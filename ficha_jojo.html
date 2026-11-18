@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficha - JoJo Bizarre Adventure: O Mundo dos Stands</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style_ficha.css">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Bangers&family=Special+Elite&display=swap" rel="stylesheet">
+<script src="fichas.js"></script>
+<script src="share.js"></script>
+<script src="jojo_dados.js"></script>
+<style>
+.dr{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:13px;background:rgba(255,255,255,.06);border:1px solid var(--edge);margin-bottom:6px}
+.dr .nm{flex:1;min-width:0}
+.dr .nm small{display:block;color:var(--muted);font-size:.72rem}
+.step{width:28px;height:28px;border-radius:9px;border:1px solid var(--edge);background:rgba(255,255,255,.06)}
+.step:disabled{opacity:.35;cursor:default}
+.rb{min-width:62px;padding:5px 8px;border-radius:10px;border:0;background:var(--accent);color:#14101f;font-weight:700}
+.xb{width:46px!important;padding:4px 6px!important;text-align:center}
+.muted{color:var(--muted);font-size:.88rem}
+.foto{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:10px}
+.foto>button:first-child{width:130px;aspect-ratio:4/5;padding:0;border:2px solid var(--accent);border-radius:14px;background:rgba(255,255,255,.05);color:var(--muted);overflow:hidden;cursor:pointer}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto .fx{background:none;border:0;color:var(--muted);text-decoration:underline;font-size:.8rem;cursor:pointer}
+.sec{font-weight:700;margin:10px 0 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip2{padding:2px 9px;border-radius:99px;background:rgba(255,80,80,.22);border:1px solid rgba(255,120,120,.5);font-size:.8rem}
+.stand-photo>button:first-child{width:160px;aspect-ratio:1/1;border-radius:50%}
+.grade{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.grade select{width:100%}
+
+:root{--accent:#ffd23f;--jj-pink:#ff3d8b;--jj-yellow:#ffd23f;--jj-teal:#19d3c5;--jj-ink:#0b0613}
+
+body{
+  background:
+    radial-gradient(circle at 15% 10%,rgba(255,61,139,.40),transparent 45%),
+    radial-gradient(circle at 90% 95%,rgba(25,211,197,.30),transparent 45%),
+    repeating-conic-gradient(from 0deg at 50% 25%,rgba(255,255,255,.05) 0 6deg,transparent 6deg 12deg),
+    #1a0933 !important;
+  background-attachment:fixed !important;
+}
+/* meio-tom (halftone) */
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.22;
+  background-image:radial-gradient(#000 1.2px,transparent 1.7px);background-size:10px 10px;
+}
+
+/* cards */
+main>section.glass{background:none !important;border:0 !important;box-shadow:none !important;backdrop-filter:none !important;padding:0 !important}
+.mod.glass{
+  background:linear-gradient(160deg,#3d1673,#1c0a3a) !important;
+  border:3px solid var(--jj-ink) !important;border-radius:6px !important;
+  box-shadow:6px 6px 0 var(--jj-pink) !important;backdrop-filter:none !important;
+}
+header.glass{background:#120726 !important;border-bottom:4px solid var(--jj-yellow) !important;border-radius:0 !important}
+
+/* dossiê */
+.dossie{
+  position:relative;overflow:hidden;
+  background:linear-gradient(100deg,#ff3d8b,#7a1fd1 55%,#19d3c5) !important;
+  border:4px solid #000 !important;border-radius:6px !important;box-shadow:8px 8px 0 #000 !important;
+}
+.dossie>*{position:relative;z-index:1}
+.dossie::before{
+  content:"ゴゴゴゴ";position:absolute;right:-8px;top:-14px;z-index:0;white-space:nowrap;
+  font:900 5.5rem/1 sans-serif;letter-spacing:-.06em;color:rgba(0,0,0,.20);transform:rotate(-8deg);pointer-events:none;
+}
+.dossie small{font-family:"Special Elite",monospace;color:#fff;text-transform:uppercase;letter-spacing:.15em;text-shadow:1px 1px 0 #000}
+.dossie h1{
+  font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:clamp(2.2rem,7vw,3.6rem);letter-spacing:.03em;
+  color:#fff;-webkit-text-stroke:2px #000;paint-order:stroke fill;
+  text-shadow:4px 4px 0 var(--jj-pink),7px 7px 0 #000;
+  transform:skewX(-6deg) rotate(-1deg);transform-origin:left;margin:6px 0 10px;
+}
+.dossie .flds span{background:#000;color:var(--jj-yellow);padding:3px 10px;font-family:Oswald,Anton,sans-serif;transform:skewX(-8deg);display:inline-block}
+
+/* títulos de seção */
+.head h2{
+  display:inline-block;margin:0 0 10px;padding:2px 14px;background:#000;color:var(--jj-yellow);
+  border-left:6px solid var(--jj-pink);transform:skewX(-8deg);
+  font:400 1.25rem Anton,Impact,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-shadow:2px 2px 0 var(--jj-pink);
+}
+input.name{font-family:Bangers,Impact,sans-serif !important;font-size:1.6rem !important;letter-spacing:.04em}
+
+/* atributos */
+.dr{background:rgba(0,0,0,.38) !important;border:2px solid #000 !important;border-left:6px solid var(--jj-pink) !important;border-radius:4px !important}
+.dr b{font:400 1.7rem Anton,Impact,sans-serif;color:var(--jj-yellow);-webkit-text-stroke:1px #000;paint-order:stroke fill;text-shadow:2px 2px 0 var(--jj-pink);min-width:28px;text-align:center}
+.step{background:var(--jj-yellow) !important;color:#000 !important;border:2px solid #000 !important;border-radius:4px !important;font-weight:900;box-shadow:2px 2px 0 #000;transition:transform .08s}
+.step:not(:disabled):hover{transform:translate(-1px,-1px) scale(1.08)}
+.step:not(:disabled):active{transform:translate(2px,2px);box-shadow:none}
+
+/* fotos */
+.foto>button:first-child{border:4px solid #000 !important;box-shadow:5px 5px 0 var(--jj-pink);transform:rotate(-2deg)}
+.stand-photo>button:first-child{box-shadow:0 0 0 4px var(--jj-yellow),0 0 22px 6px rgba(255,61,139,.7);transform:none}
+
+/* campos */
+input:not([type=file]),select,textarea{background:rgba(0,0,0,.40) !important;color:#fff;border:2px solid #000 !important;border-radius:4px !important}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--jj-yellow);outline-offset:1px}
+
+/* gráfico do Stand */
+.radar{width:100%;max-width:300px;display:block;margin:6px auto 10px;overflow:visible}
+.radar .area{fill:rgba(255,210,63,.55);stroke:var(--jj-pink);stroke-width:3;stroke-linejoin:round;filter:drop-shadow(3px 3px 0 #000)}
+.radar .lab{font:700 9px Oswald,sans-serif;fill:var(--jj-yellow);letter-spacing:.08em}
+.radar .gr{font:400 17px Anton,Impact,sans-serif;fill:#fff;stroke:#000;stroke-width:3px;paint-order:stroke}
+
+.neg{color:#ff6b6b}
+.cost{font-size:.72rem;color:var(--jj-yellow)}
+.box{background:rgba(0,0,0,.35);border:2px solid #000;border-left:6px solid var(--jj-teal);border-radius:4px;padding:6px 10px;margin:6px 0}
+.box summary{cursor:pointer;font-weight:700}
+.box input,.box select,.box textarea{width:100%;margin:4px 0}
+.box .meta{font-size:.74rem;color:var(--muted);margin:2px 0}
+.tag{display:inline-block;padding:0 8px;border-radius:3px;background:var(--jj-pink);color:#fff;font:400 .8rem Anton,sans-serif;margin-right:6px}
+.warn{color:#ff9f9f;font-size:.78rem}
+.stat{display:flex;justify-content:space-between;gap:8px;padding:3px 8px;background:rgba(0,0,0,.3);border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem}
+.stat b{color:var(--jj-yellow);text-align:right}
+.btnrow{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.xbtn{background:none;border:0;color:#ff9f9f;cursor:pointer;text-decoration:underline;font-size:.78rem}
+.rb:disabled{opacity:.35;cursor:default}
+main{padding-bottom:34vh}
+#rolls{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#120726;border-top:4px solid var(--jj-yellow);padding:6px 10px calc(6px + env(safe-area-inset-bottom,0px));max-height:30vh;overflow:auto;font-size:.88rem}
+#rolls .rl-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap;position:sticky;top:-6px;background:#120726;padding:2px 0 4px}
+#rolls .rl-b>div{padding:2px 0;border-bottom:1px dashed rgba(255,255,255,.12)}
+.tot{color:var(--jj-yellow);font-family:Anton,Impact,sans-serif;font-size:1.1rem}
+</style>
+</head>
+<body>
+<header class="glass">
+  <a href="index.html">RPGBox</a>
+  <button class="btn" id="exp">Exportar</button>
+  <button class="btn" id="imp">Importar</button>
+  <input type="file" id="impf" accept=".json,application/json" hidden>
+  <input type="file" id="fotof" accept="image/*" hidden>
+  <input type="file" id="standfotof" accept="image/*" hidden>
+</header>
+<div class="dossie" id="dossie"></div>
+<main>
+  <section class="glass" id="c1"></section>
+  <section class="glass" id="c2"></section>
+  <section class="glass" id="c3"></section>
+</main>
+<div id="rolls"></div>
+<script>
+(function(){
+var AT=JJ.AT,AB=["FOR","DES","CON","INT","SAB","CAR"],GR=JJ.GR,GMOD=JJ.MOD,SK=JJ.SKILLS;
+var STAND_ATTRS=["Poder","Durabilidade","Velocidade","Precisão","Alcance","Potencial"];
+var STAND_GRADES=["E","D","C","B","A","Nada","Infinito"];
+var ID=new URLSearchParams(location.search).get("id");
+if(!ID||!FICHAS.has(ID)){var l0=FICHAS.list();location.replace(l0.length?"ficha_jojo.html?id="+l0[0].id:"index.html");return}
+try{var th=JSON.parse(localStorage.getItem("vtt-tema"));if(th){var rs=document.documentElement.style;if(+th.h>=0)rs.setProperty("--h",+th.h);if(th.glass)rs.setProperty("--glass",th.glass/100);if(th.blur>=0)rs.setProperty("--blur",th.blur+"px");document.documentElement.dataset.style=th.solid?"solid":"glass"}}catch(e){}
+var S=FICHAS.read(ID)||{};
+var advMode=0,auxOn=false,LOG=[];
+function T(v,n){return String(v==null?"":v).slice(0,n)}
+function cl(v,a,b,d){v=parseInt(v,10);if(isNaN(v))v=d;return Math.max(a,Math.min(b,v))}
+function el(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function sgn(n){return n>=0?"+"+n:"−"+(-n)}
+function skIdx(n){for(var i=0;i<SK.length;i++)if(SK[i][0]===n)return i;return-1}
+function occFind(n){for(var i=0;i<JJ.OCC.length;i++)if(JJ.OCC[i][0]===n)return JJ.OCC[i];return null}
+function powFind(n){for(var i=0;i<JJ.POW.length;i++)if(JJ.POW[i][0]===n)return JJ.POW[i];return null}
+function fix(){
+ S.sys="jojo";S.name=T(S.name||"Novo personagem",60);
+ if(!Array.isArray(S.at)||S.at.length!==6)S.at=[1,1,1,1,1,1];
+ S.at=S.at.map(function(v){return cl(v,0,4,1)});
+ if(!Array.isArray(S.standAttr)||S.standAttr.length!==6)S.standAttr=[1,1,1,1,1,1];
+ S.standAttr=S.standAttr.map(function(v){return cl(v,0,6,1)});
+ ["standName","standDesc","standAbilities","desc","notes"].forEach(function(k){if(typeof S[k]!=="string")S[k]=""});
+ S.ocupacao=occFind(S.ocupacao)?S.ocupacao:"";
+ S.occPick=(Array.isArray(S.occPick)?S.occPick:[]).filter(function(p){return skIdx(p)>=0}).slice(0,2);
+ var sk2={};if(!S.sk||typeof S.sk!=="object")S.sk={};SK.forEach(function(s){if(S.sk[s[0]])sk2[s[0]]=true});S.sk=sk2;
+ S.nivel=cl(S.nivel,0,2,0);S.ppTotal=cl(S.ppTotal,-99,999,10);S.psTotal=cl(S.psTotal,-99,999,10);
+ S.xp=cl(S.xp,0,9999,0);S.psLost=cl(S.psLost,0,99,0);S.criacao=S.criacao!==false;S.gm=!!S.gm;
+ S.poderes=(Array.isArray(S.poderes)?S.poderes:[]).filter(powFind).slice(0,30);
+ S.hab=(Array.isArray(S.hab)?S.hab:[]).filter(function(h){return h&&(h.c||JJ.HABMAP[h.n])}).slice(0,30).map(function(h){return h.c?{c:1,n:T(h.n,60),l:cl(h.l,1,4,1),t:T(h.t,20),d:T(h.d,2000)}:{n:h.n}});
+ S.tec=(Array.isArray(S.tec)?S.tec:[]).slice(0,60).map(function(t){t=t||{};return{n:T(t.n,60),h:T(t.h,60),d:T(t.d,2000)}});
+ S.armBase=cl(S.armBase,0,99,10);S.outCA=cl(S.outCA,-99,99,0);S.armPesada=!!S.armPesada;
+ S.vigBonus=cl(S.vigBonus,0,999,0);S.eneBonus=cl(S.eneBonus,0,999,0);S.desl=T(S.desl||"9m",20);
+ if(S.v!==2){S.v=2;S.vigor=vigorM();S.energia=energiaM();S.lastVM=vigorM();S.lastEM=energiaM()}
+ S.vigor=cl(S.vigor,0,999,0);S.energia=cl(S.energia,0,999,0);S.lastVM=cl(S.lastVM,0,9999,vigorM());S.lastEM=cl(S.lastEM,0,9999,energiaM());
+ if(typeof S.avatar!=="string"||!/^(data:image\/(webp|png|jpeg);base64,)/.test(S.avatar))delete S.avatar;
+ if(typeof S.standAvatar!=="string"||!/^(data:image\/(webp|png|jpeg);base64,)/.test(S.standAvatar))delete S.standAvatar;
+}
+function mod(i){return GMOD[S.at[i]]}
+function gi(i){var g=S.standAttr[i];return g===6?4:(g===5?0:g)}
+function sm(i){return S.standAttr[i]===5?-1:GMOD[gi(i)]}
+function vigorM(){return 30+mod(2)+S.vigBonus}
+function energiaM(){return 10+mod(2)+S.eneBonus}
+function limPE(){return JJ.LIMPE[S.nivel]}
+function trein(){return JJ.TREIN[S.nivel]}
+function occSkills(){var o=occFind(S.ocupacao);if(!o)return[];var r=o[1].slice();S.occPick.forEach(function(p){if(p&&r.indexOf(p)<0)r.push(p)});return r}
+function powCount(n){return S.poderes.filter(function(x){return x===n}).length}
+function freeMax(){return Math.max(0,1+mod(3)+powCount("Treinamento em Perícia"))}
+function freeUsed(){var o=occSkills();return Object.keys(S.sk).filter(function(k){return o.indexOf(k)<0}).length}
+function habData(h){return h.c?{n:h.n,l:h.l,t:h.t||"—",a:"—",r:"—",du:"—",al:"—",rs:"—",d:h.d}:JJ.HABMAP[h.n]}
+function ci(v){return JJ.COST[v>4?(v===5?0:4):v]}
+function ppSpent(){var s=S.poderes.length;S.at.forEach(function(v){s+=JJ.COST[v]});return s}
+function psSpent(){var s=S.psLost;S.standAttr.forEach(function(v){s+=ci(v)});S.hab.forEach(function(h){s+=JJ.ABIL_PS[habData(h).l-1]});return s+S.tec.length}
+function ppLeft(){return S.ppTotal-ppSpent()}
+function psLeft(){return S.psTotal-psSpent()}
+function powOk(p){return p[2].every(function(or){return or.some(function(c){return(c[0]==="at"?S.at[c[1]]:gi(c[1]))>=c[2]})})&&(!p[4]||S.hab.some(function(h){return h.n==="Criar Ilusões"}))}
+function persist(){if(!FICHAS.write(ID,S))alert("Sem espaço. Exporte a ficha.")}
+function commit(){
+ var vm=vigorM(),em=energiaM();
+ S.vigor=cl(S.vigor+(vm-S.lastVM),0,vm,vm);S.energia=cl(S.energia+(em-S.lastEM),0,em,em);
+ S.lastVM=vm;S.lastEM=em;persist();render()}
+function bar(l,k,c,m,col){var p=m>0?c/m:0;return'<div class="lbl">'+l+'</div><div class="bar" style="--c:'+col+'"><button data-b="'+k+'" data-d="-5">−5</button><button data-b="'+k+'" data-d="-1">−</button><div><i style="transform:scaleX('+(1-p)+')"></i><span>'+c+'/'+m+'</span></div><button data-b="'+k+'" data-d="1">+</button><button data-b="'+k+'" data-d="5">+5</button></div>'}
+function stp(k,i,dn,up){return'<button class="step" data-'+k+'="'+i+'" data-dir="-1"'+(dn?"":" disabled")+' aria-label="Diminuir">−</button><button class="step" data-'+k+'="'+i+'" data-dir="1"'+(up?"":" disabled")+' aria-label="Aumentar">+</button>'}
+fix();
+
+function c1(){
+ var o=occFind(S.ocupacao),i,h='<div class="mod glass"><div class="foto"><button type="button" data-foto="1" aria-label="Trocar foto">'+(S.avatar?'<img src="'+esc(S.avatar)+'" alt="Foto">':'<span>FOTO</span>')+'</button>'+(S.avatar?'<button type="button" class="fx" data-fotox="1">remover</button>':'')+'</div>'+
+ '<input class="name" data-k="name" value="'+esc(S.name)+'" aria-label="Nome">'+
+ '<div class="row" style="margin-top:10px"><label>Ocupação</label><select data-oc="1" style="width:60%"><option value="">Escolha…</option>'+JJ.OCC.map(function(x){return'<option'+(S.ocupacao===x[0]?" selected":"")+'>'+esc(x[0])+'</option>'}).join("")+'</select></div>';
+ if(o){
+  h+='<div class="muted">Perícias: '+esc(o[1].join(", ")||"à escolha do mestre")+'</div>';
+  for(i=0;i<o[2];i++)h+='<div class="row"><label>Perícia extra '+(i+1)+'</label><select data-oc2="'+i+'" style="width:60%"><option value="">Escolha…</option>'+SK.map(function(s){return'<option'+(S.occPick[i]===s[0]?" selected":"")+'>'+esc(s[0])+'</option>'}).join("")+'</select></div>';
+  h+='<details class="box"><summary>'+esc(o[3])+'</summary><div class="muted">'+esc(o[4])+'</div></details>';
+ }
+ h+='<div class="row"><label>Patamar</label><select data-s="nivel" style="width:60%">'+JJ.PAT.map(function(p,j){return'<option value="'+j+'"'+(S.nivel===j?" selected":"")+'>'+p+'</option>'}).join("")+'</select></div></div>';
+ var pl=ppLeft(),sl=psLeft();
+ h+='<div class="mod glass"><div class="head"><h2>Pontos</h2></div>'+
+ '<div class="row"><span class="nm">PP restantes</span><b class="'+(pl<0?"neg":"")+'">'+pl+'</b><span class="muted">de</span><input class="xb" type="number" data-n="ppTotal" value="'+S.ppTotal+'" aria-label="PP total"></div>'+
+ '<div class="row"><span class="nm">PS restantes</span><b class="'+(sl<0?"neg":"")+'">'+sl+'</b><span class="muted">de</span><input class="xb" type="number" data-n="psTotal" value="'+S.psTotal+'" aria-label="PS total"></div>'+
+ '<div class="row"><span class="nm">XP</span><input class="xb" type="number" data-n="xp" value="'+S.xp+'" aria-label="XP"><button class="rb" data-act="xp2pt">10 XP → 1 PP + 1 PS</button></div>'+
+ '<div class="btnrow"><button class="rb" data-act="marco">Marco (+'+[10,20,30][S.nivel]+' XP)</button>'+(S.criacao?'<button class="rb" data-act="fin">Finalizar criação</button>':(S.gm?'<button class="rb" data-act="reabrir">Reabrir criação</button>':''))+'</div>'+
+ '<div class="muted">'+(S.criacao?'Em criação: você pode desfazer compras.':'Criação finalizada: compras são permanentes e evoluir o Stand reduz o Potencial.')+'</div>'+
+ '<label class="row"><span class="nm">Modo Mestre (sem limites)</span><input type="checkbox" data-g="gm"'+(S.gm?' checked':'')+'></label></div>';
+ var pv=vigorM(),pe=energiaM(),ca=S.armBase+mod(1)+S.outCA,dt=10+mod(4)+limPE();
+ h+='<div class="mod glass"><div class="head"><h2>Recursos</h2></div>'+bar("Vigor","vigor",S.vigor,pv,"#d93b4f")+bar("Energia","energia",S.energia,pe,"#d9a43b")+
+ '<div class="muted">Vigor = 30 + CON'+(S.vigBonus?' + '+S.vigBonus:'')+' · Energia = 10 + CON'+(S.eneBonus?' + '+S.eneBonus:'')+'</div>'+
+ '<div class="btnrow"><button class="rb" data-act="xpvig">+Vigor máx (10 XP)</button><button class="rb" data-act="xpene">+Energia máx (10 XP)</button></div>'+
+ '<div class="row"><span class="nm">CA (base + DES '+sgn(mod(1))+' + outros)</span><b>'+ca+'</b></div>'+
+ '<div class="row"><span class="nm">Armadura base</span><input class="xb" type="number" data-n="armBase" value="'+S.armBase+'" aria-label="Base da armadura"><span class="nm">Outros</span><input class="xb" type="number" data-n="outCA" value="'+S.outCA+'" aria-label="Outros bônus de CA"></div>'+
+ '<label class="row"><span class="nm">Armadura pesada (−5 em Acrobacia/Furtividade)</span><input type="checkbox" data-g="armPesada"'+(S.armPesada?' checked':'')+'></label>'+
+ '<div class="row"><span class="nm">Deslocamento</span><input class="xb" data-k="desl" value="'+esc(S.desl)+'" maxlength="20"></div>'+
+ '<div class="stat"><span>Limite de PE por turno</span><b>'+limPE()+'</b></div>'+
+ '<div class="stat"><span>DT das suas habilidades (10 + SAB + limite)</span><b>'+dt+'</b></div>'+
+ '<div class="stat"><span>Bônus de treinamento</span><b>+'+trein()+'</b></div>'+
+ '<div class="btnrow"><button class="rb" data-r="Iniciativa" data-m="'+mod(1)+'">🎲 Iniciativa '+sgn(mod(1))+'</button></div></div>';
+ return h;
+}
+function auxIdx(attr,skill){if(skill==="Furtividade"||skill==="Sentidos")return 3;return attr===0?0:attr===1?2:attr===2?1:-1}
+function c2(){
+ var h='<div class="mod glass"><div class="head"><h2>Atributos</h2></div>';
+ AT.forEach(function(n,i){
+  var v=S.at[i],dif=v<4?JJ.COST[v+1]-JJ.COST[v]:0,up=v<4&&(S.gm||dif<=ppLeft()),dn=v>0&&(S.criacao||S.gm),ax=auxIdx(i);
+  h+='<div class="dr"><div class="nm">'+n+'<small>Mod '+sgn(GMOD[v])+' · próx. nota: '+(v<4?(dif>0?'+':'')+dif+' PP':'máx.')+'</small></div>'+stp("ad",i,dn,up)+'<b>'+GR[v]+'</b><button class="rb" data-r="'+n+'" data-m="'+GMOD[v]+'"'+(ax>=0?' data-x="'+ax+'"':'')+' aria-label="Rolar '+n+'">🎲</button></div>';
+ });
+ h+='</div><div class="mod glass"><div class="head"><h2>Perícias</h2></div><div class="muted">Escolhidas: '+freeUsed()+' / '+freeMax()+' (1 + INT + poderes). Treinada = +'+trein()+'.</div>';
+ var oc=occSkills();
+ SK.forEach(function(s){
+  var n=s[0],fromOcc=oc.indexOf(n)>=0,tr=fromOcc||!!S.sk[n],m=GMOD[S.at[s[1]]]+(tr?trein():0)+(S.armPesada&&s[3]?-5:0),ax=auxIdx(s[1],n),lock=s[2]&&!tr;
+  h+='<div class="dr"><div class="nm">'+n+'<small>'+AB[s[1]]+' '+sgn(GMOD[S.at[s[1]]])+(tr?' +'+trein():'')+(s[3]&&S.armPesada?' −5':'')+(s[2]?' · só treinada':'')+(fromOcc?' · ocupação':'')+'</small></div>'+
+  '<input type="checkbox" data-sk="'+esc(n)+'" '+(tr?'checked ':'')+(fromOcc?'disabled ':'')+'aria-label="Treinado em '+esc(n)+'">'+
+  '<button class="rb" data-r="'+esc(n)+'" data-m="'+m+'"'+(ax>=0?' data-x="'+ax+'"':'')+(lock?' disabled':'')+'>'+(lock?'—':'🎲 '+sgn(m))+'</button></div>';
+ });
+ return h+'</div>';
+}
+function c3(){
+ var i,h='<div class="mod glass"><div class="head"><h2>Stand</h2></div>'+
+ '<div class="foto stand-photo"><button type="button" data-standfoto="1" aria-label="Trocar foto do stand">'+(S.standAvatar?'<img src="'+esc(S.standAvatar)+'" alt="Stand">':'<span>STAND</span>')+'</button>'+(S.standAvatar?'<button type="button" class="fx" data-standfotox="1">remover</button>':'')+'</div>'+
+ '<input class="name" data-k="standName" value="'+esc(S.standName)+'" placeholder="Nome do Stand" aria-label="Nome do Stand" style="margin-bottom:8px">'+
+ standRadar()+'<div class="grade">';
+ STAND_ATTRS.forEach(function(a,k){
+  var v=S.standAttr[k],mx=S.gm?6:4,dif=v<4?JJ.COST[v+1]-JJ.COST[v]:0;
+  var up=v<mx&&(S.gm||(dif<=psLeft()&&(S.criacao||k===5||S.standAttr[5]!==5)));
+  var dn=v>0&&(S.criacao||S.gm);
+  h+='<div class="dr"><div class="nm">'+a+'<small>'+(v<4?(dif>0?'+':'')+dif+' PS':'')+'</small></div>'+stp("sd",k,dn,up)+'<b>'+STAND_GRADES[v]+'</b></div>';
+ });
+ h+='</div><div class="sec">Atributos derivados</div>'+
+ '<div class="stat"><span>Dano base (Poder)</span><b>'+JJ.DANO[gi(0)]+'</b></div>'+
+ '<div class="stat"><span>Ataque Forte</span><b>1d20 '+sgn(sm(0))+' · dano '+sgn(sm(0)*2)+'</b></div>'+
+ '<div class="stat"><span>Ataque Veloz</span><b>1d20 '+sgn(sm(2)+JJ.VEL_B[gi(2)])+'</b></div>'+
+ '<div class="stat"><span>Ataque à Distância ('+JJ.PRE_D[gi(3)]+')</span><b>1d20 '+sgn(sm(3)+JJ.PRE_B[gi(3)])+'</b></div>'+
+ '<div class="stat"><span>Reagir/Esquivar</span><b>'+sgn(JJ.VEL_B[gi(2)])+'</b></div>'+
+ '<div class="stat"><span>Deslocamento do Stand · Ativar</span><b>'+JJ.VEL_D[gi(2)]+' · '+JJ.VEL_A[gi(2)]+'</b></div>'+
+ '<div class="stat"><span>Redução de dano (Durabilidade)</span><b>'+(gi(1)===0?'+1d4 dano recebido':gi(1)===1?'0':JJ.RD[gi(1)]+sgn(sm(1)))+'</b></div>'+
+ '<div class="stat"><span>Bônus de concentração</span><b>'+sgn(JJ.CONC[gi(1)])+'</b></div>'+
+ '<div class="stat"><span>Distância do Stand · da habilidade</span><b>'+JJ.ALC_S[gi(4)]+' · '+JJ.ALC_H[gi(4)]+'</b></div>'+
+ '<div class="btnrow"><button class="rb" data-atk="forte">👊 Ataque Forte</button><button class="rb" data-atk="veloz">⚡ Ataque Veloz</button><button class="rb" data-atk="dist">🎯 À Distância</button><button class="rb" data-act="prot">🛡 Proteger</button></div>'+
+ '<textarea data-k="standDesc" style="min-height:60px;margin-top:8px" placeholder="Aparência, tipo, conceito..." aria-label="Descrição do Stand">'+esc(S.standDesc)+'</textarea></div>';
+ var nm=JJ.NIVMAX[S.nivel];
+ h+='<div class="mod glass"><div class="head"><h2>Habilidades</h2></div>';
+ S.hab.forEach(function(x,j){
+  var a=habData(x),req=JJ.ALC_REQ[a.r],pe=JJ.PE[a.l-1],w=[];
+  if(a.l>nm)w.push('nível acima do patamar ('+JJ.PAT[S.nivel]+')');
+  if(req!==undefined&&gi(4)<req)w.push('Alcance do Stand insuficiente para "'+a.r+'"');
+  h+='<div class="box"><div><span class="tag">Nv '+a.l+'</span><b>'+esc(a.n)+'</b> <span class="cost">'+JJ.ABIL_PS[a.l-1]+' PS · '+pe+' PE</span></div>'+
+  '<div class="meta">'+esc([a.t,a.a,a.r,a.du,a.al,a.rs].join(" · "))+'</div>'+(w.length?'<div class="warn">⚠ '+esc(w.join("; "))+'</div>':'')+
+  '<details><summary>Descrição</summary><div class="muted">'+esc(a.d)+'</div></details>'+
+  '<div class="btnrow"><button class="rb" data-ab="'+j+'">Usar (−'+pe+' PE)</button>'+((S.criacao||S.gm)?'<button class="xbtn" data-hx="'+j+'">remover</button>':'')+'</div></div>';
+ });
+ if(!S.hab.length)h+='<div class="muted">Nenhuma habilidade ainda.</div>';
+ var groups=[1,2,3,4].map(function(l){return'<optgroup label="Nível '+l+' · '+JJ.ABIL_PS[l-1]+' PS · '+JJ.PE[l-1]+' PE">'+JJ.HAB.filter(function(a){return a[1]===l}).map(function(a){return'<option value="'+esc(a[0])+'"'+(l>nm&&!S.gm?' disabled':'')+'>'+esc(a[0])+'</option>'}).join("")+'</optgroup>'}).join("");
+ h+='<select data-addhab="1"><option value="">+ Adicionar habilidade da lista…</option>'+groups+'</select>'+
+ '<details class="box"><summary>Criar habilidade original</summary><input id="hn" placeholder="Nome" maxlength="60"><div class="row"><label>Nível</label><select id="hl">'+[1,2,3,4].map(function(l){return'<option value="'+l+'">'+l+'</option>'}).join("")+'</select><label>Tipo</label><select id="ht"><option>Aprimorar</option><option>Invocar</option><option>Manipular</option><option>Transmutar</option><option>Aprisionar</option></select></div><textarea id="hd" style="min-height:70px" placeholder="Ação, alcance, duração, alvo, resistência e descrição..."></textarea><button class="rb" data-act="addhab">Criar</button></details></div>';
+ h+='<div class="mod glass"><div class="head"><h2>Técnicas</h2></div><div class="muted">Cada técnica custa 1 PS e 1 PE para usar. Alcance até Longo, duração máx. 1 rodada.</div>';
+ S.tec.forEach(function(t,j){h+='<div class="box"><div><b>'+esc(t.n)+'</b> <span class="cost">'+esc(t.h)+'</span></div><div class="muted">'+esc(t.d)+'</div><div class="btnrow"><button class="rb" data-tc="'+j+'">Usar (−1 PE)</button>'+((S.criacao||S.gm)?'<button class="xbtn" data-tx="'+j+'">remover</button>':'')+'</div></div>'});
+ h+='<details class="box"><summary>Criar técnica (1 PS)</summary><input id="tn" placeholder="Nome da técnica" maxlength="60"><select id="th">'+S.hab.map(function(x){return'<option>'+esc(x.n)+'</option>'}).join("")+'</select><textarea id="td" style="min-height:70px" placeholder="O que a técnica faz..."></textarea><button class="rb" data-act="addtec">Criar</button></details></div>';
+ var mp=Math.max(0,mod(3)),avail=JJ.POW.filter(function(p){return(p[5]||!powCount(p[0]))&&(S.gm||powOk(p))});
+ h+='<div class="mod glass"><div class="head"><h2>Poderes</h2></div><div class="muted">'+S.poderes.length+' / '+mp+' (modificador de INT) · 1 PP cada</div>';
+ S.poderes.forEach(function(n,j){var p=powFind(n);h+='<div class="box"><div><b>'+esc(n)+'</b></div><div class="muted">'+esc(p[3])+'</div>'+((S.criacao||S.gm)?'<div class="btnrow"><button class="xbtn" data-px="'+j+'">remover</button></div>':'')+'</div>'});
+ h+='<select data-addpow="1"><option value="">+ Adicionar poder…</option>'+avail.map(function(p){return'<option value="'+esc(p[0])+'">'+esc(p[0])+' — '+esc(p[1])+'</option>'}).join("")+'</select></div>';
+ h+='<div class="mod glass"><div class="head"><h2>Notas</h2></div><textarea data-k="standAbilities" style="min-height:70px" placeholder="Anotações do Stand..." aria-label="Anotações do Stand">'+esc(S.standAbilities)+'</textarea><textarea data-k="notes" style="min-height:120px;margin-top:8px" aria-label="Anotações" placeholder="Anotações da sessão...">'+esc(S.notes)+'</textarea></div>';
+ return h;
+}
+
+function standRadar(){
+ var o=[0,2,4,1,3,5],cx=120,cy=120,R=72,pts=[],ax="",lb="",rg="",k,r;
+ function P(k,f){var a=(-90+60*k)*Math.PI/180;return[(cx+Math.cos(a)*R*f).toFixed(1),(cy+Math.sin(a)*R*f).toFixed(1)]}
+ for(r=1;r<=5;r++){var rp=[];for(k=0;k<6;k++)rp.push(P(k,r/5).join(","));rg+='<polygon points="'+rp.join(" ")+'" fill="'+(r%2?"rgba(0,0,0,.25)":"none")+'" stroke="rgba(255,255,255,.3)"/>'}
+ for(k=0;k<6;k++){
+  var g=S.standAttr[o[k]],f=g===5?0:g===6?1.18:(g+1)/5,e=P(k,1),l=P(k,1.3);
+  pts.push(P(k,f).join(","));
+  ax+='<line x1="'+cx+'" y1="'+cy+'" x2="'+e[0]+'" y2="'+e[1]+'" stroke="rgba(255,255,255,.3)"/>';
+  lb+='<text class="lab" x="'+l[0]+'" y="'+(+l[1]-4)+'" text-anchor="middle">'+STAND_ATTRS[o[k]].toUpperCase()+'</text>'+
+      '<text class="gr" x="'+l[0]+'" y="'+(+l[1]+12)+'" text-anchor="middle">'+STAND_GRADES[g]+'</text>';
+ }
+ return'<svg class="radar" viewBox="0 0 240 240" role="img" aria-label="Gráfico de status do Stand">'+rg+ax+'<polygon class="area" points="'+pts.join(" ")+'"/>'+lb+'</svg>';
+}
+
+function theme(){
+ delete document.documentElement.dataset.el;
+ var d=el("dossie");
+ d.style.gridTemplateColumns="1fr";
+ d.innerHTML='<div style="min-width:0"><small>Dossiê · JoJo Bizarre Adventure</small><h1>'+esc(S.name)+'</h1><div class="flds" style="flex-wrap:wrap"><span>'+esc(S.ocupacao||"—")+'</span><span>'+JJ.PAT[S.nivel]+'</span><span>PP '+ppLeft()+'</span><span>PS '+psLeft()+'</span></div></div>';
+}
+function render(){el("c1").innerHTML=c1();el("c2").innerHTML=c2();el("c3").innerHTML=c3();theme();rollsUI()}
+
+/* ---------- rolagens ---------- */
+function d(n){return 1+Math.floor(Math.random()*n)}
+function dice(e){var m=/^(\d+)d(\d+)$/.exec(e);if(!m)return{v:0,t:"0"};var r=[],s=0,i,x;for(i=0;i<+m[1];i++){x=d(+m[2]);r.push(x);s+=x}return{v:s,t:e+" ("+r.join("+")+")"}}
+function logIt(h){LOG.unshift(h);if(LOG.length>40)LOG.length=40;rollsUI()}
+function rollsUI(){
+ var r=el("rolls");if(!r)return;
+ r.innerHTML='<div class="rl-h"><b>Rolagens</b><select data-adv="1" aria-label="Vantagem"><option value="0"'+(advMode===0?' selected':'')+'>Normal</option><option value="1"'+(advMode===1?' selected':'')+'>Vantagem</option><option value="-1"'+(advMode===-1?' selected':'')+'>Desvantagem</option></select>'+
+ '<label><input type="checkbox" data-auxon="1"'+(auxOn?' checked':'')+'> Stand auxilia (−1 PE)</label><button class="rb" data-act="clr">limpar</button></div><div class="rl-b">'+LOG.map(function(l){return'<div>'+l+'</div>'}).join("")+'</div>';
+}
+function roll(lab,m,x){
+ var a=d(20),b=d(20),u=a,t="d20 ("+a+")";
+ if(advMode===1){u=Math.max(a,b);t="2d20 ("+a+", "+b+") vantagem"}
+ else if(advMode===-1){u=Math.min(a,b);t="2d20 ("+a+", "+b+") desvantagem"}
+ if(auxOn&&x!==undefined&&x!==""){if(S.energia>=1){S.energia--;m+=sm(+x);lab+=" + Stand (−1 PE)";commit()}else lab+=" (sem PE para o Stand)"}
+ logIt("<b>"+esc(lab)+":</b> "+t+" "+sgn(m)+" = <b class=\"tot\">"+(u+m)+"</b>"+(u===20?" ⚡ 20 natural":u===1?" 💀 1 natural":""));
+}
+function atk(k){
+ var m,dm=0,nm=k==="forte"?"Ataque Forte":k==="veloz"?"Ataque Veloz":"Ataque à Distância";
+ if(k==="forte"){m=sm(0);dm=sm(0)*2}else if(k==="veloz")m=sm(2)+JJ.VEL_B[gi(2)];else m=sm(3)+JJ.PRE_B[gi(3)];
+ roll(nm+" do Stand",m);
+ var dd=dice(JJ.DANO[gi(0)]);
+ logIt("↳ dano: "+dd.t+(dm?" "+sgn(dm):"")+" = <b class=\"tot\">"+Math.max(0,dd.v+dm)+"</b>");
+}
+function prot(){
+ var g=gi(1);
+ if(g===0)return logIt("<b>Proteger:</b> Durabilidade E — o Stand sofre +1d4 de dano do mesmo tipo");
+ if(g===1)return logIt("<b>Proteger:</b> Durabilidade D — sem redução de dano");
+ var r=dice(JJ.RD[g]);logIt("<b>Redução de dano:</b> "+r.t+" "+sgn(sm(1))+" = <b class=\"tot\">"+Math.max(0,r.v+sm(1))+"</b>");
+}
+function usePE(lab,c){
+ if(c>limPE()&&!S.gm){logIt("⚠ <b>"+esc(lab)+"</b> custa "+c+" PE, acima do limite de "+limPE()+" PE por turno");return}
+ if(S.energia<c){logIt("⚠ <b>"+esc(lab)+"</b>: PE insuficiente ("+S.energia+"/"+c+")");return}
+ S.energia-=c;logIt("✨ <b>"+esc(lab)+"</b> usada (−"+c+" PE)");commit();
+}
+
+/* ---------- compras ---------- */
+function evolve(oque){
+ if(S.standAttr[5]===5){alert("O Potencial do Stand acabou: não dá mais para criar habilidades/técnicas nem melhorar atributos.");return false}
+ var p=S.standAttr[5],np=p===0?5:(p===6?4:p-1);
+ if(!confirm("Evoluir ("+oque+") reduz o Potencial de "+STAND_GRADES[p]+" para "+STAND_GRADES[np]+". Continuar?"))return false;
+ S.psLost+=Math.max(0,ci(p)-ci(np));S.standAttr[5]=np;return true;
+}
+function stepAttr(i,dir){
+ var o=S.at[i],n=o+dir;if(n<0||n>4)return;
+ if(dir<0&&!S.criacao&&!S.gm)return alert("Criação finalizada: atributos não voltam atrás.");
+ var dif=JJ.COST[n]-JJ.COST[o];
+ if(dif>0&&!S.gm&&ppLeft()<dif)return alert("PP insuficientes ("+ppLeft()+" restantes, custo "+dif+").");
+ S.at[i]=n;commit();
+}
+function stepStand(i,dir){
+ var o=S.standAttr[i],n=o+dir,mx=S.gm?6:4;if(n<0||n>mx)return;
+ if(dir<0&&!S.criacao&&!S.gm)return alert("Criação finalizada: atributos do Stand não voltam atrás.");
+ var dif=ci(n)-ci(o);
+ if(dif>0&&!S.gm&&psLeft()<dif)return alert("PS insuficientes ("+psLeft()+" restantes, custo "+dif+").");
+ if(dir>0&&!S.criacao&&!S.gm&&i!==5&&!evolve("melhorar "+STAND_ATTRS[i]))return;
+ S.standAttr[i]=n;commit();
+}
+function buyHab(h){
+ var a=habData(h),c=JJ.ABIL_PS[a.l-1];
+ if(a.l>JJ.NIVMAX[S.nivel]&&!S.gm)return alert("Nível "+a.l+" exige patamar mais alto (agora: "+JJ.PAT[S.nivel]+").");
+ if(!S.gm&&psLeft()<c)return alert("PS insuficientes ("+psLeft()+" restantes, custo "+c+").");
+ if(!S.criacao&&!S.gm&&!evolve("nova habilidade"))return;
+ S.hab.push(h);commit();
+}
+function buyPow(n){
+ var p=powFind(n);if(!p)return;
+ if(!S.gm){
+  if(S.poderes.length>=Math.max(0,mod(3)))return alert("Você só pode ter poderes igual ao modificador de Inteligência ("+Math.max(0,mod(3))+").");
+  if(!powOk(p))return alert("Pré-requisito não atendido: "+p[1]);
+  if(ppLeft()<1)return alert("PP insuficientes.");
+ }
+ S.poderes.push(n);commit();
+}
+function toggleSk(n,on){
+ if(on&&!S.gm&&freeUsed()>=freeMax()){alert("Sem perícias livres (máx. "+freeMax()+"). Aumente a Inteligência ou pegue o poder Treinamento em Perícia.");commit();return}
+ if(on)S.sk[n]=true;else delete S.sk[n];commit();
+}
+function act(a){
+ if(a==="clr"){LOG=[];return rollsUI()}
+ if(a==="prot")return prot();
+ if(a==="xp2pt"){if(S.xp<10)return;S.xp-=10;S.ppTotal++;S.psTotal++}
+ else if(a==="marco"){S.xp+=[10,20,30][S.nivel]}
+ else if(a==="xpvig"||a==="xpene"){
+  if(S.xp<10)return alert("Precisa de 10 XP.");
+  S.xp-=10;var r=d(6),v=Math.max(0,r+mod(2));
+  if(a==="xpvig")S.vigBonus+=v;else S.eneBonus+=v;
+  logIt("<b>"+(a==="xpvig"?"Vigor":"Energia")+" máximo:</b> 1d6 ("+r+") "+sgn(mod(2))+" = <b class=\"tot\">+"+v+"</b>");
+ }
+ else if(a==="fin"){if(!confirm("Finalizar a criação? Depois disso, compras ficam permanentes e evoluir o Stand reduz o Potencial."))return;S.criacao=false}
+ else if(a==="reabrir"){S.criacao=true}
+ else if(a==="addhab"){
+  var n=T(el("hn").value,60).trim();if(!n)return alert("Dê um nome à habilidade.");
+  var h={c:1,n:n,l:cl(el("hl").value,1,4,1),t:el("ht").value,d:T(el("hd").value,2000)};
+  return buyHab(h);
+ }
+ else if(a==="addtec"){
+  var tn=T(el("tn").value,60).trim(),th=el("th").value;
+  if(!S.hab.length)return alert("Crie uma habilidade antes: toda técnica pertence a uma habilidade.");
+  if(!tn)return alert("Dê um nome à técnica.");
+  if(!S.gm&&psLeft()<1)return alert("PS insuficientes.");
+  if(!S.criacao&&!S.gm&&!evolve("nova técnica"))return;
+  S.tec.push({n:tn,h:th,d:T(el("td").value,2000)});
+ }
+ commit();
+}
+
+/* ---------- eventos ---------- */
+document.addEventListener("click",function(e){
+ var t=e.target.closest("button");if(!t||t.disabled)return;var d=t.dataset;
+ if(d.foto){el("fotof").click()}
+ else if(d.fotox){delete S.avatar;commit()}
+ else if(d.standfoto){el("standfotof").click()}
+ else if(d.standfotox){delete S.standAvatar;commit()}
+ else if(d.b){S[d.b]=cl(S[d.b]+ +d.d,0,999,0);commit()}
+ else if(d.ad!==undefined){stepAttr(+d.ad,+d.dir)}
+ else if(d.sd!==undefined){stepStand(+d.sd,+d.dir)}
+ else if(d.r!==undefined){roll(d.r,+d.m,d.x)}
+ else if(d.atk){atk(d.atk)}
+ else if(d.act){act(d.act)}
+ else if(d.ab!==undefined){var a=habData(S.hab[+d.ab]);usePE(a.n,JJ.PE[a.l-1])}
+ else if(d.tc!==undefined){usePE(S.tec[+d.tc].n,1)}
+ else if(d.hx!==undefined){S.hab.splice(+d.hx,1);commit()}
+ else if(d.tx!==undefined){S.tec.splice(+d.tx,1);commit()}
+ else if(d.px!==undefined){S.poderes.splice(+d.px,1);commit()}
+});
+document.addEventListener("input",function(e){
+ var t=e.target,d=t.dataset;
+ if(!d.k)return;
+ S[d.k]=t.value.slice(0,d.k==="notes"||d.k==="standAbilities"||d.k==="standDesc"||d.k==="desc"?20000:60);
+ if(d.k==="name"){var h1=document.querySelector(".dossie h1");if(h1)h1.textContent=S.name}
+ persistSoon();
+});
+document.addEventListener("change",function(e){
+ var t=e.target,d=t.dataset,v=t.value;
+ if(d.adv!==undefined){advMode=+v}
+ else if(d.auxon!==undefined){auxOn=t.checked}
+ else if(d.s){S[d.s]=+v;commit()}
+ else if(d.oc){S.ocupacao=v;S.occPick=[];commit()}
+ else if(d.oc2!==undefined){S.occPick[+d.oc2]=v;commit()}
+ else if(d.g){S[d.g]=t.checked;commit()}
+ else if(d.addhab){if(v)buyHab({n:v});else commit()}
+ else if(d.addpow){if(v)buyPow(v);else commit()}
+ else if(d.n){S[d.n]=cl(v,-99,9999,0);commit()}
+ else if(d.sk!==undefined){toggleSk(d.sk,t.checked)}
+ else if(d.k){S[d.k]=t.value.slice(0,20000);persistSoon();if(d.k==="name"){var h1=document.querySelector(".dossie h1");if(h1)h1.textContent=S.name}}
+});
+
+el("exp").onclick=function(){var b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=(S.name||"ficha").replace(/[^\w-]+/g,"_")+"_jojo.json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},500)};
+el("imp").onclick=function(){el("impf").click()};
+el("impf").onchange=function(){var f=this.files[0];this.value="";if(!f||f.size>1500000)return;var rd=new FileReader();rd.onload=function(){var o=null;try{o=JSON.parse(rd.result)}catch(e){}if(!o||o.sys!=="jojo"){alert("Arquivo inválido.");return}if(!confirm("Substituir?"))return;S=o;fix();commit()};rd.readAsText(f)};
+el("fotof").onchange=function(){var f=this.files[0];this.value="";if(!f||!/^image\//.test(f.type))return;var url=URL.createObjectURL(f),im=new Image();im.onload=function(){var w0=256,h0=320,c=document.createElement("canvas");c.width=w0;c.height=h0;var r=Math.max(w0/im.width,h0/im.height),w=im.width*r,h=im.height*r;c.getContext("2d").drawImage(im,(w0-w)/2,(h0-h)/2,w,h);URL.revokeObjectURL(url);S.avatar=c.toDataURL("image/webp",.82);commit()};im.onerror=function(){URL.revokeObjectURL(url)};im.src=url};
+el("standfotof").onchange=function(){var f=this.files[0];this.value="";if(!f||!/^image\//.test(f.type))return;var url=URL.createObjectURL(f),im=new Image();im.onload=function(){var w0=256,h0=256,c=document.createElement("canvas");c.width=w0;c.height=h0;var r=Math.max(w0/im.width,h0/im.height),w=im.width*r,h=im.height*r;c.getContext("2d").drawImage(im,(w0-w)/2,(h0-h)/2,w,h);URL.revokeObjectURL(url);S.standAvatar=c.toDataURL("image/webp",.82);commit()};im.onerror=function(){URL.revokeObjectURL(url)};im.src=url};
+var pT=0;function persistSoon(){clearTimeout(pT);pT=setTimeout(persist,350)}
+window.addEventListener("beforeunload",function(){clearTimeout(pT);persist()});
+commit();
+})();
+</script>
+</body>
+</html>

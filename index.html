@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RPGBox</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css"> 
+<script src="fichas.js"></script> 
+</head>
+<body>
+
+<header class="glass" id="top">
+  <div class="logo">
+    <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linejoin="round"><path d="M12 2 3 7v10l9 5 9-5V7z"/><path d="M12 12 3 7M12 12l9-5M12 12v10"/></svg></i>
+    <span>RPGBox</span>
+  </div>
+  <nav aria-label="Áreas do site">
+    <a href="#fichas" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>Fichas</a>
+    <a href="mapas.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>Mapas</a>
+    <a href="campanhas.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Campanhas</a>
+  </nav>
+  <button class="gear" id="gear" aria-label="Configurações" aria-expanded="false" aria-controls="panel">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+  </button>
+
+  <div class="panel glass" id="panel" role="dialog" aria-label="Configurações do site">
+    <h2>Aparência</h2>
+    <h3>Estilo dos painéis</h3>
+    <div class="seg"><button type="button" id="st-glass">Vidro</button><button type="button" id="st-solid">Cor sólida</button></div>
+    <div class="glassopt">
+      <h3>Transparência do vidro</h3>
+      <input type="range" id="glass" min="3" max="20" value="7" aria-label="Transparência do vidro">
+      <h3>Desfoque do vidro</h3>
+      <input type="range" id="blur" min="0" max="32" value="18" aria-label="Desfoque do vidro">
+    </div>
+    <h3>Cor do site</h3>
+    <div class="swatches" id="swatches">
+      <button class="sw" style="--c:265" data-h="265" aria-label="Roxo"></button>
+      <button class="sw" style="--c:210" data-h="210" aria-label="Azul"></button>
+      <button class="sw" style="--c:165" data-h="165" aria-label="Verde"></button>
+      <button class="sw" style="--c:335" data-h="335" aria-label="Rosa"></button>
+      <button class="sw" style="--c:28" data-h="28" aria-label="Laranja"></button>
+      <button class="sw" style="--c:0" data-h="0" aria-label="Vermelho"></button>
+    </div>
+    <h3>Matiz personalizado</h3>
+    <input type="range" id="hue" min="0" max="360" value="265" aria-label="Matiz">
+    <h3>Transparência do vidro</h3>
+    <input type="range" id="glass" min="3" max="20" value="7" aria-label="Transparência do vidro">
+    <h3>Desfoque do vidro</h3>
+    <input type="range" id="blur" min="0" max="32" value="18" aria-label="Desfoque do vidro">
+    <button class="reset" id="reset">Restaurar padrão</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Sua mesa está pronta.</h1>
+    <p>Abra uma ficha, prepare um mapa ou monte o soundpad da próxima sessão.</p>
+  </section>
+
+  <section class="areas">
+    <a class="area glass" href="#fichas">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+      <h2>Fichas</h2><span>Crie e edite fichas personalizadas dos personagens.</span>
+    </a>
+    <a class="area glass" href="mapas.html">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg></div>
+      <h2>Mapas</h2><span>Monte cenas com tokens, grid e névoa.</span>
+    </a>
+    <a class="area glass" href="campanhas.html">
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h2>Campanhas</h2><span>Mestre e jogadores: fichas, rolagens e investigação em tempo real.</span>
+    </a>
+  </section>
+
+  <div class="section-head" id="fichas">
+    <h2>Fichas recentes</h2>
+    <a class="chip" href="ficha.html">Ver todas as fichas</a>
+  </div>
+  <div class="cards" id="cards"></div>
+  <div class="section-head" id="mapas">
+    <h2>Mapas</h2>
+  </div>
+  <div class="empty glass">
+    <p>Você ainda não abriu nenhum mapa nesta sessão.</p>
+    <button class="btn" type="button">Carregar mapa do computador</button>
+  </div>
+
+
+</main>
+
+<script>
+(function(){
+  var root=document.documentElement, KEY="vtt-tema";
+  var DEF={h:265,glass:7,blur:18,solid:false};
+  var st=Object.assign({},DEF);
+  try{var s=JSON.parse(localStorage.getItem(KEY));if(s&&typeof s==="object")st=Object.assign(st,s);}catch(e){}
+
+  var hue=document.getElementById("hue"), glass=document.getElementById("glass"), blur=document.getElementById("blur");
+  var sws=[].slice.call(document.querySelectorAll(".sw"));
+
+  function apply(save){
+    root.style.setProperty("--h",st.h);
+    root.style.setProperty("--glass",st.glass/100);
+    root.style.setProperty("--blur",st.blur+"px");
+    hue.value=st.h; glass.value=st.glass; blur.value=st.blur;
+    sws.forEach(function(b){b.setAttribute("aria-pressed",String(+b.dataset.h===+st.h));});
+    root.dataset.style=st.solid?"solid":"glass";
+    document.getElementById("st-glass").classList.toggle("on",!st.solid);
+    document.getElementById("st-solid").classList.toggle("on",!!st.solid);
+    if(save){try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}}
+  }
+  apply(false);
+
+  sws.forEach(function(b){b.addEventListener("click",function(){st.h=+b.dataset.h;apply(true);});});
+  hue.addEventListener("input",function(){st.h=+hue.value;apply(true);});
+  glass.addEventListener("input",function(){st.glass=+glass.value;apply(true);});
+  blur.addEventListener("input",function(){st.blur=+blur.value;apply(true);});
+  document.getElementById("reset").addEventListener("click",function(){st=Object.assign({},DEF);apply(true);});
+
+  document.getElementById("st-glass").addEventListener("click",function(){st.solid=false;apply(true);});
+  document.getElementById("st-solid").addEventListener("click",function(){st.solid=true;apply(true);});
+
+  var gear=document.getElementById("gear"), panel=document.getElementById("panel");
+  function toggle(open){panel.classList.toggle("open",open);gear.setAttribute("aria-expanded",String(open));}
+  gear.addEventListener("click",function(e){e.stopPropagation();toggle(!panel.classList.contains("open"));});
+  document.addEventListener("click",function(e){if(!panel.contains(e.target))toggle(false);});
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")toggle(false);});
+
+  var links=[].slice.call(document.querySelectorAll("nav a"));
+  links.forEach(function(a){a.addEventListener("click",function(){links.forEach(function(x){x.classList.toggle("on",x===a);});});});
+})();
+</script>
+<script>
+(function(){
+ var box=document.getElementById("cards");
+ var OKA=/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/;
+
+ var SYS=[
+ {k:"",n:"Ficha universal",tag:"Universal",d:"Monte do zero: atributos, recursos, perícias e rolagens livres. Serve pra qualquer sistema.",page:"ficha.html",name:"Novo personagem"},
+ {k:"op",n:"Ordem Paranormal RPG",tag:"Ordem Paranormal",d:"Livro oficial v1.3: classes, NEX, PV, PE, Sanidade e perícias.",page:"ficha_op.html",name:"Novo agente"},
+ {k:"ordem",n:"Ordem (playtest 0.1)",tag:"Ordem (playtest)",d:"Profiles, origens, atributos em dados e árvore de habilidades.",page:"ficha_ordem.html",name:"Novo agente"},
+ {k:"sentim",n:"Sentimentalism RPG",tag:"Sentimentalism",d:"Sonhos, emoções e segredos, com o visual mudando conforme a emoção.",page:"ficha_sentim.html",name:"Novo personagem"},
+ {k:"jojo",n:"JoJo Bizarre Adventure",tag:"JoJo (Stands)",d:"Atributos E-A, Stands com foto e habilidades, vigor e energia.",page:"ficha_jojo.html",name:"Novo personagem"}
+];
+function sysOf(d){var k=d&&d.sys||"";return SYS.filter(function(s){return s.k===k})[0]||SYS[0]}
+function pickSys(){
+ var ov=document.createElement("div");ov.className="sysov";ov.setAttribute("role","dialog");ov.setAttribute("aria-modal","true");ov.setAttribute("aria-label","Escolha o tipo de ficha");
+ var bx=document.createElement("div");bx.className="sysbox glass";
+ var h=document.createElement("h2");h.textContent="Que ficha você quer criar?";bx.appendChild(h);
+ function close(){document.removeEventListener("keydown",onKey);ov.remove()}
+ function onKey(e){if(e.key==="Escape")close()}
+ SYS.forEach(function(s){
+  var b=document.createElement("button");b.type="button";b.className="sysopt";
+  var t=document.createElement("b");t.textContent=s.n;
+  var p=document.createElement("small");p.textContent=s.d;
+  b.appendChild(t);b.appendChild(p);
+  b.addEventListener("click",function(){
+   var data={name:s.name};if(s.k)data.sys=s.k;
+   var id=FICHAS.create(data);close();
+   if(id)location.href=s.page+"?id="+id;else alert("Não foi possível criar a ficha.");
+  });
+  bx.appendChild(b);
+ });
+ var c=document.createElement("button");c.type="button";c.className="sysx";c.textContent="Cancelar";c.addEventListener("click",close);bx.appendChild(c);
+ ov.addEventListener("click",function(e){if(e.target===ov)close()});
+ document.addEventListener("keydown",onKey);
+ ov.appendChild(bx);document.body.appendChild(ov);bx.querySelector("button").focus();
+}
+
+ function render(){
+  box.textContent="";
+  var list=FICHAS.list();
+  list.forEach(function(f,i){
+   var c=document.createElement("div");c.className="card glass";
+   var a=document.createElement("a");a.className="open";a.href="ficha.html?id="+f.id;a.setAttribute("aria-label","Abrir "+f.name);
+   var art=document.createElement("div");art.className="art "+(i%2?"b":"a");
+   var d=FICHAS.read(f.id);
+   a.href=sysOf(d).page+"?id="+f.id;   if(d&&typeof d.avatar==="string"&&d.avatar.length<400000&&OKA.test(d.avatar))art.style.background='url("'+d.avatar+'") center/cover';
+   var info=document.createElement("div");info.className="info";
+   var s=document.createElement("strong");s.textContent=f.name;
+   var sm=document.createElement("small");sm.textContent=sysOf(d).tag;
+   info.appendChild(s);info.appendChild(sm);
+   var x=document.createElement("button");x.type="button";x.className="del";x.textContent="×";x.setAttribute("aria-label","Excluir "+f.name);
+   x.addEventListener("click",function(){
+    if(confirm("Excluir a ficha \""+f.name+"\"? Isso não pode ser desfeito. Exporte antes se quiser guardar.")){FICHAS.remove(f.id);render()}
+   });
+   c.appendChild(art);c.appendChild(info);c.appendChild(a);c.appendChild(x);box.appendChild(c);
+  });
+  var n=document.createElement("button");n.type="button";n.className="card glass new";
+      if(list.length<FICHAS.MAX){
+   var n=document.createElement("button");n.type="button";n.className="card glass new";
+   n.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+   n.appendChild(document.createTextNode("Nova ficha ("+list.length+"/"+FICHAS.MAX+")"));
+   n.addEventListener("click",pickSys);
+   box.appendChild(n);
+  }
+ }
+ render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficha - Sentimentalism RPG</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=Pinyon+Script&display=swap" rel="stylesheet">
+<script src="fichas.js"></script>
+<script src="share.js"></script>
+<style>
+:root{--paper:#b9b9b9;--card:rgba(222,222,222,.72);--ink:#161616;--acc:#2b2b2b;--bd:#2a2a2a;--mut:#4d4d4d;--btn:#222;--btnt:#eee;--up:#1f6b2d;--dn:#9b1c1c}
+html[data-emo="0"]{--paper:#d8c04f;--card:rgba(252,240,160,.62);--acc:#a87200;--bd:#7a5a00;--mut:#6b5410;--btn:#b07d00;--btnt:#fff}
+html[data-emo="1"]{--paper:#14122a;--card:rgba(32,28,66,.82);--ink:#dedcf7;--acc:#9b88ff;--bd:#5b4fb3;--mut:#a29dd0;--btn:#9b88ff;--btnt:#0d0b1f;--up:#8be39a;--dn:#ff8c8c}
+html[data-emo="2"]{--paper:#3a0b0e;--card:rgba(74,12,16,.82);--ink:#ffe6e2;--acc:#ff3b3b;--bd:#b01e1e;--mut:#e0a0a0;--btn:#d42a2a;--btnt:#fff;--up:#9be39b;--dn:#ffb3b3}
+html[data-emo="3"]{--paper:#76879e;--card:rgba(184,200,220,.58);--acc:#2f5f95;--bd:#34506f;--mut:#3b4d64;--btn:#2f5f95;--btnt:#fff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--paper);color:var(--ink);font:500 1.05rem "Cormorant Garamond",Georgia,serif;transition:background .8s,color .8s;padding:18px 14px 40px}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;mix-blend-mode:multiply;opacity:.55;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.4'/%3E%3C/svg%3E")}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50}
+.top{display:flex;justify-content:space-between;max-width:1180px;margin:0 auto 6px;font-size:.95rem}
+.top a{color:var(--ink)}
+.top button{background:none;border:0;color:var(--ink);text-decoration:underline;font:inherit;cursor:pointer}
+.page{position:relative;max-width:1180px;margin:0 auto;border:3px double var(--bd);padding:22px 18px 26px}
+.page::before{content:"❦ ❧ ❦";position:absolute;top:-15px;left:24px;padding:0 10px;background:var(--paper);color:var(--acc);letter-spacing:.3em}
+.page::after{content:"❧ ❦ ❧";position:absolute;bottom:-15px;right:24px;padding:0 10px;background:var(--paper);color:var(--acc);letter-spacing:.3em}
+header.t{text-align:center;margin-bottom:18px}
+header.t h1{margin:0;font:700 clamp(1.6rem,6vw,3.2rem) "Cinzel Decorative",serif;letter-spacing:.14em;text-transform:uppercase}
+header.t p{margin:0;font:400 1.9rem "Pinyon Script",cursive;color:var(--acc)}
+main{display:grid;gap:18px;grid-template-columns:repeat(3,1fr);align-items:start}
+@media(max-width:980px){main{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.card{background:var(--card);border:1px solid var(--bd);padding:14px 16px;box-shadow:3px 3px 0 var(--bd)}
+.card h2,.hd h2{margin:0 0 8px;font:400 1.9rem "Pinyon Script",cursive;color:var(--acc)}
+.hd{display:flex;justify-content:space-between;align-items:baseline}
+.mut,.hint{color:var(--mut);font-size:.92rem;font-style:italic}
+.hint{margin:6px 0}
+input,select,textarea{width:100%;background:rgba(255,255,255,.18);color:var(--ink);border:1px solid var(--bd);padding:6px 8px;font:inherit}
+textarea{min-height:70px;resize:vertical}
+.nameinp{font:700 1.5rem "Cormorant Garamond",serif;text-align:center;margin-bottom:8px}
+label.q{display:block;font-size:.9rem;margin-top:8px;font-style:italic}
+button{font:inherit;cursor:pointer;color:var(--ink)}
+button:disabled{opacity:.35;cursor:default}
+.btn{width:100%;margin-top:8px;padding:7px;background:var(--btn);color:var(--btnt);border:0;letter-spacing:.04em}
+.row{display:flex;align-items:center;gap:6px;padding:4px 0;border-bottom:1px dotted var(--bd)}
+.row .nm{flex:1;min-width:0}
+.st{display:inline-flex;align-items:center;gap:4px}
+.st button{width:24px;height:24px;border:1px solid var(--bd);background:rgba(255,255,255,.2);padding:0}
+.st b{min-width:18px;text-align:center}
+.chip{font-style:normal;font-size:.8rem;padding:0 5px;border:1px solid var(--bd)}
+.chip.up{color:var(--up);border-color:var(--up)}
+.chip.dn{color:var(--dn);border-color:var(--dn)}
+.roll{min-width:44px;padding:3px 6px;border:1px solid var(--acc);background:var(--acc);color:var(--btnt);font-weight:700}
+html[data-emo="1"] .roll,html[data-emo="2"] .roll{color:#0d0b1f}
+.sec{margin:10px 0 2px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;color:var(--acc)}
+.emos{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.em{border:1px solid var(--bd);padding:6px;text-align:center}
+.em.on{background:var(--acc);color:var(--btnt)}
+.em b{display:block;margin-bottom:4px}
+.dot{width:28px;height:28px;margin:0 2px;border-radius:50%;border:1px solid var(--bd);background:rgba(255,255,255,.25);padding:0;font-weight:700}
+.dot.f{background:var(--ink);color:var(--paper)}
+.stn{margin:10px 0 0;font:400 1.7rem "Pinyon Script",cursive;color:var(--acc)}
+.res{display:none;text-align:center;padding:6px;border:1px solid var(--bd)}
+.res strong{display:block;font:700 2.6rem "Cinzel Decorative",serif}
+.res small{color:var(--mut)}
+.log{font-size:.85rem;color:var(--mut)}
+.bar{display:flex;align-items:center;gap:4px;margin:6px 0}
+.bar button{width:30px;height:28px;border:1px solid var(--bd);background:rgba(255,255,255,.2);padding:0;font-size:.8rem}
+.bar div{flex:1;height:28px;position:relative;border:1px solid var(--bd);background:rgba(0,0,0,.25)}
+.bar i{position:absolute;inset:0;background:var(--acc);transform-origin:left;transition:transform .3s}
+.bar span{position:absolute;inset:0;display:grid;place-items:center;font-weight:700;color:#fff;mix-blend-mode:difference}
+.alert{margin:8px 0;padding:8px;background:#000;color:#fff;text-align:center;letter-spacing:.1em}
+.sx{background:#000;color:#000;min-height:50px}
+.sx:focus,.sx.rev{background:rgba(255,255,255,.18);color:var(--ink)}
+.sec2{border:1px solid var(--bd);padding:8px;margin-bottom:8px}
+.x{border:0;background:none;font-size:1.1rem;color:var(--dn)}
+@keyframes bob{50%{transform:translateY(-4px)}}
+@keyframes jit{0%,100%{transform:translate(0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}}
+@keyframes shk{0%,100%{transform:translate(0)}20%{transform:translate(-2px,1px)}40%{transform:translate(2px,-1px)}60%{transform:translate(-1px,-2px)}80%{transform:translate(2px,2px)}}
+@keyframes pul{50%{box-shadow:inset 0 0 160px 40px rgba(255,0,0,.55)}}
+@keyframes rain{to{background-position:-60px 400px}}
+html[data-emo="0"] header.t h1{animation:bob 1.6s ease-in-out infinite}
+html[data-emo="0"][data-st="3"] .card{animation:jit .25s linear infinite}
+html[data-emo="0"] body::after{background:radial-gradient(circle at 50% 0,rgba(255,230,90,.35),transparent 60%)}
+html[data-emo="1"] body::after{background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,.65))}
+html[data-emo="1"][data-st="3"] body::after{background:radial-gradient(ellipse at center,transparent 25%,rgba(0,0,0,.88))}
+html[data-emo="1"]:not([data-st="1"]) .card{animation:shk .5s linear infinite}
+html[data-emo="1"][data-st="3"] .card{animation-duration:.22s}
+html[data-emo="2"] body::after{box-shadow:inset 0 0 120px 20px rgba(200,0,0,.4);animation:pul 2.4s ease-in-out infinite}
+html[data-emo="2"][data-st="3"] body::after{animation-duration:.8s}
+html[data-emo="2"] .card{border-style:dashed}
+html[data-emo="3"] body::after{background:repeating-linear-gradient(105deg,transparent 0 18px,rgba(190,215,255,.28) 18px 19px);background-size:60px 60px;animation:rain 1s linear infinite}
+html[data-emo="3"][data-st="3"] body{filter:grayscale(.55)}
+html[data-emo="3"][data-st="3"] body::after{animation-duration:.5s}
+@media(prefers-reduced-motion:reduce){*,body::after{animation:none!important}}
+
+.foto{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:10px}
+.foto>button:first-child{width:150px;aspect-ratio:4/5;padding:6px;border:1px solid var(--bd);background:#e9e5d8;box-shadow:3px 3px 0 var(--bd);transform:rotate(-2deg);overflow:hidden;cursor:pointer;color:#555;font-style:italic}
+.foto img{width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(.6) contrast(1.05)}
+.foto .fx{background:none;border:0;text-decoration:underline;font-size:.85rem;color:var(--mut)}
+html[data-emo="3"] .foto img{filter:grayscale(1)}
+html[data-emo="1"][data-st="3"] .foto img{filter:grayscale(.6) blur(1px) brightness(.7)}
+</style>
+</head>
+<body>
+<div class="top"><a href="index.html">← RPGBox</a><span><button id="exp">Exportar</button> · <button id="imp">Importar</button><input type="file" id="impf" accept=".json,application/json" hidden></span></div>
+<input type="file" id="fotof" accept="image/*" hidden>
+<div class="page">
+<header class="t"><h1>Sentimentalism</h1><p>Ficha de personagem</p></header>
+<main><div class="col" id="c1"></div><div class="col" id="c2"></div><div class="col" id="c3"></div></main>
+</div>
+<script>
+(function(){
+var AN=["Agilidade","Ataque","Cérebro","Coração","Fala","Vontade","Mascarar"];
+var SK=[["Furtividade",0],["Acrobacia",0],["Reflexo",0],["Escapar",0],["Luta",1],["Intimidação",1],["Arremesso",1],["Carregar",1],["Medicina",2],["Pesquisa",2],["Memória",2],["Percepção",2],["Estratégia",2],["Empatia",3],["Leitura de pessoas",3],["Consolar",3],["Inspirar",3],["Persuasão",4],["Enganação",4],["Performance",4],["Negociação",4],["Resistência",5],["Foco",5],["Recuperação",5],["Mentira Convincente",6],["Disfarce",6],["Controle Emocional",6],["Inexpressividade",6]];
+var DR=[["Artista","Inspirar","Performance",[3,4]],["Atleta","Acrobacia","Reflexo",[0]],["Campista","Percepção","Estratégia",[2]],["Cartomante","Leitura de pessoas","Foco",[3,5]],["Chef","Foco","Performance",[4,5]],["Detetive","Persuasão","Estratégia",[2,4]],["Engenheiro","Pesquisa","Estratégia",[2]],["Executivo","Persuasão","Negociação",[4]],["Lutador","Luta","Intimidação",[1]],["Mágico","Mentira Convincente","Performance",[6,4]],["Militar","Furtividade","Intimidação",[1,0]],["Policial","Intimidação","Persuasão",[4,1]],["Religioso","Resistência","Recuperação",[5]],["Ricão","Enganação","Negociação",[4]],["Solitário","Controle Emocional","Inexpressividade",[6]],["T.I.","Pesquisa","Memória",[2]],["Trabalhador de Campo","Empatia","Consolar",[3]]];
+var EM=[
+{n:"Felicidade",st:["Feliz","Alegre","Eufórico"],b:[3,0],p:[4,2],fx:["Bônus +2 em Coração e Agilidade. Hiperativo: −2 em Fala e Cérebro.","Recupera 2 FV por rodada. Sorriso Doloroso: quem tem Melancolia perto perde 2 FV.","Bônus vão para +4. Ansiedade: desvantagens vão para −4."]},
+{n:"Medo",st:["Medo","Apavorado","Paralisado"],b:[5,0],p:[1,4],fx:["Bônus +2 em Vontade e Agilidade. Calafrio: −2 em Ataque e Fala.","Ganha 10 FV temporários. Tremedeira assusta quem vê você.","Bônus +4 e 20 FV temporários. Corra: desvantagens −4, fuja AGORA."]},
+{n:"Raiva",st:["Raiva","Ira","Ódio"],b:[1,5],p:[0,2],fx:["Bônus +2 em Ataque e Vontade. Incontrolável: −2 em Agilidade e Cérebro.","+2 de dano nos golpes. Punhos cerrados: Defesa −2.","Bônus +4. Sempre com raiva: desvantagens −4."]},
+{n:"Tristeza",st:["Triste","Melancólico","Inconsolável"],b:[2,4],p:[0,1],fx:["Bônus +2 em Cérebro e Fala. Inútil: −2 em Agilidade e Ataque.","+2 de Defesa. Rio de lágrimas: deixa pessoas próximas tristes.","Bônus +4. Frio: desvantagens −4."]}];
+var LS=[["Olho",["Reflexo","Arremesso","Percepção"]],["Boca",["Persuasão","Enganação","Negociação"]],["Ouvidos",["Percepção","Escapar","Reflexo"]],["Braço ou perna",["Luta","Arremesso","Acrobacia"]]];
+var IT=[["Lanterna",1,"remove a desvantagem do escuro"],["Mochila",0,"+3 de espaço"],["Binóculos",1,"+2 Percepção"],["Corda",2,"+2 Acrobacia (escalada)"],["Câmera Fotográfica",1,"+2 Memória"],["Caderno de anotação",1,"+1 Memória"],["Lupa",1,"+2 Pesquisa"],["Óculos escuros",1,"+2 Persuasão"],["Graveto",1,"1d8+At"],["Bastão de baseball",2,"1d10+At"],["Faca de brinquedo",1,"1d6+At, Medo"],["Escudo improvisado",2,"+5 Defesa"],["Estilingue",1,"1d8"],["Arma d'água",2,"1d6, Raiva"],["Capacete",2,"+3 Defesa"],["Garrafa térmica",1,"2d6+At"],["Panela",2,"2d8; +3 Defesa guardada"],["Faixa nos punhos",1,"+1 dano desarmado"],["Lanchinho",1,"cura 3d6"],["Pacote de band-aid",1,"cura 2d8"],["Kit médico",2,"cura 2d10"],["Remédio",1,"cura 3d8"]];
+
+function el(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function cl(v,a,b,d){v=parseInt(v,10);if(isNaN(v))v=d;return Math.max(a,Math.min(b,v))}
+var ID=new URLSearchParams(location.search).get("id");
+if(!ID||!FICHAS.has(ID)){var l0=FICHAS.list();location.replace(l0.length?"ficha.html?id="+l0[0].id:"index.html");return}
+var S=FICHAS.read(ID)||{};
+if(S.sys!=="sentim"){location.replace("ficha.html?id="+ID);return}
+
+function fix(){
+ S.sys="sentim";S.name=String(S.name||"Novo personagem").slice(0,60);
+ S.q=[0,1,2].map(function(i){return String(S.q&&S.q[i]||"").slice(0,300)});
+ S.dm=cl(S.dm,-1,DR.length-1,-1);S.da=cl(S.da,0,1,0);
+ S.a=Array.isArray(S.a)&&S.a.length===7?S.a.map(function(v){return cl(v,1,4,1)}):[1,1,1,1,1,1,1];
+ var sk={};SK.forEach(function(k){var v=S.sk&&S.sk[k[0]];if(v)sk[k[0]]=cl(v,-3,3,0)});S.sk=sk;
+ S.emo=cl(S.emo,-1,3,-1);S.st=S.emo<0?0:cl(S.st,0,3,0);if(!S.st)S.emo=-1;
+ S.sec=(Array.isArray(S.sec)?S.sec:[]).slice(0,12).map(function(x){return{t:String(x&&x.t||"").slice(0,500),g:String(x&&x.g||"").slice(0,120),e:cl(x&&x.e,0,3,0),r:x&&x.r?1:0}});
+ S.loss=[0,1,2,3].map(function(i){return cl(S.loss&&S.loss[i],0,2,0)});
+ S.inv=(Array.isArray(S.inv)?S.inv:[]).slice(0,40).map(function(i){return{n:String(i&&i.n||"").slice(0,40),s:cl(i&&i.s,0,6,1),t:String(i&&i.t||"").slice(0,60)}});
+ S.notes=String(S.notes||"").slice(0,20000);
+  if(!(typeof S.avatar==="string"&&S.avatar.length<400000&&/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(S.avatar)))delete S.avatar;
+}
+fix();
+
+function dAttr(){var d=DR[S.dm];return d?d[3][Math.min(S.da,d[3].length-1)]:-1}
+function av(i){return S.a[i]+(dAttr()===i?1:0)}
+function emoMod(i){if(S.emo<0||!S.st)return 0;var v=S.st===3?4:2,e=EM[S.emo];return e.b.indexOf(i)>-1?v:e.p.indexOf(i)>-1?-v:0}
+function tot(i){return av(i)+emoMod(i)}
+function sv(n){var d=DR[S.dm];return d&&(d[1]===n||d[2]===n)?3:(S.sk[n]||0)}
+function dieFor(n){return LS.some(function(l,i){return S.loss[i]>0&&l[1].indexOf(n)>-1})?12:20}
+function pts(){return 5-S.a.reduce(function(a,v){return a+v-1},0)}
+function spent(){var d=DR[S.dm];return SK.reduce(function(a,k){var v=sv(k[0]);return a+(d&&(d[1]===k[0]||d[2]===k[0])?0:Math.max(0,v))},0)}
+function neg(){return SK.reduce(function(a,k){var v=sv(k[0]);return a+(v<0?-v:0)},0)}
+function fvMax(){return av(5)*10}
+function defMod(){if(S.st<2)return 0;var v=S.st===3?4:2;return S.emo===2?-v:S.emo===3?v:0}
+function defense(){return av(0)+sv("Reflexo")+15+defMod()}
+function cap(){return Math.max(0,sv("Carregar"))+3+3*S.inv.filter(function(i){return i.n==="Mochila"}).length}
+function used(){return S.inv.reduce(function(a,i){return a+i.s},0)}
+
+var last="",log=[];
+function rollT(label,mod,die){
+ var r=1+Math.floor(Math.random()*die),t=r+mod;
+ last='<strong>'+t+'</strong><small>'+esc(label)+': d'+die+' ['+r+'] '+(mod<0?"−":"+")+Math.abs(mod)+(die===20&&r===20?" · ACERTO CRÍTICO":die===20&&r===1?" · FALHA CRÍTICA":"")+'</small>';
+ log.unshift(label+": "+t+" (d"+die+" "+r+")");log=log.slice(0,6);render();
+}
+function proj(){
+ var d=DR[S.dm];
+ S.info=["Sonho: "+(d?d[0]:"—")+" · "+(S.emo>=0&&S.st?EM[S.emo].st[S.st-1]:"sem emoção")];
+ S.attrs=AN.map(function(n,i){var t=tot(i);return{n:n,v:t,f:"1d20"+(t?(t<0?t:"+"+t):"")}});
+ S.per=SK.map(function(k){return{n:k[0],b:sv(k[0]),at:AN[k[1]]}});
+ S.bars=[{n:"FV",c:S.fv,m:fvMax(),col:"#b23a48"}];S.marks=[];S.skills=[];
+}
+function persist(){proj();if(!FICHAS.write(ID,S)&&!persist.w){persist.w=1;alert("O navegador está sem espaço para salvar. Exporte a ficha.")}}
+function commit(){
+ if(pts()<0)S.a=[1,1,1,1,1,1,1];
+ S.fv=cl(S.fv,0,fvMax(),fvMax());
+ persist();render();
+}
+function opts(arr,cur,ph){return(ph?'<option value="-1">'+ph+'</option>':'')+arr.map(function(a,i){return'<option value="'+i+'"'+(i===cur?" selected":"")+'>'+esc(a)+'</option>'}).join("")}
+function stp(k,i,dn,up){return'<span class="st"><button data-'+k+'="'+i+'" data-dir="-1"'+(dn?"":" disabled")+' aria-label="Diminuir">−</button><button data-'+k+'="'+i+'" data-dir="1"'+(up?"":" disabled")+' aria-label="Aumentar">+</button></span>'}
+
+function foto(){
+ return'<div class="foto"><button type="button" data-foto="1" aria-label="Trocar foto do personagem">'+(S.avatar?'<img src="'+esc(S.avatar)+'" alt="Foto do personagem">':'<span>FOTO<br><small>toque para adicionar</small></span>')+'</button>'+(S.avatar?'<button type="button" class="fx" data-fotox="1">remover foto</button>':'')+'</div>';
+}
+
+function c1(){
+ var d=DR[S.dm],h='<div class="card">'+foto()+'<input class="nameinp" data-k="name" value="'+esc(S.name)+'" aria-label="Nome">'; ["Por que seu personagem sonha com esse mundo perfeito?","Quais monstros seu personagem enfrenta?","Por que você tenta?"].forEach(function(q,i){h+='<label class="q">'+q+'</label><textarea data-q="'+i+'" style="min-height:48px">'+esc(S.q[i])+'</textarea>'});
+ h+='</div><div class="card"><h2>Sonho</h2><select data-s="dm">'+opts(DR.map(function(x){return x[0]}),S.dm,"Escolha um sonho…")+'</select>';
+ if(d){h+='<p class="hint">Perícias +3: '+d[1]+' e '+d[2]+'.</p>';if(d[3].length>1)h+='<label class="q">+1 em:</label><select data-s="da">'+opts(d[3].map(function(i){return AN[i]}),Math.min(S.da,1))+'</select>';else h+='<p class="hint">+1 em '+AN[d[3][0]]+'.</p>'}
+ h+='</div><div class="card"><h2>Emoção</h2><div class="emos">';
+ EM.forEach(function(e,i){h+='<div class="em'+(S.emo===i?" on":"")+'"><b>'+e.n+'</b>'+[1,2,3].map(function(n){return'<button class="dot'+(S.emo===i&&S.st>=n?" f":"")+'" data-es="'+i+':'+n+'" title="'+e.st[n-1]+'" aria-label="'+e.st[n-1]+'">'+n+'</button>'}).join("")+'</div>'});
+ h+='</div>';
+ if(S.emo>=0)h+='<p class="stn">'+EM[S.emo].st[S.st-1]+'</p><p class="hint">'+EM[S.emo].fx.slice(0,S.st).join(" ")+'</p>';
+ else h+='<p class="hint">Sem emoção ativa. Toque num número para ativar o estágio (toque de novo para sair). O visual da ficha muda com a emoção.</p>';
+ h+='<button class="btn" data-hold="1">Segurar emoção (d20 + Mascarar + Controle Emocional)</button></div>';
+ h+='<div class="card"><div class="hd"><h2>Segredos</h2><span class="mut">toque para ler</span></div>';
+ S.sec.forEach(function(x,i){h+='<div class="sec2"><textarea class="sx'+(x.r?" rev":"")+'" data-st="'+i+'" aria-label="Segredo">'+esc(x.t)+'</textarea><input data-sg="'+i+'" value="'+esc(x.g)+'" placeholder="Gatilho (objeto, situação, palavra)" style="margin-top:4px"><div class="row" style="border:0"><select data-se="'+i+'" style="flex:1">'+opts(EM.map(function(e){return e.n}),x.e)+'</select><button class="roll" data-sr="'+i+'">'+(x.r?"Revelado":"Revelar")+'</button><button class="x" data-sx="'+i+'" aria-label="Remover">×</button></div></div>'});
+ h+='<p class="hint">Revelar um segredo libera a emoção dele no estágio 3, sem poder ser segurada.</p>'+(S.sec.length<12?'<button class="btn" data-sadd="1">+ Segredo</button>':'')+'</div>';
+ return h;
+}
+function c2(){
+ var left=pts(),da=dAttr(),h='<div class="card"><div class="hd"><h2>Atributos</h2><span class="mut">'+left+' ponto'+(left===1?"":"s")+'</span></div>';
+ AN.forEach(function(n,i){var m=emoMod(i);h+='<div class="row"><span class="nm">'+n+'</span>'+stp("ad",i,S.a[i]>1,left>0&&S.a[i]<4)+'<b>'+S.a[i]+'</b>'+(da===i?'<i class="chip up">+1 sonho</i>':'')+(m?'<i class="chip '+(m>0?"up":"dn")+'">'+(m>0?"+":"")+m+'</i>':'')+'<button class="roll" data-ra="'+i+'" title="d20 + '+n+'">'+tot(i)+'</button></div>'});
+ var sp=spent(),mx=av(2)+8,ng=neg();
+ h+='</div><div class="card"><div class="hd"><h2>Perícias</h2><span class="mut" style="color:'+(sp>mx?"var(--dn)":"var(--mut)")+'">'+sp+'/'+mx+' pontos</span></div><div class="hd"><span class="mut">Penalidades (obrigatório somar −3)</span><span class="mut" style="color:'+(ng===3?"var(--mut)":"var(--dn)")+'">−'+ng+'/−3</span></div><p class="hint">Máximo +3. Perícia em 0 rola só d20, sem atributo. As do sonho ficam em +3. Penalidade: três perícias em −1, ou uma em −2 e outra em −1, ou uma em −3.</p>';
+  AN.forEach(function(an,ai){
+  h+='<div class="sec">'+an+'</div>';
+  SK.forEach(function(k){
+   if(k[1]!==ai)return;
+   var n=k[0],v=sv(n),lock=DR[S.dm]&&(DR[S.dm][1]===n||DR[S.dm][2]===n),die=dieFor(n);
+   h+='<div class="row"><span class="nm">'+(lock?"★ ":"")+n+'</span>'+(lock?'':stp("sd",SK.indexOf(k),v>0||(v>-3&&ng<3),v<3&&(v<0||sp<mx)))+'<b>'+(v>0?"+":"")+v+'</b><button class="roll" data-rs="'+SK.indexOf(k)+'" title="d'+die+' + '+an+' + '+n+'">'+(tot(ai)+v)+(die===20?"":" d"+die)+'</button></div>';
+  });
+ });
+ return h+'</div>';
+}
+function c3(){
+ var fm=fvMax(),h='<div class="card"><div class="res" style="display:'+(last?"block":"none")+'">'+last+'</div><div class="log">'+log.map(function(l){return'<div>'+esc(l)+'</div>'}).join("")+'</div>'+(last?"":'<p class="hint">Toque nos números dos atributos e das perícias para rolar.</p>')+'</div>';
+ h+='<div class="card"><h2>Recursos</h2><div class="hd"><span>Força de Vontade</span><b>'+S.fv+'/'+fm+'</b></div><div class="bar"><button data-fv="-5">−5</button><button data-fv="-1">−1</button><div><i style="transform:scaleX('+(fm?S.fv/fm:0)+')"></i><span>'+S.fv+'</span></div><button data-fv="1">+1</button><button data-fv="5">+5</button></div>';
+ if(S.fv===0)h+='<div class="alert">COLAPSO: '+(av(5)+1)+' rodadas para ser salvo. Depois, vira uma casca vazia.</div>';
+ if(S.emo===1&&S.st>1)h+='<p class="hint">FV temporário do Medo: +'+(S.st===3?20:10)+'.</p>';
+ h+='<div class="row"><span class="nm">Defesa (Ag + Reflexo + 15)</span><b>'+defense()+'</b></div><div class="row"><span class="nm">Iniciativa (d20 + Ag)</span><button class="roll" data-init="1">'+(tot(0)>=0?"+":"")+tot(0)+'</button></div></div>';
+ h+='<div class="card"><h2>Perdas</h2>';
+ LS.forEach(function(l,i){h+='<label class="q">'+l[0]+' ('+l[1].join(", ")+')</label><select data-sl="'+i+'">'+opts(["Nenhuma","Temporária (24h)","Permanente"],S.loss[i])+'</select>'});
+ h+='<p class="hint">Com perda, as perícias afetadas rolam d12 no lugar de d20.</p></div>';
+ var c=cap(),u=used();
+ h+='<div class="card"><div class="hd"><h2>Itens</h2><span class="mut" style="color:'+(u>c?"var(--dn)":"var(--mut)")+'">'+u+'/'+c+' espaços</span></div>';
+ S.inv.forEach(function(it,i){h+='<div class="row"><span class="nm">'+esc(it.n)+(it.t?'<br><small class="mut">'+esc(it.t)+'</small>':'')+'</span><span>'+it.s+'</span><button class="x" data-ir="'+i+'" aria-label="Remover">×</button></div>'});
+ h+='<select id="cat" style="margin-top:8px">'+IT.map(function(it,i){return'<option value="'+i+'">'+it[0]+' ('+it[1]+')</option>'}).join("")+'</select><button class="btn" data-add="cat">Adicionar do catálogo</button><input id="in" placeholder="Item personalizado (emoção, perfeito…)" maxlength="40" style="margin-top:8px"><input id="it" placeholder="Efeito / dano" maxlength="60" style="margin-top:4px"><div class="row" style="border:0"><input id="is" type="number" min="0" max="6" value="1" style="width:70px"><button class="btn" style="margin:0" data-add="cus">Adicionar</button></div></div>';
+ return h+'<div class="card"><h2>Anotações</h2><textarea data-k="notes" style="min-height:110px" aria-label="Anotações">'+esc(S.notes)+'</textarea></div>';
+}
+function render(){
+ var r=document.documentElement.dataset;r.emo=S.emo>=0?S.emo:"n";r.st=S.st;
+ el("c1").innerHTML=c1();el("c2").innerHTML=c2();el("c3").innerHTML=c3();
+}
+
+document.addEventListener("click",function(e){
+ var t=e.target.closest("button");if(!t)return;
+ var d=t.dataset,i;
+  if(d.foto){el("fotof").click()}
+ else if(d.fotox){delete S.avatar;commit()}
+ else if(d.ra!==undefined){i=+d.ra;rollT(AN[i],tot(i),20)}
+ else if(d.rs!==undefined){var k=SK[+d.rs];rollT(k[0],tot(k[1])+sv(k[0]),dieFor(k[0]))}
+ else if(d.init){rollT("Iniciativa",tot(0),20)}
+ else if(d.hold){rollT("Segurar emoção",tot(6)+sv("Controle Emocional"),20)}
+ else if(d.ad!==undefined){i=+d.ad;S.a[i]=cl(S.a[i]+ +d.dir,1,4,1);commit()}
+ else if(d.sd!==undefined){var n=SK[+d.sd][0],v=cl((S.sk[n]||0)+ +d.dir,-3,3,0);if(v)S.sk[n]=v;else delete S.sk[n];commit()}
+ else if(d.es){var p=d.es.split(":"),a=+p[0],b=+p[1];if(S.emo===a&&S.st===b){S.emo=-1;S.st=0}else{S.emo=a;S.st=b}commit()}
+ else if(d.fv){S.fv=cl(S.fv+ +d.fv,0,fvMax(),0);commit()}
+ else if(d.sadd){S.sec.push({t:"",g:"",e:0,r:0});commit()}
+ else if(d.sx!==undefined){if(confirm("Remover este segredo?")){S.sec.splice(+d.sx,1);commit()}}
+ else if(d.sr!==undefined){var x=S.sec[+d.sr];if(x.r){x.r=0}else{x.r=1;S.emo=x.e;S.st=3}commit()}
+ else if(d.ir!==undefined){S.inv.splice(+d.ir,1);commit()}
+ else if(d.add==="cat"){var it=IT[+el("cat").value];if(it&&S.inv.length<40){S.inv.push({n:it[0],s:it[1],t:it[2]});commit()}}
+ else if(d.add==="cus"){var nm=el("in").value.trim().slice(0,40);if(nm&&S.inv.length<40){S.inv.push({n:nm,s:cl(el("is").value,0,6,1),t:el("it").value.trim().slice(0,60)});commit()}}
+});
+document.addEventListener("input",function(e){
+ var t=e.target,d=t.dataset;
+ if(d.k){S[d.k]=t.value.slice(0,d.k==="notes"?20000:60);persist()}
+ else if(d.q!==undefined){S.q[+d.q]=t.value.slice(0,300);persist()}
+ else if(d.st!==undefined){S.sec[+d.st].t=t.value.slice(0,500);persist()}
+ else if(d.sg!==undefined){S.sec[+d.sg].g=t.value.slice(0,120);persist()}
+});
+document.addEventListener("change",function(e){
+ var t=e.target,d=t.dataset,v=+t.value;
+ if(d.s){S[d.s]=v;if(d.s==="dm")S.da=0;commit()}
+ else if(d.se!==undefined){S.sec[+d.se].e=cl(v,0,3,0);commit()}
+ else if(d.sl!==undefined){S.loss[+d.sl]=cl(v,0,2,0);commit()}
+});
+el("exp").onclick=function(){
+ var b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(b);a.download=(S.name||"ficha").replace(/[^\w-]+/g,"_")+"_sentimentalism.json";
+ document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},500);
+};
+el("imp").onclick=function(){el("impf").click()};
+el("impf").onchange=function(){
+ var f=this.files[0];this.value="";if(!f||f.size>1500000)return;
+ var rd=new FileReader();
+ rd.onload=function(){
+  var o=null;try{o=JSON.parse(rd.result)}catch(e){}
+  if(!o||o.sys!=="sentim"){alert("Arquivo inválido. Use uma ficha de Sentimentalism exportada por esta página.");return}
+  if(!confirm("Substituir a ficha atual por \""+String(o.name||"").slice(0,40)+"\"?"))return;
+  S=o;fix();commit();
+ };
+ rd.readAsText(f);
+};
+
+el("fotof").onchange=function(){
+ var f=this.files[0];this.value="";
+ if(!f||!/^image\//.test(f.type))return;
+ var url=URL.createObjectURL(f),im=new Image();
+ im.onload=function(){
+  var w0=256,h0=320,c=document.createElement("canvas");c.width=w0;c.height=h0;
+  var r=Math.max(w0/im.width,h0/im.height),w=im.width*r,h=im.height*r;
+  c.getContext("2d").drawImage(im,(w0-w)/2,(h0-h)/2,w,h);
+  URL.revokeObjectURL(url);
+  S.avatar=c.toDataURL("image/webp",.82);commit();
+ };
+ im.onerror=function(){URL.revokeObjectURL(url)};
+ im.src=url;
+};
+
+commit();
+})();
+</script>
+</body>
+</html>

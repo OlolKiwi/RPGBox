@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficha universal</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style_ficha.css">
+<script src="fichas.js"></script>
+<script src="share.js"></script>
+</head>
+<body>
+<header class="glass">
+  <a href="index.html">RPGBox</a>
+  <span class="sp"></span>
+  <button class="btn" id="exp"><img class="exportar" src="imagens/Exportar.png" alt="Exportar"></button>
+  <button class="btn" id="imp"><img class="exportar" src="imagens/Import.png" alt="Importar"></button>
+  <input type="file" id="impf" accept=".json,application/json" hidden>
+  <button class="btn" id="lay">Layout</button>
+  <button class="btn" id="wall">Fundo</button>
+  <button class="btn" id="wallx">Sem fundo</button>
+  <input type="file" id="avf" accept="image/*" hidden>
+  <input type="file" id="wallf" accept="image/*" hidden>
+  <button class="btn" id="edit">Modo de edição</button>
+</header>
+<main>
+  <section class="glass" id="left"></section>
+  <section class="glass" id="mid"></section>
+  <section class="glass" id="right"></section>
+</main>
+<script>
+(function(){
+var TK="vtt-tema";
+var ID=new URLSearchParams(location.search).get("id");
+if(!ID||!FICHAS.has(ID)){
+  var l0=FICHAS.list();
+  location.replace(l0.length?"ficha.html?id="+l0[0].id:"index.html");
+  return;
+}
+var DEF={name:"Novo personagem",info:["Classe e nível","Origem"],
+ attrs:[["FOR",10],["DES",10],["CON",10],["INT",10],["SAB",10],["CAR",10]].map(function(a){return{n:a[0],v:a[1]}}),
+ bars:[{n:"Pontos de Vida",c:10,m:10,col:"#d93b4f"},{n:"Pontos de Magia",c:10,m:10,col:"#2f7df0"}],
+ marks:[{n:"Death Save",max:3,on:0}],
+ skills:[{n:"Ataque",f:"1d20+3"},{n:"Dano",f:"2d6+2"}],
+ per:[{n:"Atletismo",b:0},{n:"Percepção",b:0},{n:"Furtividade",b:0}],
+ notes:""};
+var S=FICHAS.read(ID);
+if(!S||typeof S!=="object")S={};
+Object.keys(DEF).forEach(function(k){if(S[k]===undefined)S[k]=JSON.parse(JSON.stringify(DEF[k]))});;
+try{var t=JSON.parse(localStorage.getItem(TK));if(t){var r=document.documentElement.style;if(+t.h>=0)r.setProperty("--h",+t.h);if(t.glass)r.setProperty("--glass",t.glass/100);if(t.blur>=0)r.setProperty("--blur",t.blur+"px");document.documentElement.dataset.style=t.solid?"solid":"glass"}}catch(e){}
+var midTab="hab", mode="soma", pool={}, goal=5, bonus=0, last=null, log=[];
+var ed={info:false,attrs:false,skills:false,bars:false,marks:false,per:false};
+var lay=false;
+var DEFLAY=[["prof","info","attrs"],["skills","bars","marks"],["per","notes","dice"]];
+function head(title,key){
+  return '<div class="head"><h2>'+title+'</h2><button class="edbtn'+(ed[key]?' on':'')+'" data-ed="'+key+'">'+(ed[key]?'Concluir':'Editar')+'</button></div>';
+}
+var DICE=[2,4,6,8,10,12,20,100];
+function save(){
+  var ok=FICHAS.write(ID,S);
+  if(!ok&&!save.w){save.w=1;alert("O navegador está sem espaço para salvar. Exporte as fichas e apague as que não usa.")}
+  return ok;
+}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function dieSvg(n){
+ var P={4:"12,3 22,20 2,20",8:"12,2 22,12 12,22 2,12",10:"12,1 21,10 12,23 3,10",12:"12,2 21.5,9 18,21 6,21 2.5,9",20:"12,2 20.5,7 20.5,17 12,22 3.5,17 3.5,7"},s;
+ if(n===6)s='<rect x="4" y="4" width="16" height="16" rx="3"/>';
+ else if(P[n])s='<polygon points="'+P[n]+'"/>';
+ else s='<circle cx="12" cy="12" r="9.5"/>';
+ return'<svg class="dz" viewBox="0 0 24 24" aria-hidden="true">'+s+'<text x="12" y="'+(n===4?16:14.6)+'" text-anchor="middle">'+n+'</text></svg>';
+}
+function dieMini(f){
+ return esc(f==null?"":f).replace(/(\d*)d(\d+)(kh\d*|kl\d*)?/gi,function(m,q,s,k){return(q&&q!=="1"?q+"×":"")+dieSvg(+s)+(k?"<small>"+k+"</small>":"")});
+}
+function num(v,d){v=parseInt(v,10);return isNaN(v)?d:v}
+function rnd(n){return 1+Math.floor(Math.random()*n)}
+function pushLog(t){log.unshift(t);log=log.slice(0,8);renderRight()}
+function roll(f){
+ var s=String(f).replace(/\s+/g,""),re=/([+-]?)(?:(\d*)d(\d+)(?:(kh|kl)(\d*))?|(\d+))/gi,m,pos=0,total=0,terms=[];
+ while((m=re.exec(s))!==null){
+  if(m.index!==pos||terms.length>=8)return null;
+  pos=re.lastIndex;
+  var sg=m[1]==="-"?-1:1;
+  if(m[3]){
+   var q=Math.min(num(m[2],1)||1,50),sd=Math.min(num(m[3],20),1000),kd=(m[4]||"").toLowerCase(),kn=m[5]?num(m[5],1):1,r=[],i;
+   for(i=0;i<q;i++)r.push(rnd(sd));
+   var used=r.slice();
+   if(kd)used=r.slice().sort(function(a,c){return kd==="kh"?c-a:a-c}).slice(0,Math.max(1,Math.min(kn||1,q)));
+   var sub=0;used.forEach(function(x){sub+=x});
+   total+=sg*sub;terms.push({sg:sg,txt:q+"d"+sd+(kd?kd+(kn>1?kn:""):""),r:r,used:used,kd:kd});
+  }else{var v=num(m[6],0);total+=sg*v;terms.push({sg:sg,v:v})}
+ }
+ if(!terms.length||pos!==s.length)return null;
+ return{total:total,terms:terms};
+}
+function rollDetail(o){
+ return o.terms.map(function(t,i){
+  var sign=t.sg<0?"− ":(i?"+ ":"");
+  return t.v!==undefined?sign+t.v:sign+t.txt+" ["+t.r.join(", ")+"]"+(t.kd?" → "+t.used.join(", "):"");
+ }).join(" ");
+}
+function rollFormula(name,f){
+ var o=roll(f);if(!o){last='<small>Fórmula inválida: '+esc(f)+'</small>';renderRight();return}
+ var det=rollDetail(o);
+ last='<strong>'+o.total+'</strong><small>'+esc(name)+' ('+esc(f)+'): '+esc(det)+'</small>';
+ pushLog(name+": "+o.total+" · "+det);
+}
+function bonusExpr(b){
+ if(typeof b==="number")return b?(b>0?"+":"")+b:"";
+ var s=String(b==null?"":b).replace(/\s+/g,"");
+ if(!s)return"";
+ return/^[+-]/.test(s)?s:"+"+s;
+}
+function fmtB(b){
+ if(typeof b==="number")return(b>=0?"+":"")+b;
+ var s=String(b==null?"":b).trim();
+ if(!s)return"+0";
+ return/^[+-]/.test(s)?s:"+"+s;
+}
+function addBonus(f,b){return f+bonusExpr(b)}
+function attrFormula(a){
+ if(!a||!a.f)return null;
+ var f=String(a.f).trim(),v=a.v;
+ if(f.indexOf("@")<0)return f;
+ if(v<=0){var m=/@d(\d+)/i.exec(f);if(m)return"2d"+m[1]+"kl1"}
+ return f.replace(/@/g,String(Math.max(v,0)));
+}
+function mProf(){
+ return '<button class="avatar" id="avbtn" aria-label="Trocar imagem">'+(S.avatar?'<img src="'+esc(S.avatar)+'" alt="">':esc((S.name||"?").charAt(0).toUpperCase()))+'</button>'+
+ '<input class="name" data-k="name" value="'+esc(S.name)+'" aria-label="Nome do personagem">';
+}
+function mInfo(){
+ var h=head("Informações","info");
+ S.info.forEach(function(v,i){h+='<div class="row"><input data-l="info" data-i="'+i+'" value="'+esc(v)+'" placeholder="Digite aqui...">'+(ed.info?'<button class="x" data-del="info" data-i="'+i+'" aria-label="Remover">×</button>':'')+'</div>'});
+ if(ed.info)h+='<button class="add" data-add="info">+ Nova informação</button>';
+ return h;
+}
+function mAttrs(){
+ var h=head("Atributos simples","attrs")+'<div class="attrs">';
+ S.attrs.forEach(function(a,i){
+  h+='<div class="attr">'+(ed.attrs?'<input class="nm" data-l="attrn" data-i="'+i+'" value="'+esc(a.n)+'" aria-label="Nome do atributo">':'<small>'+esc(a.n)+'</small>')+
+   '<input type="number" data-l="attrv" data-i="'+i+'" value="'+a.v+'" aria-label="Valor de '+esc(a.n)+'">'+
+   (ed.attrs?'<input class="nm" data-l="attrf" data-i="'+i+'" value="'+esc(a.f||"")+'" placeholder="@d20kh1" aria-label="Fórmula de rolagem">':(a.f?'<button class="rl" data-rattr="'+i+'" aria-label="Rolar '+esc(a.n)+'">🎲 Rolar</button>':''))+
+   (ed.attrs?'<button class="x" data-del="attrs" data-i="'+i+'" aria-label="Remover">×</button>':'')+'</div>';
+ });
+ h+='</div>';
+ if(ed.attrs)h+='<div style="margin-top:10px"><button class="add" data-add="attrs">+ Novo atributo</button></div><div style="margin-top:8px"><button class="add" data-preset="ordem">Aplicar @d20kh1 a todos</button></div><p class="hint">Fórmula: o @ vira o valor do atributo. Ex.: @d20kh1 rola o valor em d20 e fica com o maior; 1d8 rola um dado fixo.</p>';
+ return h;
+}
+function mSkills(){
+ var h=head("Habilidades","skills")+'<p class="hint">Toque numa habilidade para rolar.</p>';
+ S.skills.forEach(function(s,i){h+=ed.skills?'<div class="row"><input data-l="skn" data-i="'+i+'" value="'+esc(s.n)+'" aria-label="Nome"><input data-l="skf" data-i="'+i+'" value="'+esc(s.f)+'" style="width:110px" aria-label="Fórmula"><button class="x" data-del="skills" data-i="'+i+'" aria-label="Remover">×</button></div>':'<button class="item" data-roll="'+i+'"><span>'+esc(s.n)+'</span><em>'+esc(s.f)+'</em></button>'});
+ if(ed.skills)h+='<button class="add" data-add="skills">+ Nova habilidade</button>';
+ return h;
+}
+function mBars(){
+ var h=head("Recursos","bars");
+ S.bars.forEach(function(b,i){var p=b.m>0?Math.max(0,Math.min(1,b.c/b.m)):0;
+  h+=ed.bars?'<div class="row"><input data-l="bn" data-i="'+i+'" value="'+esc(b.n)+'" aria-label="Nome"><input type="number" data-l="bm" data-i="'+i+'" value="'+b.m+'" style="width:76px" aria-label="Máximo"><input type="color" data-l="bc" data-i="'+i+'" value="'+esc(b.col)+'" style="width:48px;padding:2px" aria-label="Cor"><button class="x" data-del="bars" data-i="'+i+'" aria-label="Remover">×</button></div>'
+  :'<div class="lbl">'+esc(b.n)+'</div><div class="bar" style="--c:'+esc(b.col)+'"><button data-bar="-1" data-i="'+i+'" aria-label="Diminuir">−</button><div><i style="transform:scaleX('+(1-p)+')"></i><span>'+b.c+'/'+b.m+'</span></div><button data-bar="1" data-i="'+i+'" aria-label="Aumentar">+</button></div>'});
+ if(ed.bars)h+='<button class="add" data-add="bars">+ Novo recurso</button>';
+ return h;
+}
+function mMarks(){
+ var h=head("Marcadores","marks");
+ S.marks.forEach(function(m,i){var pips="";for(var k=0;k<m.max;k++)pips+='<button data-pip="'+i+'" data-k="'+k+'" aria-label="Marcar">'+(k<m.on?"●":"○")+'</button>';
+  h+='<div class="mark"><b>'+(ed.marks?'<input data-l="mn" data-i="'+i+'" value="'+esc(m.n)+'" aria-label="Nome" style="width:130px"> <input type="number" data-l="mx" data-i="'+i+'" value="'+m.max+'" style="width:60px" aria-label="Quantidade">':esc(m.n))+'</b><span class="pips">'+pips+(ed.marks?'<button class="x" data-del="marks" data-i="'+i+'" aria-label="Remover">×</button>':'')+'</span></div>'});
+ if(ed.marks)h+='<button class="add" data-add="marks">+ Novo marcador</button>';
+ return h;
+}
+function mPer(){
+ var h=head("Perícias","per")+'<p class="hint">Toque numa perícia para rolar. O bônus pode ser número (+5) ou dado (1d4, 1d4+2). Ligada a um atributo com fórmula, rola o atributo + bônus; sem ligação, 1d20 + bônus.</p>';
+ function opts(sl){return'<option value="">—</option>'+S.attrs.map(function(a){return'<option value="'+esc(a.n)+'"'+(a.n===sl?' selected':'')+'>'+esc(a.n)+'</option>'}).join("")}
+ S.per.forEach(function(p,i){h+=ed.per?'<div class="row"><input data-l="pn" data-i="'+i+'" value="'+esc(p.n)+'" aria-label="Nome"><select data-l="pat" data-i="'+i+'" style="width:84px" aria-label="Atributo ligado">'+opts(p.at)+'</select><input type="text" data-l="pb" data-i="'+i+'" value="'+esc(String(p.b==null?"":p.b))+'" placeholder="+5 ou 1d4" style="width:92px" aria-label="Bônus (número ou dado)"><button class="x" data-del="per" data-i="'+i+'" aria-label="Remover">×</button></div>':'<button class="item" data-per="'+i+'"><span>'+esc(p.n)+'</span><em>'+(p.at?esc(p.at)+" ":"")+esc(fmtB(p.b))+'</em></button>'});
+ if(ed.per)h+='<button class="add" data-add="per">+ Nova perícia</button>';
+ return h;
+}
+function mNotes(){
+ return '<div class="head"><h2>Anotações</h2></div><textarea data-k="notes" placeholder="Anotações da campanha, itens, pistas..." aria-label="Anotações">'+esc(S.notes)+'</textarea>';
+}
+function mDice(){return '<div id="dice"></div>'}
+
+var MODS={
+ prof:{t:"Perfil",f:mProf},info:{t:"Informações",f:mInfo},attrs:{t:"Atributos",f:mAttrs},
+ skills:{t:"Habilidades",f:mSkills},bars:{t:"Recursos",f:mBars},marks:{t:"Marcadores",f:mMarks},
+ per:{t:"Perícias",f:mPer},notes:{t:"Anotações",f:mNotes},dice:{t:"Dados",f:mDice}
+};
+function fixLay(){
+ var seen={},L=Array.isArray(S.layout)?S.layout:null;
+ if(!L||L.length!==3)L=JSON.parse(JSON.stringify(DEFLAY));
+ S.layout=L.map(function(c){return(Array.isArray(c)?c:[]).filter(function(id){
+  if(typeof id!=="string"||!Object.prototype.hasOwnProperty.call(MODS,id)||seen[id])return false;
+  seen[id]=1;return true})});
+}
+function moveMod(id,a){
+ var L=S.layout,ci=-1,i=-1,k,j;
+ for(k=0;k<L.length;k++){j=L[k].indexOf(id);if(j>-1){ci=k;i=j}}
+ if(ci<0)return;
+ var col=L[ci];
+ if(a==="u"&&i>0){col.splice(i,1);col.splice(i-1,0,id)}
+ else if(a==="d"&&i<col.length-1){col.splice(i,1);col.splice(i+1,0,id)}
+ else if((a==="l"&&ci>0)||(a==="r"&&ci<L.length-1)){col.splice(i,1);var to=L[ci+(a==="l"?-1:1)];to.splice(Math.min(i,to.length),0,id)}
+ else if(a==="x")col.splice(i,1);
+}
+function renderCols(){
+ fixLay();
+ var ids=["left","mid","right"];
+ S.layout.forEach(function(col,ci){
+  var h="";
+  col.forEach(function(id,i){
+   h+='<div class="mod glass'+(lay?' laying':'')+'">'+(lay?'<div class="lay"><b>'+MODS[id].t+'</b><span>'+
+    '<button data-lay="l" data-m="'+id+'"'+(ci===0?' disabled':'')+' aria-label="Mover para a esquerda">◀</button>'+
+    '<button data-lay="u" data-m="'+id+'"'+(i===0?' disabled':'')+' aria-label="Subir">▲</button>'+
+    '<button data-lay="d" data-m="'+id+'"'+(i===col.length-1?' disabled':'')+' aria-label="Descer">▼</button>'+
+    '<button data-lay="r" data-m="'+id+'"'+(ci===2?' disabled':'')+' aria-label="Mover para a direita">▶</button>'+
+    '<button data-lay="x" data-m="'+id+'" aria-label="Ocultar">✕</button></span></div>':'')+MODS[id].f()+'</div>';
+  });
+  if(ci===0&&lay){
+   var used=[].concat.apply([],S.layout),hid="";
+   Object.keys(MODS).forEach(function(id){if(used.indexOf(id)<0)hid+='<button class="add" data-show="'+id+'">+ '+MODS[id].t+'</button>'});
+   if(hid)h+='<div class="mod glass laying"><div class="head"><h2>Módulos ocultos</h2></div>'+hid+'</div>';
+  }
+  el(ids[ci]).innerHTML=h;
+ });
+ renderRight();
+}
+function renderRight(){
+ var modes=[["soma","Dados soma"],["max","Maior valor"],["cont","Contar sucessos"]];
+ var h='<div class="tabs">'+modes.map(function(m){return'<button data-mode="'+m[0]+'"'+(mode===m[0]?' class="on"':'')+'>'+m[1]+'</button>'}).join("")+'</div><div class="dice">';
+ DICE.forEach(function(n){h+='<button class="d'+(pool[n]?' has':'')+'" data-d="'+n+'" aria-label="Adicionar d'+n+'">d'+n+'<b>'+(pool[n]||"")+'</b></button>'});
+ h+='<button class="d" data-undo="1" aria-label="Limpar dados">↩</button></div>';
+ if(mode==="cont")h+='<div class="bonus">Sucesso a partir de <input type="number" id="goal" value="'+goal+'" aria-label="Valor de sucesso"></div>';
+ h+='<div class="bonus">Bônus <input type="number" id="bonus" value="'+bonus+'" aria-label="Bônus"></div>'+
+ '<div class="rollrow"><button class="btn" data-clear="1" aria-label="Limpar histórico">🗑</button><button class="btn main" data-go="1">ROLAR</button></div>'+
+ '<div class="result" id="res"'+(last?' style="display:block"':'')+'>'+(last||"")+'</div><div class="log">'+log.map(function(l){return'<div>'+esc(l)+'</div>'}).join("")+'</div>';
+ var bx=el("dice");if(bx)bx.innerHTML=h;
+}
+function el(i){return document.getElementById(i)}
+function renderLeft(){renderCols()}
+function renderMid(){renderCols()}
+function renderAll(){renderCols()}
+
+function go(){
+ var rs=[],txt=[],n;
+ DICE.forEach(function(d){for(var i=0;i<(pool[d]||0);i++){var x=rnd(d);rs.push(x);txt.push("d"+d+":"+x)}});
+ if(!rs.length){last='<small>Escolha pelo menos um dado.</small>';renderRight();return}
+ var v,label;
+ if(mode==="soma"){v=rs.reduce(function(a,b){return a+b},0)+bonus;label="soma"}
+ else if(mode==="max"){v=Math.max.apply(null,rs)+bonus;label="maior valor"}
+ else{v=rs.filter(function(x){return x+bonus>=goal}).length;label="sucessos"}
+ last='<strong>'+v+'</strong><small>'+esc(label)+' ('+esc(txt.join(", "))+(bonus&&mode!=="cont"?" "+(bonus>0?"+":"")+bonus:"")+')</small>';
+ pushLog(v+" "+label+" ← "+txt.join(", "))
+}
+
+document.addEventListener("click",function(e){
+ var t=e.target.closest("button");if(!t)return;var d=t.dataset,i=+d.i;
+ if(t.id==="avbtn"){el("avf").click();return}
+ if(d.tab){midTab=d.tab;renderMid()}
+ else if(d.mode){mode=d.mode;renderRight()}
+ else if(d.d){pool[d.d]=(pool[d.d]||0)+1;renderRight()}
+ else if(d.undo){pool={};last=null;renderRight()}
+ else if(d.clear){log=[];last=null;renderRight()}
+ else if(d.go){go()}
+ else if(d.roll!==undefined){var s=S.skills[+d.roll];rollFormula(s.n,s.f)}
+  else if(d.rattr!==undefined){var ra=S.attrs[+d.rattr],rf=attrFormula(ra);if(rf)rollFormula(ra.n,rf)}
+ else if(d.preset){S.attrs.forEach(function(a){a.f="@d20kh1"});save();renderAll()}
+  else if(d.per!==undefined){var p=S.per[+d.per],at=null;S.attrs.forEach(function(a){if(a.n===p.at)at=a});var af=attrFormula(at);rollFormula(p.n,af?addBonus(af,p.b):"1d20"+bonusExpr(p.b))}
+ else if(d.bar){var b=S.bars[i];b.c=Math.max(0,Math.min(b.m,b.c+num(d.bar,0)));save();renderMid()}
+ else if(d.pip!==undefined){var m=S.marks[+d.pip],k=+d.k;m.on=(m.on===k+1)?k:k+1;save();renderMid()}
+ else if(d.ed){ed[d.ed]=!ed[d.ed];renderLeft();renderMid()}
+ else if(d.lay){moveMod(d.m,d.lay);save();renderCols()}
+ else if(d.show){S.layout[1].push(d.show);save();renderCols()} 
+ else if(d.add){var a=d.add;
+  if(a==="info")S.info.push("");else if(a==="attrs")S.attrs.push({n:"ATR",v:10});else if(a==="skills")S.skills.push({n:"Nova habilidade",f:"1d20"});
+  else if(a==="bars")S.bars.push({n:"Novo recurso",c:10,m:10,col:"#2fa56b"});else if(a==="marks")S.marks.push({n:"Marcador",max:3,on:0});else if(a==="per")S.per.push({n:"Nova perícia",b:0});
+  save();renderAll()}
+ else if(d.del){S[d.del].splice(i,1);save();renderAll()}
+});
+document.addEventListener("input",function(e){
+ var t=e.target,d=t.dataset,i=+d.i,v=t.value;
+ if(t.id==="bonus"){bonus=num(v,0);return}
+ if(t.id==="goal"){goal=num(v,5);return}
+if(d.k==="name"){S.name=v;var a=document.querySelector(".avatar");if(a&&!S.avatar)a.textContent=(v||"?").charAt(0).toUpperCase()} else if(d.k==="notes")S.notes=v;
+ else if(d.l==="info")S.info[i]=v;
+ else if(d.l==="attrv")S.attrs[i].v=num(v,0);else if(d.l==="attrn")S.attrs[i].n=v;
+ else if(d.l==="skn")S.skills[i].n=v;else if(d.l==="skf")S.skills[i].f=v;
+ else if(d.l==="bn")S.bars[i].n=v;else if(d.l==="bm"){S.bars[i].m=Math.max(0,num(v,0));S.bars[i].c=Math.min(S.bars[i].c,S.bars[i].m)}else if(d.l==="bc")S.bars[i].col=v;
+ else if(d.l==="mn")S.marks[i].n=v;else if(d.l==="mx"){S.marks[i].max=Math.max(1,Math.min(12,num(v,1)));S.marks[i].on=Math.min(S.marks[i].on,S.marks[i].max)}
+ else if(d.l==="pn")S.per[i].n=v;else if(d.l==="pb")S.per[i].b=/^\s*[+-]?\d+\s*$/.test(v)?num(v,0):v.slice(0,20);
+ else if(d.l==="attrf")S.attrs[i].f=v.slice(0,30);else if(d.l==="pat")S.per[i].at=v.slice(0,12);
+ else return;
+ save();
+});
+el("edit").addEventListener("click",function(){
+  var on=!Object.keys(ed).every(function(k){return ed[k]});
+  Object.keys(ed).forEach(function(k){ed[k]=on});
+  this.classList.toggle("on",on);renderLeft();renderMid();
+});
+el("avf").addEventListener("change",function(){
+  var f=this.files[0];this.value="";
+  if(!f||!/^image\//.test(f.type))return;
+  var url=URL.createObjectURL(f),im=new Image();
+  im.onload=function(){
+    var s=256,c=document.createElement("canvas");c.width=c.height=s;
+    var m=Math.min(im.width,im.height);
+    c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,s,s);
+    URL.revokeObjectURL(url);
+    S.avatar=c.toDataURL("image/webp",.8);save();renderLeft();
+  };
+  im.onerror=function(){URL.revokeObjectURL(url)};
+  im.src=url;
+});
+function clean(o){
+  if(!o||typeof o!=="object")return null;
+  function str(v,n){return String(v==null?"":v).slice(0,n)}
+  function arr(a){return Array.isArray(a)?a.slice(0,50):[]}
+  var r={name:str(o.name,60)||"Novo personagem"};
+  r.info=arr(o.info).map(function(v){return str(v,200)});
+  r.attrs=arr(o.attrs).map(function(a){a=a||{};return{n:str(a.n,12),v:num(a.v,0),f:str(a.f,30)}});
+  r.bars=arr(o.bars).map(function(b){b=b||{};var m=Math.max(0,num(b.m,0));return{n:str(b.n,40),m:m,c:Math.max(0,Math.min(m,num(b.c,0))),col:/^#[0-9a-f]{6}$/i.test(b.col)?b.col:"#2fa56b"}});
+  r.marks=arr(o.marks).map(function(m){m=m||{};var x=Math.max(1,Math.min(12,num(m.max,1)));return{n:str(m.n,40),max:x,on:Math.max(0,Math.min(x,num(m.on,0)))}});
+  r.skills=arr(o.skills).map(function(s){s=s||{};return{n:str(s.n,40),f:str(s.f,30)}});
+  r.per=arr(o.per).map(function(p){p=p||{};var b=String(p.b==null?"0":p.b).trim();return{n:str(p.n,40),b:/^[+-]?\d+$/.test(b)?num(b,0):str(b,20),at:str(p.at,12)}});
+  r.notes=str(o.notes,20000);
+  r.layout=o.layout;
+  if(typeof o.avatar==="string"&&o.avatar.length<400000&&/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(o.avatar))r.avatar=o.avatar;
+  if(typeof o.wall==="string"&&o.wall.length<900000&&WOK.test(o.wall))r.wall=o.wall;
+  return r;
+}
+el("imp").addEventListener("click",function(){el("impf").click()});
+el("impf").addEventListener("change",function(){
+  var f=this.files[0];this.value="";
+  if(!f||f.size>1500000)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    var n=null;try{n=clean(JSON.parse(rd.result))}catch(e){}
+    if(!n){alert("Arquivo inválido. Use um .json exportado pela ficha.");return}
+    if(!confirm("Substituir a ficha atual por \""+n.name+"\"?"))return;
+    S=n;save();setWall(S.wall);renderAll();
+  };
+  rd.readAsText(f);
+});
+
+el("lay").addEventListener("click",function(){lay=!lay;this.classList.toggle("on",lay);renderCols()});
+
+var WK="vtt-wall",WOK=/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/;
+function setWall(u){document.documentElement.style.setProperty("--wall",u&&WOK.test(u)?'url("'+u+'")':"none")}
+setWall(S.wall);
+el("wall").addEventListener("click",function(){el("wallf").click()});
+el("wallx").addEventListener("click",function(){delete S.wall;save();setWall(null)});
+el("wallf").addEventListener("change",function(){
+ var f=this.files[0];this.value="";
+ if(!f||!/^image\//.test(f.type))return;
+ var url=URL.createObjectURL(f),im=new Image();
+ im.onload=function(){
+  var s=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement("canvas");
+  c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);
+  c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  URL.revokeObjectURL(url);
+  var u=c.toDataURL("image/webp",.7),old=S.wall;
+  S.wall=u;
+  if(!save()){S.wall=old;alert("Imagem grande demais para guardar no navegador.");return}
+  setWall(u);
+ };
+ im.onerror=function(){URL.revokeObjectURL(url)};
+ im.src=url;
+});
+
+el("exp").addEventListener("click",function(){
+ var b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(b);a.download=(S.name||"ficha").replace(/[^\w-]+/g,"_")+".json";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},500)});
+renderAll();
+})();
+</script>
+</body>
+</html>

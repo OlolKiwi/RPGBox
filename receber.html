@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover">
+<title>Ficha compartilhada - RPGBox</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style_ficha.css">
+<script src="fichas.js"></script>
+<style>
+body{display:grid;place-items:center;min-height:100vh;padding:16px}
+.box{width:min(420px,100%);padding:24px;border-radius:24px;display:flex;flex-direction:column;gap:12px;text-align:center}
+.box h1{margin:0;font-size:1.2rem;color:var(--muted);font-weight:500}
+.av{width:110px;height:140px;margin:0 auto;border-radius:16px;overflow:hidden;border:1px solid var(--edge);display:grid;place-items:center;font-size:2.4rem;font-weight:700;background:linear-gradient(135deg,hsl(var(--h) 70% 45%),hsl(calc(var(--h) + 60) 60% 28%))}
+.av img{width:100%;height:100%;object-fit:cover}
+.nm{font-size:1.5rem;font-weight:700;overflow-wrap:anywhere}
+.tag{display:inline-block;margin:0 auto;padding:3px 12px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:.85rem}
+.inf{color:var(--muted);font-size:.9rem}
+.btn{display:block;width:100%;padding:12px;border-radius:14px;border:1px solid var(--edge);background:rgba(255,255,255,.07);color:inherit;font:inherit;font-weight:700;cursor:pointer;text-decoration:none;text-align:center}
+.btn.main{background:var(--accent);color:#14101f;border-color:transparent}
+.btn:disabled{opacity:.5;cursor:default}
+.msg{min-height:1.2em;font-size:.9rem;color:#ff8b8b}
+a.back{color:var(--muted);font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="box glass">
+  <h1>Ficha compartilhada com você</h1>
+  <div id="rc">Carregando…</div>
+</div>
+<script>
+(function(){
+function el(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+try{var th=JSON.parse(localStorage.getItem("vtt-tema"));if(th){var rs=document.documentElement.style;if(+th.h>=0)rs.setProperty("--h",+th.h);if(th.glass)rs.setProperty("--glass",th.glass/100);if(th.blur>=0)rs.setProperty("--blur",th.blur+"px");document.documentElement.dataset.style=th.solid?"solid":"glass"}}catch(e){}
+var SYS={"":["Ficha universal","ficha.html"],op:["Ordem Paranormal","ficha_op.html"],ordem:["Ordem (playtest)","ficha_ordem.html"],sentim:["Sentimentalism","ficha_sentim.html"],jojo:["JoJo","ficha_jojo.html"]};
+var AV=/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/;
+var rc=el("rc"),data=null;
+function fail(t){rc.innerHTML='<p class="msg">'+esc(t)+'</p><a class="btn" href="index.html">Ir para o início</a>'}
+var s=new URLSearchParams(location.search).get("s")||"";
+if(!/^[a-z0-9]{10}$/.test(s)){fail("Link inválido.")}
+else if(typeof FICHAS==="undefined"){fail("A biblioteca de fichas não carregou.")}
+else{
+ fetch("/api/ficha/"+s).then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}},function(){return{ok:false,j:{}}})}).then(function(x){
+  if(!x.ok||!x.j.d||typeof x.j.d!=="object")throw new Error((x.j&&x.j.erro)||"Link inválido ou expirado.");
+  data=x.j.d;show(x.j.ts);
+ }).catch(function(e){fail(e.message)});
+}
+function sysOf(d){var k=d&&typeof d.sys==="string"?d.sys:"";return SYS.hasOwnProperty(k)?SYS[k]:SYS[""]}
+function show(ts){
+ var d=data,name=String(d.name||"Sem nome").slice(0,60),inf=Array.isArray(d.info)?d.info.filter(function(x){return typeof x==="string"}).slice(0,3):[];
+ var left=Math.max(0,Math.ceil((ts+30*864e5-Date.now())/864e5));
+ rc.innerHTML='<div class="av">'+(typeof d.avatar==="string"&&AV.test(d.avatar)?'<img src="'+esc(d.avatar)+'" alt="">':esc(name.charAt(0).toUpperCase()))+'</div>'+
+  '<div class="nm">'+esc(name)+'</div><div><span class="tag">'+esc(sysOf(d)[0])+'</span></div>'+
+  inf.map(function(t){return'<div class="inf">'+esc(t)+'</div>'}).join("")+
+  '<div class="inf">O link vale por mais '+left+' dia'+(left===1?"":"s")+'.</div>'+
+  '<button class="btn main" id="radd">Adicionar à minha biblioteca</button><p class="msg" id="rmsg"></p><a class="back" href="index.html">Agora não, ir para o início</a>';
+ el("radd").onclick=add;
+}
+function add(){
+ var m=el("rmsg"),l=FICHAS.list();
+ if(l.length>=FICHAS.MAX){m.textContent="Sua biblioteca está cheia ("+l.length+"/"+FICHAS.MAX+"). Apague uma ficha na página inicial e abra este link de novo.";return}
+ var c=JSON.parse(JSON.stringify(data));
+ c.name=String(c.name||"Sem nome").slice(0,60);
+ if(c.avatar!==undefined&&!(typeof c.avatar==="string"&&AV.test(c.avatar)))delete c.avatar;
+ var id=FICHAS.create(c);
+ if(!id){m.textContent="Não foi possível salvar (o navegador está sem espaço).";return}
+ location.href=sysOf(c)[1]+"?id="+id;
+}
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ficha - Ordem Paranormal (Playtest 0.1)</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style_ficha_ordem.css">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Special+Elite&display=swap" rel="stylesheet">
+<script src="fichas.js"></script>
+<script src="share.js"></script>
+<style>
+</style>
+</head>
+<body>
+<header class="glass">
+  <a href="index.html">RPGBox</a>
+  <span class="els" id="els"></span><span class="sp"></span>
+  <button class="btn" id="exp">Exportar</button>
+  <button class="btn" id="imp">Importar</button>
+  <input type="file" id="impf" accept=".json,application/json" hidden>
+  <input type="file" id="fotof" accept="image/*" hidden>
+</header>
+<div class="dossie" id="dossie"></div>
+<main>
+  <section class="glass" id="c1"></section>
+  <section class="glass" id="c2"></section>
+  <section class="glass" id="c3"></section>
+</main>
+<script>
+(function(){
+var STEPS=[4,6,8,10,12],AT=["Físico","Mente","Emoção"];
+var MAXLOW=1;
+var SK=[["Acrobacia",0],["Atletismo",0],["Crime",0],["Furtividade",0],["Luta",0],["Pontaria",0],["Vigor",0],["Aptidão",1],["Inspecionar",1],["Medicina",1],["Metalurgia",1],["Ocultismo",1],["Percepção",1],["Sobrevivência",1],["Adestramento",2],["Carisma",2],["Disciplina",2],["Enganação",2],["Intimidar",2],["Intuição",2]];
+var ORG=[
+["Acadêmico","Aptidão","Inspecionar","Referência","1×/cena: obtém uma informação básica"],
+["Atleta","Atletismo","Acrobacia","Condicionamento","reduz em 1 uma penalidade de esforço"],
+["Criminoso","Furtividade","Luta","Contato","conhece alguém que fornece informação ou favor"],
+["Militar","Pontaria","Atletismo","Disciplina Militar","ignora penalidade de medo/pressão ao cumprir objetivo"],
+["Policial","Percepção","Inspecionar","Procedimento","reconhece sinais comuns de cena investigativa"],
+["Profissional de Saúde","Medicina","Intuição","Cuidador","ao estabilizar alguém, recuperação adicional"],
+["Técnico","Metalurgia","Aptidão","Improviso","repara ou adapta equipamento simples"],
+["Artista","Carisma","Aptidão","Expressão","comunica uma ideia complexa por apresentação (Aptidão: Artes)"],
+["Sobrevivente","Percepção","Disciplina","Instinto","identifica o detalhe mais perigoso"],
+["Investigador","Inspecionar","Intuição","Conexões","ao reunir duas pistas, pede uma hipótese ao Mestre"],
+["Jornalista","Inspecionar","Carisma","Fonte Confiável","rede de contatos que informa ou indica quem saiba"],
+["Engenheiro","Metalurgia","Aptidão","Projeto Mental","entende rápido a estrutura de máquinas e sistemas"],
+["Detetive Particular","Inspecionar","Percepção","Seguir Pistas","ao achar uma pista, sabe o que pode se ligar a ela"],
+["Paramédico","Medicina","Atletismo","Atendimento de Emergência","estabiliza ferido rápido, mesmo em condições adversas"],
+["Mecânico","Metalurgia","Atletismo","Mão na Massa","reparos improvisados com peças e ferramentas à mão"],
+["Professor","Aptidão","Carisma","Didática","explica conhecimento complexo e orienta alguém numa tarefa"],
+["Artista Marcial","Luta","Acrobacia","Disciplina Corporal","mantém controle e precisão sob cansaço ou pressão"],
+["Hacker","Crime","Furtividade","Invasão Digital","acha vulnerabilidades e contorna proteções simples"],
+["Religioso","Disciplina","Carisma","Fé Inabalável","mantém a calma e resiste a abalos à determinação"],
+["Investigador Paranormal","Inspecionar","Ocultismo","Experiência Oculta","reconhece padrões, símbolos e fenômenos estranhos"]
+].map(function(a){return{n:a[0],s:[a[1],a[2]],an:a[3],at:a[4]}});
+function L(a){return a.map(function(s){var p=s.split("|");return{n:p[0],t:p[1]}})}
+function B(a){return a.map(function(x){return{n:x[0],t:x[1],a:x[2],b:x[3]}})}
+var PRO=[
+{n:"Executor",pv:4,fx:"Luta",x:2,sug:["Acrobacia","Atletismo","Pontaria","Furtividade"],ini:"Pressão Ofensiva|1×/rodada: acerto muito alto pressiona o alvo e abre vantagem a um aliado",paths:["Pressão","Brutalidade","Precisão"],
+ab:{
+2:L(["Voz de Comando|1×/cena: aliado que te ouve ganha benefício no próximo teste","Impacto|empurra ou desequilibra um alvo em ataques corpo a corpo","Mira|1×/cena: ignora pequena penalidade de posição","Marcar Alvo|1×/cena: marca inimigo; aliados ganham benefício no 1º ataque","Investida|avançar e atacar corpo a corpo na mesma ação dá benefício","Mãos Firmes|ignora tremor, cansaço ou ferimento leve em ataques à distância"]),
+4:L(["Cobrir Aliado|1×/cena: assume uma consequência física de aliado próximo","Golpe Pesado|aumenta a consequência de um ataque de força máxima","Tiro Limpo|sem se mover, benefício no próximo ataque à distância","Incentivar|1×/cena: aliado repete teste contra medo ou pressão","Pele Grossa|1×/cena: reduz uma pequena consequência física","Disparo de Supressão|1×/cena: alvo se protege e sofre penalidade para agir"]),
+6:L(["Presença Dominante|benefício em Intimidar e Carisma para impor respeito","Demolidor|danifica cobertura e obstáculos com eficiência","Atirador|alvo prioritário: benefício contra ele","Linha de Frente|de pé e à vista: aliados ganham benefício contra medo e pressão","Quebra-Guarda|acerto muito alto derruba a defesa e abre benefício","Tiro em Movimento|atacar à distância após se mover não gera penalidade"]),
+10:L(["Ponto de Virada|1×/cena: cena vira contra o grupo; ação dá benefício a todos aliados","Força Bruta|1×/cena: acerto vira efeito decisivo","Execução|contra alvo gravemente comprometido, acerto encerra a ameaça","Último Fôlego|1×/cena: aliado derrubado fica de pé por mais uma ação","Fúria Controlada|1×/cena: até o fim da rodada, benefício corpo a corpo e ignora dor","Tiro Impossível|1×/cena: ataque à distância ignora cobertura parcial e distância razoável"])},
+br:B([["Tanque","1×/cena: reduz uma consequência física importante",0,1],["Duelista","benefício contra quem atacou você na rodada anterior",1,2],["Fogo de Cobertura","1×/cena: atira para proteger aliado, que age sem ser atingido",0,2]])},
+{n:"Analyst",pv:3,fx:"Inspecionar",x:3,sug:["Percepção","Aptidão","Metalurgia","Medicina","Intuição"],ini:"Análise Rápida|1×/cena: pergunta objetiva sobre ameaça, pista ou situação; resposta verdadeira e útil",paths:["Investigação","Suporte","Preparação"],
+ab:{
+2:L(["Hipótese|formula uma hipótese ao reunir pistas","Saber de Campo|1×/cena: declara fato técnico plausível (Medicina, Metalurgia ou Aptidão) sem teste","Plano B|1×/cena: declara um pequeno recurso plausível trazido consigo","Segunda Olhada|1×/cena: repete teste de Inspecionar ou Percepção","Voz Calma|1×/cena: aliado repete teste contra medo ou pressão","Rota de Fuga|ao chegar, declara uma saída plausível que já notou"]),
+4:L(["Perfil|reconhece padrões de comportamento ou modus operandi","Solução Técnica|improvisa reparo, diagnóstico ou procedimento simples","Kit de Campo|o primeiro equipamento preparado ocupa 1 espaço a menos","Leitura de Depoimento|pergunta ao Mestre se a pessoa esconde algo","Anotações Compartilhadas|compartilha pista: aliado ganha benefício em teste relacionado","Equipamento Reserva|1×/cena: se um item pequeno se perde, você tem reserva"]),
+6:L(["Conexão Oculta|pergunta com qual outra pista a evidência se conecta","Apoio Especializado|ao orientar aliado numa perícia sua, ele ganha benefício","Preparado|1×/cena: repete um teste baseado em preparação","Linha do Tempo|reconstrói a sequência de eventos; pergunta ordem, local ou autoria","Triagem Rápida|descobre qual perigo é o mais urgente para aliado ou vítima","Estudo Prévio|1×/cena: pesquisou local ou ameaça; benefício no 1º teste"]),
+10:L(["Revelação|estabelece uma conclusão forte baseada nas pistas","Equipe Afinada|1×/cena: aliados ganham benefício baseado em perícia sua","Plano Perfeito|prepara uma contingência antes de cena importante","Caso Fechado|1×/cena: com 3 pistas ligadas, aliados ganham benefício contra a ameaça","Rede de Apoio|1×/cena: aciona contato ou recurso externo plausível","Plano de Evacuação|1×/cena: conduz o grupo para fora; aliados ganham benefício pra escapar"])},
+br:B([["Investigador","transforma uma pista vaga numa direção concreta",0,1],["Coordenador","aliado ganha benefício ao seguir sua instrução",1,2],["Investigação Metódica","declara o que levou: benefício no 1º teste de Inspecionar ou Percepção ali",0,2]])},
+{n:"Vigilante",pv:5,fx:"Percepção",x:3,sug:["Acrobacia","Atletismo","Furtividade","Pontaria","Intuição"],ini:"Reflexo|1×/cena: reage na hora a uma mudança repentina, se fisicamente plausível",paths:["Mobilidade","Adaptação","Controle"],
+ab:{
+2:L(["Esquiva|reposiciona-se ao perceber ameaça antes do impacto","Sangue-Frio|benefício em testes sob pressão de tempo ou ameaça imediata","Armadilha|prepara armadilhas simples com materiais disponíveis","Rolar com o Golpe|reduz pequena consequência de queda ou impacto","Aprender com o Erro|ao falhar, benefício no próximo teste até o fim da cena","Rastro Falso|deixa pistas falsas simples com materiais disponíveis"]),
+4:L(["Movimento Tático|reposicionar não gera penalidade de mobilidade","Mudança de Plano|1×/cena: após falha, outra abordagem e repete o teste com outra perícia","Observador|identifica entradas, saídas e cobertura após estudar a área","Pulo Improvável|vence obstáculos de altura ou vão plausíveis sem teste","Aguentar o Tranco|1×/cena: ignora pequena consequência física de ataque","Ponto Cego|descobre pontos cegos de uma área; benefício em Furtividade ali"]),
+6:L(["Contra-Ataque|após evitar ameaça, benefício no próximo ataque contra o agressor","Alerta Compartilhado|aliados próximos ganham benefício pra reagir a ameaça que você percebeu","Preparar Terreno|aliados ganham benefício dentro de área preparada","Interceptar|1×/cena: entra no caminho de um ataque e protege aliado próximo","Posição Defensiva|ao se defender, aliados próximos ganham benefício contra ataques","Emboscada|benefício no 1º ataque contra alvo que não percebeu você"]),
+10:L(["Fantasma|some da atenção imediata se houver oportunidade plausível","Sempre um Passo à Frente|1×/cena: age antes de qualquer outra ação da cena","Mestre do Terreno|transforma preparação ambiental em vantagem decisiva","Golpe e Fuga|1×/cena: ataca e sai da linha de ameaça sem consequência","Inabalável|1×/cena: ignora consequência que o tiraria da cena","Presa Encurralada|1×/cena: bloqueia rotas de fuga de alvo observado em área preparada"])},
+br:B([["Evasivo","1×/cena: consequência física grave vira moderada",0,1],["Predador","benefício para rastrear ou antecipar um alvo observado",2,1],["Passos Calculados","1×/cena: usa terreno preparado para se mover e reagir sem penalidade",0,2]])}
+];
+var ITEMS=[["Ferramentas e investigação",[["Lanterna",1],["Binóculos",1],["Gravador de voz",1],["Caderno de campo",1],["Kit de arrombamento",1],["Kit de evidências",2],["Câmera",2],["Corda e equipamento de escalada",2]]],["Tecnologia",[["Rádio comunicador",1],["Celular",1],["Scanner de frequências",1],["Notebook",2],["Kit de ferramentas eletrônicas",2],["Drone compacto",2]]],["Medicina e sobrevivência",[["Bandagens e curativos",1],["Sinalizadores",1],["Kit médico",2],["Kit de sobrevivência",2]]],["Proteção",[["Capacete",1],["Jaqueta reforçada",2],["Máscara de gás",2],["Colete de proteção",3]]],["Armas",[["Faca",1],["Pistola",1],["Bastão ou taco",2],["Machado de emergência",2],["Arma longa",3]]],["Transporte e volumosos",[["Mochila especializada",3],["Caixa de ferramentas",4],["Gerador portátil",4],["Escada dobrável",4]]]];
+
+var EL={sangue:["Sangue","M12 2C12 2 5 10 5 15a7 7 0 0014 0c0-5-7-13-7-13z"],morte:["Morte","M12 3a8 8 0 00-8 8c0 2.5 1.2 4.4 3 5.6V20h3v-2h4v2h3v-3.4c1.8-1.2 3-3.1 3-5.6a8 8 0 00-8-8zM9 14a2 2 0 110-4 2 2 0 010 4zm6 0a2 2 0 110-4 2 2 0 010 4z"],energia:["Energia","M13 2L4 14h6l-1 8 9-12h-6z"],conhecimento:["Conhecimento","M12 5C6 5 2 12 2 12s4 7 10 7 10-7 10-7-4-7-10-7zm0 11a4 4 0 110-8 4 4 0 010 8zm0-2.2a1.8 1.8 0 100-3.6 1.8 1.8 0 000 3.6z"]};
+var EIMG={sangue:"imagens/Sangue.webp",morte:"imagens/Morte.webp",energia:"imagens/Energia.webp",conhecimento:"imagens/Conhecimento.webp"};
+function embSvg(k){return'<svg class="emb" viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="'+EL[k][1]+'"/></svg>'}
+function emb(k){return'<span class="emb em" style="--m:url('+EIMG[k]+')"></span>'}
+document.addEventListener("error",function(e){var t=e.target;if(t&&t.classList&&t.classList.contains("eimg"))t.outerHTML=embSvg(t.dataset.k)},true);
+
+function el(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function clamp(v,a,b,d){v=parseInt(v,10);if(isNaN(v))v=d;return Math.max(a,Math.min(b,v))}
+function dieSvg(n){
+ var P={4:"12,3 22,20 2,20",8:"12,2 22,12 12,22 2,12",10:"12,1 21,10 12,23 3,10",12:"12,2 21.5,9 18,21 6,21 2.5,9",20:"12,2 20.5,7 20.5,17 12,22 3.5,17 3.5,7"},s;
+ if(n===6)s='<rect x="4" y="4" width="16" height="16" rx="3"/>';
+ else if(P[n])s='<polygon points="'+P[n]+'"/>';
+ else s='<circle cx="12" cy="12" r="9.5"/>';
+ return'<svg class="dz" viewBox="0 0 24 24" aria-hidden="true">'+s+'<text x="12" y="'+(n===4?16:14.6)+'" text-anchor="middle">'+n+'</text></svg>';
+}
+
+var TK="vtt-tema",ID=new URLSearchParams(location.search).get("id");
+if(!ID||!FICHAS.has(ID)){var l0=FICHAS.list();location.replace(l0.length?"ficha.html?id="+l0[0].id:"index.html");return}
+try{var th=JSON.parse(localStorage.getItem(TK));if(th){var rs=document.documentElement.style;if(+th.h>=0)rs.setProperty("--h",+th.h);if(th.glass)rs.setProperty("--glass",th.glass/100);if(th.blur>=0)rs.setProperty("--blur",th.blur+"px");document.documentElement.dataset.style=th.solid?"solid":"glass"}}catch(e){}
+var S=FICHAS.read(ID)||{};
+if(S.sys!=="ordem"){location.replace("ficha.html?id="+ID);return}
+
+function fix(){
+ S.sys="ordem";S.name=String(S.name||"Novo agente").slice(0,60);S.concept=String(S.concept||"").slice(0,120);
+ S.pi=clamp(S.pi,-1,PRO.length-1,-1);S.oi=clamp(S.oi,-1,ORG.length-1,-1);S.lvl=clamp(S.lvl,1,10,1);
+ if(!Array.isArray(S.at)||S.at.length!==3)S.at=[1,1,1];
+ S.at=S.at.map(function(v){return clamp(v,0,4,1)});
+ var names=SK.map(function(k){return k[0]}),sk={};
+ SK.forEach(function(k){var v=S.sk&&S.sk[k[0]];if(v)sk[k[0]]=clamp(v,0,4,0)});S.sk=sk;
+ S.pick=(Array.isArray(S.pick)?S.pick:[]).filter(function(n){return names.indexOf(n)>-1}).slice(0,3);
+ S.free=(Array.isArray(S.free)?S.free:[]).map(function(n){return names.indexOf(n)>-1?n:""}).slice(0,6);
+ S.apt=String(S.apt||"").slice(0,30);
+ var abc={};[2,4,6,8,10].forEach(function(l){if(S.abc&&S.abc[l]!==undefined&&S.abc[l]!==null)abc[l]=clamp(S.abc[l],0,l===8?2:5,0)});S.abc=abc;
+ S.inv=(Array.isArray(S.inv)?S.inv:[]).slice(0,40).map(function(i){return{n:String(i&&i.n||"").slice(0,40),s:clamp(i&&i.s,1,6,1)}});
+  S.notes=String(S.notes||"").slice(0,20000);
+ S.el=EL[S.el]?S.el:"sangue";
+ if(!(typeof S.avatar==="string"&&S.avatar.length<400000&&/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(S.avatar)))delete S.avatar;
+}
+fix();
+
+function prof(){return S.pi>=0?PRO[S.pi]:null}
+function org(){return S.oi>=0?ORG[S.oi]:null}
+function attrLeft(){return 2+(S.lvl>=5?1:0)+(S.lvl>=9?1:0)-S.at.reduce(function(a,v){return a+v-1},0)}
+function extraLeft(){return(S.lvl>=3?1:0)+(S.lvl>=7?1:0)-Object.keys(S.sk).reduce(function(a,k){return a+S.sk[k]},0)}
+function trained(){
+ var o=org(),p=prof(),set={},rep=0;
+ function add(s){if(!s)return;if(set[s])rep++;else set[s]=1}
+ if(o)o.s.forEach(add);
+ if(p){add(p.fx);S.pick.slice(0,p.x).forEach(add)}
+ S.free.slice(0,rep).forEach(function(s){if(s&&!set[s])set[s]=1});
+ return{set:set,rep:rep};
+}
+function skDie(n){return STEPS[Math.min(4,(trained().set[n]?1:0)+(S.sk[n]||0))]}
+function pvMax(){var p=prof();return STEPS[S.at[0]]+(p?p.pv:0)}
+function pdMax(){return STEPS[S.at[1]]+STEPS[S.at[2]]}
+function cap(){return STEPS[S.at[0]]+2}
+function used(){return S.inv.reduce(function(a,i){return a+i.s},0)}
+function pathsOf(l,i){var p=prof();return l===8?[p.br[i].a,p.br[i].b]:[i%3]}
+function allowed(l,i){
+ if(!prof())return false;
+ if(l===2||l===4)return true;
+ var ps=pathsOf(l,i),ch=[];
+ [2,4,6,8,10].forEach(function(x){if(x!==l&&x<=S.lvl&&S.abc[x]!==undefined)ch.push(pathsOf(x,S.abc[x]))});
+ return ch.some(function(c){return c.some(function(x){return ps.indexOf(x)>-1})});
+}
+
+var last="",log=[];
+function rnd(n){return 1+Math.floor(Math.random()*n)}
+function rollDice(name,parts){
+ var tot=0,det=parts.map(function(p){var r=rnd(p.d);tot+=r;return"d"+p.d+" ["+r+"]"}).join(" + ");
+ last='<strong>'+tot+'</strong><small>'+esc(name)+': '+esc(det)+'</small>';
+ log.unshift(name+": "+tot+" · "+det);log=log.slice(0,8);render();
+}
+
+function proj(){
+ var p=prof(),o=org();
+ S.info=[(p?p.n:"Sem profile")+" · "+(o?o.n:"sem origem")+" · Nível "+S.lvl];
+ S.attrs=AT.map(function(n,i){return{n:n,v:STEPS[S.at[i]],f:"1d"+STEPS[S.at[i]]}});
+ S.per=SK.map(function(k){return{n:k[0]==="Aptidão"&&S.apt?"Aptidão ("+S.apt+")":k[0],b:"1d"+skDie(k[0]),at:AT[k[1]]}});
+ S.bars=[{n:"PV",c:S.pvc,m:pvMax(),col:"#d93b4f"},{n:"PD",c:S.pdc,m:pdMax(),col:"#2f7df0"}];
+ S.marks=[];S.skills=[];
+}
+function persist(){proj();if(!FICHAS.write(ID,S)&&!persist.w){persist.w=1;alert("O navegador está sem espaço para salvar. Exporte a ficha.")}}
+function commit(){
+ if(attrLeft()<0)S.at=[1,1,1];
+ if(extraLeft()<0)S.sk={};
+ S.pvc=clamp(S.pvc,0,pvMax(),pvMax());S.pdc=clamp(S.pdc,0,pdMax(),pdMax());
+ persist();render();
+}
+
+function so(arr,cur,ph){return'<option value="-1">'+ph+'</option>'+arr.map(function(a,i){return'<option value="'+i+'"'+(i===cur?" selected":"")+'>'+esc(a.n)+'</option>'}).join("")}
+function bar(lbl,key,c,m,col){var p=m>0?Math.max(0,Math.min(1,c/m)):0;return'<div class="lbl">'+lbl+'</div><div class="bar" style="--c:'+col+'"><button data-b="'+key+'" data-d="-1" aria-label="Diminuir">−</button><div><i style="transform:scaleX('+(1-p)+')"></i><span>'+c+'/'+m+'</span></div><button data-b="'+key+'" data-d="1" aria-label="Aumentar">+</button></div>'}
+function step(k,i,dn,up){return'<button class="step" data-'+k+'="'+i+'" data-dir="-1"'+(dn?"":" disabled")+' aria-label="Diminuir">−</button><button class="step" data-'+k+'="'+i+'" data-dir="1"'+(up?"":" disabled")+' aria-label="Aumentar">+</button>'}
+function ab(n,t){return'<div class="ab"><b>'+esc(n)+'</b><small>'+esc(t)+'</small></div>'}
+
+function c1(){
+ var pvm=pvMax(),pdm=pdMax(),c=cap(),u=used(),h;
+ S.pvc=clamp(S.pvc,0,pvm,pvm);S.pdc=clamp(S.pdc,0,pdm,pdm);
+  h='<div class="mod glass">'+foto()+'<input class="name" data-k="name" value="'+esc(S.name)+'" aria-label="Nome do agente">'+
+ '<input data-k="concept" value="'+esc(S.concept)+'" placeholder="Conceito (quem é, motivação…)" aria-label="Conceito" style="margin-top:6px">'+
+ '<div class="row" style="margin-top:10px"><label>Profile</label><select data-s="pi" style="width:62%">'+so(PRO,S.pi,"Escolha…")+'</select></div>'+
+ '<div class="row"><label>Origem</label><select data-s="oi" style="width:62%">'+so(ORG,S.oi,"Escolha…")+'</select></div>'+
+ '<div class="row"><label>Nível</label><select data-s="lvl" style="width:62%">'+[1,2,3,4,5,6,7,8,9,10].map(function(n){return'<option'+(n===S.lvl?" selected":"")+'>'+n+'</option>'}).join("")+'</select></div></div>';
+ h+='<div class="mod glass"><div class="head"><h2>Recursos</h2></div>'+bar("PV (Físico + base do Profile)","pvc",S.pvc,pvm,"#d93b4f")+bar("PD (Mente + Emoção)","pdc",S.pdc,pdm,"#2f7df0")+'</div>';
+ h+='<div class="mod glass"><div class="head"><h2>Inventário</h2><span class="muted" style="color:'+(u>c?"#ff8b8b":"var(--muted)")+'">'+u+'/'+c+' espaços</span></div>';
+ S.inv.forEach(function(it,i){h+='<div class="row"><span style="flex:1">'+esc(it.n)+'</span><span class="muted">'+it.s+'</span><button class="x" data-ir="'+i+'" aria-label="Remover">×</button></div>'});
+ h+='<div class="row"><select id="cat" style="flex:1">'+ITEMS.map(function(g,gi){return'<optgroup label="'+g[0]+'">'+g[1].map(function(it,ii){return'<option value="'+gi+'-'+ii+'">'+it[0]+' ('+it[1]+')</option>'}).join("")+'</optgroup>'}).join("")+'</select><button class="btn" data-add="cat">+</button></div>'+
+ '<div class="row"><input id="in" placeholder="Item personalizado" maxlength="40"><input id="is" type="number" min="1" max="6" value="1" style="width:64px"><button class="btn" data-add="cus">+</button></div></div>';
+ return h;
+}
+function fopts(cur,set){return'<option value="">Escolha…</option>'+SK.filter(function(k){return!set[k[0]]||k[0]===cur}).map(function(k){return'<option'+(k[0]===cur?" selected":"")+'>'+k[0]+'</option>'}).join("")}
+function init(){
+ var p=prof(),o=org();
+ if(!p||!o)return'<p class="hint">Escolha Profile e Origem para definir as perícias iniciais.</p>';
+ var t=trained(),base={};
+ o.s.forEach(function(n){base[n]=1});base[p.fx]=1;
+ var pending=S.pick.length<p.x||(t.rep>0&&S.free.filter(Boolean).length<t.rep);
+ var h='<details class="ini"'+(pending?" open":"")+'><summary>Perícias iniciais</summary><p class="hint">Origem: '+o.s.join(", ")+' · Profile: '+p.fx+'. Escolha '+p.x+' perícias quaisquer (★ = sugeridas pelo Profile). Se escolher uma que já veio da Origem ou do Profile, ela vira uma escolha livre.</p><div class="chk">';
+ SK.forEach(function(k){
+  var n=k[0];
+  h+='<label><input type="checkbox" data-pk="'+esc(n)+'"'+(S.pick.indexOf(n)>-1?" checked":"")+'> '+(p.sug.indexOf(n)>-1?"★ ":"")+n+(base[n]?' <small class="muted">(já treinada)</small>':'')+'</label>';
+ });
+ h+='</div>';
+ if(t.rep>0){h+='<p class="hint">Perícia repetida: escolha '+t.rep+' no lugar.</p>';for(var i=0;i<t.rep;i++)h+='<select data-fr="'+i+'" style="margin-bottom:6px">'+fopts(S.free[i],t.set)+'</select>'}
+ return h+'</details>';
+}
+function c2(){
+ var left=attrLeft(),ex=extraLeft(),t=trained(),lows=S.at.filter(function(v){return v===0}).length,h='<div class="mod glass"><div class="head"><h2>Atributos</h2><span class="muted">'+left+' aumento'+(left===1?"":"s")+'</span></div>'; AT.forEach(function(n,i){h+='<div class="dr"><button class="dzb" data-ra="'+i+'" aria-label="Rolar '+n+'">'+dieSvg(STEPS[S.at[i]])+'</button><div class="nm">'+n+'<small>toque no dado pra rolar</small></div>'+step("ad",i,S.at[i]>1||(S.at[i]===1&&lows<MAXLOW),left>0&&S.at[i]<4)+'</div>'});
+ h+='</div><div class="mod glass"><div class="head"><h2>Perícias</h2><span class="muted">'+ex+' treino'+(ex===1?"":"s")+' extra</span></div>'+init();
+ AT.forEach(function(an,ai){
+  h+='<div class="sec">'+an+'</div>';
+  SK.forEach(function(k,ki){
+   if(k[1]!==ai)return;
+   var nm=k[0],tr=t.set[nm],e=S.sk[nm]||0;
+   h+='<div class="dr'+(tr?" tr":"")+'"><button class="dzb" data-rs="'+ki+'" aria-label="Rolar '+nm+'">'+dieSvg(skDie(nm))+'</button><div class="nm">'+nm+(nm==="Aptidão"?' <input data-k="apt" value="'+esc(S.apt)+'" placeholder="campo" maxlength="30" style="width:96px;padding:3px 6px;font-size:.8rem">':'')+'<small>'+(tr?"treinada":"não treinada")+(e?" · +"+e+" extra":"")+'</small></div>'+step("sd",ki,e>0,ex>0&&e<4-(tr?1:0))+'</div>';
+  });
+ });
+ return h+'</div>';
+}
+function c3(){
+ var p=prof(),o=org(),h='<div class="mod glass"><div class="head"><h2>Rolagem</h2></div><div class="result" style="display:'+(last?"block":"none")+'">'+last+'</div><div class="log">'+log.map(function(l){return'<div>'+esc(l)+'</div>'}).join("")+'</div>'+(last?'':'<p class="hint">Toque num dado de atributo ou perícia. A perícia rola o dado do atributo + o dado da perícia.</p>')+'</div>';
+ h+='<div class="mod glass"><div class="head"><h2>Habilidades</h2></div>';
+ if(p){var q=p.ini.split("|");h+=ab(q[0]+" (inicial)",q[1])}else h+='<p class="hint">Escolha um Profile.</p>';
+ if(o)h+=ab(o.an+" ("+o.n+")",o.at);
+ if(p)[2,4,6,8,10].forEach(function(l){
+  if(l>S.lvl)return;
+  var arr=l===8?p.br:p.ab[l],cur=S.abc[l];
+  h+='<div class="sec">Nível '+l+(l===8?" · ponte":"")+'</div><select data-al="'+l+'"><option value="-1">Escolha…</option>'+arr.map(function(a,i){
+   var pa=l===8?" ("+p.paths[a.a]+" + "+p.paths[a.b]+")":" ("+p.paths[i%3]+")";
+   return'<option value="'+i+'"'+(i===cur?" selected":"")+(allowed(l,i)||i===cur?"":" disabled")+'>'+esc(a.n)+pa+'</option>';
+  }).join("")+'</select>'+(cur!==undefined?ab(arr[cur].n,arr[cur].t):"");
+ });
+ return h+'</div><div class="mod glass"><div class="head"><h2>Anotações</h2></div><textarea data-k="notes" placeholder="Relações, objetivos, história…" aria-label="Anotações">'+esc(S.notes)+'</textarea></div>';
+}
+function foto(){
+ return'<div class="foto"><button type="button" data-foto="1" aria-label="Trocar foto do personagem">'+(S.avatar?'<img src="'+esc(S.avatar)+'" alt="Foto do personagem">':'<span>FOTO<br><small>toque para adicionar</small></span>')+'</button>'+(S.avatar?'<button type="button" class="fx" data-fotox="1">remover foto</button>':'')+'</div>';
+}
+function theme(){
+ var p=prof(),o=org(),e=S.el;
+ document.documentElement.dataset.el=e;
+ el("dossie").innerHTML=emb(e)+'<div><small>Dossiê de agente // Ordem Paranormal</small><h1>'+esc(S.name)+'</h1><small>'+esc((p?p.n:"sem profile")+" · "+(o?o.n:"sem origem")+" · nível "+S.lvl+" · "+EL[e][0])+'</small></div><span class="stamp">CONFIDENCIAL</span>';
+ el("els").innerHTML=Object.keys(EL).map(function(k){return'<button type="button" data-el="'+k+'" class="'+(k===e?"on":"")+'" title="'+EL[k][0]+'" aria-label="Elemento '+EL[k][0]+'">'+emb(k)+'<b>'+EL[k][0]+'</b></button>'}).join("");
+}
+function render(){el("c1").innerHTML=c1();el("c2").innerHTML=c2();el("c3").innerHTML=c3();theme()}
+
+document.addEventListener("click",function(e){
+ var t=e.target.closest("button");if(!t)return;
+ var d=t.dataset,i;
+  if(d.el){if(EL[d.el]){S.el=d.el;commit()}}
+ else if(d.foto){el("fotof").click()}
+ else if(d.fotox){delete S.avatar;commit()}
+ else if(d.ra!==undefined){i=+d.ra;rollDice(AT[i],[{d:STEPS[S.at[i]]}])}
+ else if(d.rs!==undefined){var k=SK[+d.rs];rollDice(k[0],[{d:STEPS[S.at[k[1]]]},{d:skDie(k[0])}])}
+ else if(d.ad!==undefined){i=+d.ad;var nv0=clamp(S.at[i]+ +d.dir,0,4,1),lows=S.at.filter(function(v,j){return(j===i?nv0:v)===0}).length;if(lows>MAXLOW)return;S.at[i]=nv0;commit()} else if(d.sd!==undefined){
+  var nm=SK[+d.sd][0],tr=trained().set[nm]?1:0,nv=(S.sk[nm]||0)+ +d.dir;
+  if(nv<0||nv>4-tr)return;
+  if(nv)S.sk[nm]=nv;else delete S.sk[nm];
+  commit();
+ }
+ else if(d.b){S[d.b]=clamp(S[d.b]+ +d.d,0,999,0);commit()}
+ else if(d.ir!==undefined){S.inv.splice(+d.ir,1);commit()}
+ else if(d.add==="cat"){var v=el("cat").value.split("-"),it=ITEMS[+v[0]]&&ITEMS[+v[0]][1][+v[1]];if(it&&S.inv.length<40){S.inv.push({n:it[0],s:it[1]});commit()}}
+ else if(d.add==="cus"){var n=el("in").value.trim().slice(0,40);if(n&&S.inv.length<40){S.inv.push({n:n,s:clamp(el("is").value,1,6,1)});commit()}}
+});
+document.addEventListener("input",function(e){
+ var t=e.target,d=t.dataset;
+  if(d.k){S[d.k]=t.value.slice(0,d.k==="notes"?20000:d.k==="name"?60:d.k==="apt"?30:120);persist();if(d.k==="name"){var h1=document.querySelector(".dossie h1");if(h1)h1.textContent=S.name}}
+});
+document.addEventListener("change",function(e){
+ var t=e.target,d=t.dataset,v=t.value;
+ if(d.s){
+  S[d.s]=+v;
+  if(d.s==="pi"){S.pick=[];S.free=[];S.abc={}}
+  if(d.s==="oi")S.free=[];
+  commit();
+ }else if(d.pk){
+  var p=prof(),ix=S.pick.indexOf(d.pk);
+  if(t.checked&&ix<0){if(S.pick.length<p.x)S.pick.push(d.pk)}else if(!t.checked&&ix>-1)S.pick.splice(ix,1);
+  commit();
+ }else if(d.fr!==undefined){S.free[+d.fr]=v;commit()}
+ else if(d.al){if(+v<0)delete S.abc[d.al];else S.abc[d.al]=+v;commit()}
+});
+el("exp").onclick=function(){
+ var b=new Blob([JSON.stringify(S,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(b);a.download=(S.name||"ficha").replace(/[^\w-]+/g,"_")+"_ordem.json";
+ document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},500);
+};
+el("imp").onclick=function(){el("impf").click()};
+el("impf").onchange=function(){
+ var f=this.files[0];this.value="";if(!f||f.size>1500000)return;
+ var rd=new FileReader();
+ rd.onload=function(){
+  var o=null;try{o=JSON.parse(rd.result)}catch(e){}
+  if(!o||o.sys!=="ordem"){alert("Arquivo inválido. Use uma ficha de Ordem exportada por esta página.");return}
+  if(!confirm("Substituir a ficha atual por \""+String(o.name||"").slice(0,40)+"\"?"))return;
+  S=o;fix();commit();
+ };
+ rd.readAsText(f);
+};
+el("fotof").onchange=function(){
+ var f=this.files[0];this.value="";
+ if(!f||!/^image\//.test(f.type))return;
+ var url=URL.createObjectURL(f),im=new Image();
+ im.onload=function(){
+  var w0=256,h0=320,c=document.createElement("canvas");c.width=w0;c.height=h0;
+  var r=Math.max(w0/im.width,h0/im.height),w=im.width*r,h=im.height*r;
+  c.getContext("2d").drawImage(im,(w0-w)/2,(h0-h)/2,w,h);
+  URL.revokeObjectURL(url);
+  S.avatar=c.toDataURL("image/webp",.82);commit();
+ };
+ im.onerror=function(){URL.revokeObjectURL(url)};
+ im.src=url;
+};
+
+commit();
+})();
+</script>
+</body>
+</html>
