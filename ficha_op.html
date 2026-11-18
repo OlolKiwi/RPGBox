@@ -1054,6 +1054,7 @@ function itForm(){
 function c1(){
  var c=C(),h='<div class="mod glass"><div class="foto"><button type="button" data-foto="1" aria-label="Trocar foto">'+(S.avatar?'<img src="'+esc(S.avatar)+'" alt="Foto do personagem">':'<span>FOTO</span>')+'</button>'+(S.avatar?'<button type="button" class="fx" data-fotox="1">remover foto</button>':'')+'</div>'+
  '<input class="name" data-k="name" value="'+esc(S.name)+'" aria-label="Nome">'+
+  '<div class="row" style="margin-top:10px"><label>Classe</label><select data-s="cl" style="width:60%">'+opt(CL.map(function(x){return x.n}),S.cl,"Escolha…")+'</select></div>'+
  '<div class="row"><label>'+(S.useNivel?'Nível':'NEX')+'</label><select data-s="'+(S.useNivel?'nivel':'nx')+'" style="width:60%">'+NX.map(function(n,i){var cur=S.useNivel?S.nivel:S.nx;return'<option value="'+i+'"'+(i===cur?" selected":"")+'>'+(S.useNivel?(i+1):n+'%')+'</option>'}).join("")+'</select></div>'+
 (S.useNivel?'<div class="row"><label>NEX (exposição)</label><input class="xb" type="number" min="0" max="99" data-n="nexp" value="'+S.nexp+'"></div>':'')+
 '<div class="row" style="flex-wrap:wrap"><label style="white-space:normal"><input type="checkbox" data-k="useNivel" '+(S.useNivel?"checked":"")+'> Usar Nível (NEX separado)</label></div>'+
