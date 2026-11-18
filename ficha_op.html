@@ -983,7 +983,7 @@ function fix(){
  S.prot=cl(S.prot,0,99,0);S.defx=cl(S.defx,-99,99,0);S.esquivax=cl(S.esquivax,-99,99,0);S.cx=cl(S.cx,-50,50,0);S.desl=T(S.desl||"9m",20);S.usePD=!!S.usePD;S.useNivel=!!S.useNivel;S.nivel=cl(S.nivel,0,NX.length-1,0);S.pd=cl(S.pd,0,9999,0);S.nexp=cl(S.nexp==null?NX[S.nx]:S.nexp,0,99,0);
  S.inv=(Array.isArray(S.inv)?S.inv:[]).slice(0,40).map(function(i){var sp=parseFloat(i&&i.s);return{n:T(i&&i.n,60),s:isNaN(sp)?1:Math.max(0,Math.min(10,sp)),t:T(i&&i.t,4000)}});
  S.pod=T(S.pod,6000);S.rit=T(S.rit,6000);S.notes=T(S.notes,20000);S.poderNovo=T(S.poderNovo,80);S.poderNovoDesc=T(S.poderNovoDesc,2000);
-  S.rl=(Array.isArray(S.rl)?S.rl:[]).slice(0,40).map(function(r){return{n:T(r&&r.n,60),e:T(r&&r.e,20),t:T(r&&r.t,100)}});
+  S.rl=(Array.isArray(S.rl)?S.rl:[]).slice(0,40).map(function(r){return{n:T(r&&r.n,60),e:T(r&&r.e,20),t:T(r&&r.t,4000)}});
  if(!(typeof S.avatar==="string"&&S.avatar.length<400000&&/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/.test(S.avatar)))delete S.avatar;
 }
 fix();
@@ -993,13 +993,13 @@ function lvIdx(){return S.useNivel?S.nivel:S.nx}   // competência
 function cnex(){return NX[lvIdx()]}                 // equivalente em NEX (5..99)
 function nex(){return S.useNivel?S.nexp:NX[S.nx]}   // exposição paranormal
 function nivelIdx(){return lvIdx()}
-function pvExtra(){var b=0,n=Math.floor(cnex()/5);/* resto igual */}
-function pvM(){var c=C();return c?c.pv+S.at[4]+lvIdx()*(c.pl+S.at[4])+(S.pvx||0):0}
-function peM(){var c=C();return c?c.pe+S.at[3]+lvIdx()(S.pex||0):0}
-function snM(){var c=C();return c?c.sn+lvIdx()*(S.pex||0):0}
-function pdM(){var c=C();return c?PDC[S.cl].b+S.at[3]+lvIdx()*(S.pex||0):0}
-function pts(){var z=S.at.some(function(v){return v===0});return 4+[20,50,80,95].filter(function(x){return nex()>=x}).length+(z?1:0)-S.at.reduce(function(a,v){return a+Math.max(0,v-1)},0)}
-function gmax(){return nex()>=70?3:nex()>=35?2:1}
+function pvExtra(){var b=0,n=Math.floor(cnex()/5);if(oname()==="Desgarrado")b+=n;if(S.tri==="Tropa de Choque"||S.tri2==="Tropa de Choque")b+=n;return b}
+function pvM(){var c=C();return c?c.pv+S.at[4]+lvIdx()*(c.pl+S.at[4])+pvExtra()+(S.pvx||0):0}
+function peM(){var c=C();return c?c.pe+S.at[3]+lvIdx()*(c.el+S.at[3])+(S.pex||0):0}
+function snM(){var c=C();return c?c.sn+lvIdx()*c.sl+(S.snx||0):0}
+function pdM(){var c=C();return c?PDC[S.cl].b+S.at[3]+lvIdx()*(PDC[S.cl].i+S.at[3])+(S.pdx||0):0}
+function pts(){var z=S.at.some(function(v){return v===0});return 4+[20,50,80,95].filter(function(x){return cnex()>=x}).length+(z?1:0)-S.at.reduce(function(a,v){return a+Math.max(0,v-1)},0)}
+function gmax(){return cnex()>=70?3:cnex()>=35?2:1}
 function bon(n){return GB[eg(n)]+(S.xb[n]||0)}
 function defesa(){return 10+S.at[0]+S.defx}
 function esquiva(){return defesa()+bon("Reflexos")+(S.esquivax||0)}
@@ -1068,12 +1068,12 @@ function c1(){
  '<div class="row"><span class="nm">Bônus PV máx.</span><input class="xb" type="number" data-n="pvx" value="'+(S.pvx||0)+'"></div>'+
 (S.usePD?'<div class="row"><span class="nm">Bônus PD máx.</span><input class="xb" type="number" data-n="pdx" value="'+(S.pdx||0)+'"></div>':'<div class="row"><span class="nm">Bônus PE máx.</span><input class="xb" type="number" data-n="pex" value="'+(S.pex||0)+'"></div><div class="row"><span class="nm">Bônus SAN máx.</span><input class="xb" type="number" data-n="snx" value="'+(S.snx||0)+'"></div>')+
  (st.length?'<div class="chips">'+st.map(function(x){return'<span class="chip2">'+x+'</span>'}).join("")+'</div>':'')+
- '<div class="row" style="flex-wrap:wrap"><label style="white-space:normal"><input type="checkbox" data-k="usePD" '+(S.usePD?"checked":"")+'> Usar PD (PE+SAN combinados)</label></div>'+
+ '<div class="row" style="flex-wrap:wrap"><label style="white-space:normal"><input type="checkbox" data-k="usePD" '+(S.usePD?"checked":"")+'> Usar PD (substitui PE e SAN)</label></div>'+
  '<div class="row"><span class="nm">Defesa (10 + Agi + bônus)</span><b>'+defesa()+'</b><input class="xb" type="number" data-n="defx" value="'+S.defx+'" aria-label="Bônus de defesa"></div>'+
  '<div class="row"><span class="nm">Esquiva (Defesa + Reflexos + bônus)</span><b>'+esquiva()+'</b><input class="xb" type="number" data-n="esquivax" value="'+(S.esquivax||0)+'" aria-label="Bônus de esquiva"></div>'+
  '<div class="row"><span class="nm">Proteção (RD)</span><input class="xb" type="number" data-n="prot" value="'+S.prot+'" aria-label="Proteção"></div>'+
  '<div class="row"><span class="nm">Deslocamento</span><input class="xb" data-k="desl" value="'+esc(S.desl)+'" maxlength="20" aria-label="Deslocamento"></div>'+
- '<div class="row"><span class="nm">'+(S.usePD?'Limite de PD':'Limite de PE')+' por turno</span><b>'+lvIdx()+1.+'</b></div></div>';
+ '<div class="row"><span class="nm">'+(S.usePD?'Limite de PD':'Limite de PE')+' por turno</span><b>'+(lvIdx()+1)+'</b></div></div>';
  var cp=cap(),u=used();
  h+='<div class="mod glass"><div class="head"><h2>Inventário</h2><span class="muted" style="color:'+(u>cp?"#ff8b8b":"var(--muted)")+'">'+u+'/'+cp+' espaços</span></div>';
  S.inv.forEach(function(it,i){var isKat=String(it.n||"").toLowerCase().indexOf("katana")>-1;var nm=isKat?'<button type="button" class="rn" data-kat="'+i+'" style="background:none;border:0;padding:0;color:inherit;font:inherit;font-weight:700;text-decoration:underline;cursor:pointer">'+esc(it.n)+'</button>':esc(it.n);h+='<div class="info-item" style="margin:4px 0"><div class="info-row"><span class="info-name">'+nm+'</span><span class="muted">'+it.s+'</span><button type="button" class="info-btn" data-info="1" aria-expanded="false">Descrição</button><button class="x" data-ir="'+i+'" aria-label="Remover">×</button></div><div class="info-panel">'+esc(it.t||"Sem descrição cadastrada.")+'<div style="margin-top:8px"><button type="button" class="btn" data-melh="'+i+'" style="width:100%;font-size:.85rem">＋ Melhoria</button></div></div></div>'});
@@ -1082,11 +1082,11 @@ function c1(){
  return h;
 }
 function c2(){
- var left=pts(),gm=gmax(),h='<div class="mod glass"><div class="head"><h2>Atributos</h2><span class="muted">'+left+' ponto'+(left===1?"":"s")+'</span></div>';
- AT.forEach(function(n,i){var v=S.at[i];h+='<div class="dr"><div class="nm">'+n+'<small>'+(v>0?v+"d20, fica com o maior":"2d20, fica com o pior")+'</small></div>'+stp("ad",i,v>0,left>0&&v<100)+'<span class="muted" style="color:'+(left<0?"#ff8b8b":"var(--muted)")+'">'+left+' ponto'+(left===1?"":"s")+'</span>'+'<b>'+v+'</b><button class="rb" data-ra="'+i+'" aria-label="Rolar '+n+'">'+AB[i]+'</button></div>'});
+ var left=pts(),gm=gmax(),h='<div class="mod glass"><div class="head"><h2>Atributos</h2></div>';
+ AT.forEach(function(n,i){var v=S.at[i];h+='<div class="dr"><div class="nm">'+n+'<small>'+(v>0?v+"d20, fica com o maior":"2d20, fica com o pior")+'</small></div>'+stp("ad",i,v>0,v<100)+'<span class="muted" style="color:'+(left<0?"#ff8b8b":"var(--muted)")+'">'+left+' ponto'+(left===1?"":"s")+'</span>'+'<b>'+v+'</b><button class="rb" data-ra="'+i+'" aria-label="Rolar '+n+'">'+AB[i]+'</button></div>'});
  h+='<p class="hint">Na criação: máximo 3 por atributo. Reduzir um atributo a 0 dá +1 ponto. Aumentos em NEX 20%, 50%, 80% e 95%.</p></div>';
  var tn=SK.filter(function(k){return eg(k[0])>0&&!ofl(k[0])}).length,c=C();
- h+='<div class="mod glass"><div class="head"><h2>Perícias</h2><span class="muted">'+tn+(c?"/"+(c.tr+S.at[2]):"")+' treinadas</span></div>';
+ h+='<div class="mod glass"><div class="head"><h2>Perícias</h2<span class="muted" style="color:'+(left<0?"#ff8b8b":"var(--muted)")+'">'+left+' ponto'+(left===1?"":"s")+'</span></div>';
  SK.forEach(function(k){
   var n=k[0],g=eg(n),a=S.at[k[1]],b=bon(n);
   h+='<div class="dr'+(g?" tr":"")+'"><div class="nm">'+n+'<small>'+AB[k[1]]+' · '+GR[g]+(ofl(n)?' · origem':'')+'</small></div><input class="xb" type="number" data-xb="'+esc(n)+'" value="'+(S.xb[n]||0)+'" title="Bônus extra" aria-label="Bônus extra de '+esc(n)+'">'+stp("gd",SK.indexOf(k),g>ofl(n),g<3)+'<button class="rb" data-rs="'+SK.indexOf(k)+'" aria-label="Rolar '+n+'">'+(a>0?a:2)+'d20'+(b?(b>0?"+":"")+b:"")+'</button></div>';
@@ -1104,7 +1104,7 @@ function c3(){
 function theme(){
  var c=C(),e=S.el,pv=pvM(),sn=snM(),st="Ativo",h=0,i;
  var sv=S.usePD?S.pd:S.snc,sm=S.usePD?pdM():sn;
- if(c){if(S.pvc<=0)st="Morrendo";else if(S.sv<=0)st="Enlouquecendo";else if(S.pvc<=pv/2)st="Machucado";else if(S.sv<=sm/2)st="Perturbado"}
+ if(c){if(S.pvc<=0)st="Morrendo";else if(sv<=0)st="Enlouquecendo";else if(S.pvc<=pv/2)st="Machucado";else if(sv<=sm/2)st="Perturbado"}
  for(i=0;i<ID.length;i++)h=(h*31+ID.charCodeAt(i))%10000;
  document.documentElement.dataset.el=e;
  el("clas").innerHTML='<span>Ordo Realitas // Dossiê de agente // Confidencial</span><span>Arquivo nº '+("0000"+h).slice(-4)+'</span><i class="bc"></i>';
@@ -1224,7 +1224,7 @@ else if(d.addpp){
   var inEl=el("in");if(!inEl)return;
   var nm=inEl.value.trim().slice(0,60);if(!nm)return;
   var it={n:nm,s:Math.max(0,Math.min(10,parseFloat(el("is").value)||0)),t:el("it").value.trim().slice(0,4000)};
-  if(S.inv.length<40){S.inv.push(it);commit()}
+  if(S.inv.length<40){S.inv.push(it);ci="";commit()}
  }
 });
 document.addEventListener("input",function(e){
