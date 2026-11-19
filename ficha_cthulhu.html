@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Investigador · Chamado de Cthulhu</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Special+Elite&display=swap" rel="stylesheet">
+<script src="fichas.js"></script>
+<style>
+:root{
+  --papel:#e8dbbd; --papel2:#dac8a0; --tinta:#1d1912; --tinta2:#51493a;
+  --verde:#3a5846; --sangue:#7b1f18; --ouro:#8f7332; --noite:#14110b;
+  --b:10px;
+  --serif:"IM Fell English","Iowan Old Style",Georgia,serif;
+  --sc:"IM Fell English SC","IM Fell English",Georgia,serif;
+  --tipo:"Special Elite","Courier New",monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;color:var(--tinta);font-family:var(--serif);font-size:17px;line-height:1.35;
+  background:#1b1812 radial-gradient(ellipse at 50% 0,#2b261b,#14110b 70%);
+  padding:max(14px,env(safe-area-inset-top)) 12px calc(120px + env(safe-area-inset-bottom));
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--sangue);outline-offset:2px}
+
+/* barra superior */
+.barra{max-width:1080px;margin:0 auto 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;color:var(--papel)}
+.barra a,.barra button,.barra select{
+  background:transparent;border:1px solid #8f7332;color:var(--papel);padding:6px 12px;border-radius:3px;
+  text-decoration:none;font-family:var(--sc);font-size:16px;
+}
+.barra select option{color:#000}
+.barra .esp{flex:1}
+.barra a:hover,.barra button:hover{background:#2a2419}
+
+/* folha de papel com moldura art déco */
+.folha{
+  position:relative;max-width:1080px;margin:0 auto;
+  padding:calc(var(--b) + 36px) calc(var(--b) + 30px) 40px;
+  background-color:var(--papel);
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35 0 0 0 0 .25 0 0 0 0 .1 0 0 0 .22 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  box-shadow:0 20px 60px #000a;
+}
+.folha::before{
+  content:"";position:absolute;inset:8px;padding:var(--b);border:2px solid var(--tinta);pointer-events:none;
+  background:
+    repeating-linear-gradient(45deg,var(--tinta) 0 1.4px,transparent 1.4px 7px),
+    repeating-linear-gradient(-45deg,var(--tinta) 0 1.4px,transparent 1.4px 7px);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.folha::after{
+  content:"";position:absolute;inset:calc(8px + 2px + var(--b));border:1.5px solid var(--tinta);pointer-events:none;
+}
+.sinal{position:absolute;width:44px;height:44px;background:var(--papel);padding:4px;z-index:1}
+.sinal svg{width:100%;height:100%;fill:none;stroke:var(--tinta);stroke-width:2.4;stroke-linejoin:round}
+.sinal.a{top:2px;left:2px}.sinal.b{top:2px;right:2px}.sinal.c{bottom:2px;left:2px}.sinal.d{bottom:2px;right:2px}
+
+/* título em aba */
+.titulo{text-align:center;margin:0 0 22px}
+.titulo h1{
+  display:inline-block;margin:0;padding:6px 34px 8px;font:400 clamp(24px,4.4vw,34px)/1.1 var(--serif);
+  border:2px solid var(--tinta);border-top:0;border-radius:0 0 18px 18px;background:var(--papel);
+}
+.titulo p{margin:8px 0 0;color:var(--tinta2);font-style:italic}
+
+h2{font:400 22px/1 var(--sc);margin:0 0 10px;letter-spacing:.02em}
+section{margin-top:26px}
+.cab{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;border-bottom:2px solid var(--tinta);padding-bottom:4px;margin-bottom:12px}
+.cab h2{margin:0}
+.cab small{color:var(--tinta2);font-style:italic}
+.cab .esp{flex:1}
+
+/* campos tipo máquina de escrever */
+input,textarea,select{font-family:var(--tipo);font-size:16px}
+input[type=text],input[type=number],textarea,select{
+  background:transparent;border:0;border-bottom:1.5px solid var(--tinta);border-radius:0;padding:3px 4px;width:100%;min-width:0;
+}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+textarea{border:1.5px solid var(--tinta);border-radius:8px;padding:8px 10px;min-height:92px;resize:vertical;line-height:1.4;background:#f5ecd433}
+input::placeholder,textarea::placeholder{color:#7a6e57;opacity:.8}
+.rot-btn,.mini{
+  background:var(--tinta);color:var(--papel);border:0;border-radius:3px;padding:4px 10px;font-family:var(--sc);font-size:15px;
+}
+.mini:hover,.rot-btn:hover{background:var(--sangue)}
+.mini.claro{background:transparent;color:var(--tinta);border:1.5px solid var(--tinta)}
+.mini.claro:hover{background:var(--tinta);color:var(--papel)}
+
+/* identificação */
+.ident{display:grid;grid-template-columns:1fr 190px;gap:22px;align-items:start}
+.campos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 22px}
+.campo label{display:block;font:400 15px var(--sc);color:var(--tinta2)}
+.retrato{
+  aspect-ratio:3/4;border:3px double var(--tinta);background:#cdb98d center/cover no-repeat;position:relative;
+  display:grid;place-items:center;text-align:center;padding:10px;cursor:pointer;font-style:italic;color:var(--tinta2);
+}
+.retrato input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.retrato.tem span{display:none}
+
+/* características: caixas triplas como na ficha impressa */
+.cars{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 18px}
+.car{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:8px}
+.rot{background:none;border:0;padding:0;text-align:left;line-height:1}
+.rot b{display:block;font:400 28px var(--serif)}
+.rot small{font-size:12px;color:var(--tinta2)}
+.rot:hover b{color:var(--sangue)}
+.tri{display:grid;grid-template-columns:1.25fr 1fr 1fr;border:2px solid var(--tinta);border-radius:12px;overflow:hidden;height:44px}
+.tri>*{display:grid;place-items:center;border-left:1.5px solid var(--tinta);font-family:var(--tipo);font-size:15px}
+.tri>*:first-child{border-left:0}
+.tri input{border:0;text-align:center;height:100%;font-size:19px;padding:0}
+.tri .sub,.sub{color:var(--tinta2)}
+
+/* derivados */
+.deriv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px 18px;margin-top:20px}
+.card{border:2px solid var(--tinta);border-radius:12px;padding:8px 12px 10px;background:#f1e6cb55}
+.card h3{margin:0 0 4px;font:400 17px var(--sc);display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.card h3 small{font:italic 13px var(--serif);color:var(--tinta2)}
+.cont{display:grid;grid-template-columns:34px 1fr 34px;gap:6px;align-items:center}
+.cont input{text-align:center;font-size:24px;border:0;border-bottom:0;padding:0}
+.cont button{height:34px;width:34px;border-radius:50%;border:1.5px solid var(--tinta);background:transparent;font-size:20px;line-height:1;padding:0}
+.cont button:hover{background:var(--tinta);color:var(--papel)}
+.valor{font:400 26px var(--tipo);text-align:center}
+.card .linha{display:flex;gap:6px;align-items:center;margin-top:6px;font-size:14px}
+.card .linha input{text-align:center;padding:2px}
+.card .acoes{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+.estados{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:18px}
+.estados label{display:flex;align-items:center;gap:7px;font-family:var(--sc);font-size:17px;cursor:pointer}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;width:20px;height:20px;border:2px solid var(--tinta);border-radius:3px;background:transparent;margin:0;display:inline-grid;place-items:center;cursor:pointer;flex:none}
+input[type=checkbox]:checked{background:var(--tinta)}
+input[type=checkbox]:checked::after{content:"";width:9px;height:5px;border-left:2.5px solid var(--papel);border-bottom:2.5px solid var(--papel);transform:rotate(-45deg) translate(1px,-1px)}
+
+/* perícias */
+.pontos{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center;font-family:var(--sc);font-size:17px}
+.pontos .pt-in{display:inline-flex;align-items:baseline;gap:4px}
+.pontos .pt-in input{width:52px;text-align:center}
+.pontos .estouro{color:var(--sangue)}
+.busca{max-width:260px}
+.lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 34px;margin-top:12px}
+.per{display:grid;grid-template-columns:20px minmax(0,1fr) 46px 46px 46px 38px 30px 30px;gap:5px;align-items:center;padding:3px 0;border-bottom:1px dotted #8a7d62}
+.per .nmw{display:flex;align-items:center;min-width:0}
+.per .nm{background:none;border:0;padding:0;text-align:left;min-width:0;font-size:17px;line-height:1.15}
+.per .nm small{display:block;font-size:12px;color:var(--tinta2);font-style:italic}
+.per .nm:hover{color:var(--sangue)}
+.per .x{background:none;border:0;color:var(--sangue);font-size:18px;padding:0 4px}
+.per input.pt{height:26px;padding:0;text-align:center;font-size:14px;border:1px solid #8a7d62;border-radius:4px;background:#f5ecd466}
+.per input.pt::placeholder{font-size:10px}
+.per .tot{font:400 18px var(--tipo);text-align:center}
+.per .sub{font:13px var(--tipo);text-align:center}
+.per.zero .nm{color:#5d5441}
+.per.oculta{display:none}
+.novo{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-top:14px}
+.novo select{width:auto;min-width:160px}
+.novo input[type=text]{width:200px}
+.legenda{font-size:14px;color:var(--tinta2);font-style:italic;margin:8px 0 0}
+
+/* combate */
+.rolagem{overflow-x:auto}
+.armas{width:100%;border-collapse:collapse;min-width:760px}
+.armas th{font:400 15px var(--sc);text-align:left;padding:0 6px 4px;border-bottom:2px solid var(--tinta);color:var(--tinta2)}
+.armas td{padding:4px 6px 2px;vertical-align:bottom}
+.armas td:last-child{white-space:nowrap}
+.armas select{font-size:15px}
+
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 22px}
+.cols .campo.larga{grid-column:1/-1}
+.cols .campo label{margin-bottom:3px}
+
+.rodape{margin-top:24px;font-size:14px;color:var(--tinta2);font-style:italic;text-align:center}
+
+/* bandeja de dados */
+#bandeja{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--noite);color:var(--papel);
+  border-top:2px solid var(--ouro);padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+}
+#bandeja .in{max-width:1080px;margin:0 auto}
+#bandeja .topo{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+#bandeja select,#bandeja input{background:#241f15;border:1px solid #5d5030;border-radius:3px;color:var(--papel);padding:5px 8px;width:auto}
+#bandeja input{width:130px}
+#bandeja .mini{background:var(--ouro);color:#14110b}
+#bandeja .mini:hover{background:#b8963f}
+#bandeja .ultimo{flex:1;min-width:200px;display:flex;align-items:center;gap:10px;justify-content:flex-end;text-align:right}
+.res{display:flex;align-items:baseline;gap:8px}
+.res .n{font:400 30px/1 var(--tipo)}
+.res .t{font:400 17px var(--sc)}
+.res .d{font-size:13px;opacity:.75;font-style:italic}
+.nv-crit .n,.nv-crit .t{color:#e6c35c}
+.nv-ext .n,.nv-ext .t{color:#9fd19b}
+.nv-dif .n,.nv-dif .t{color:#b6d4a2}
+.nv-ok .n,.nv-ok .t{color:#dfe3c0}
+.nv-fail .n,.nv-fail .t{color:#d79a8c}
+.nv-des .n,.nv-des .t{color:#ff6a58}
+#hist{display:none;max-height:34vh;overflow:auto;margin-top:8px;border-top:1px solid #3a3322;padding-top:6px}
+#hist.aberto{display:block}
+#hist .res{padding:3px 0;border-bottom:1px dotted #3a3322;flex-wrap:wrap}
+#hist .n{font-size:20px}
+#hist .r{flex:1;min-width:140px}
+@media (prefers-reduced-motion:no-preference){
+  .res.novo-res{animation:pulso .45s ease-out}
+  @keyframes pulso{from{transform:scale(1.08);opacity:.4}to{transform:none;opacity:1}}
+}
+
+@media (max-width:900px){
+  .cars{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .deriv{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lista{grid-template-columns:1fr}
+}
+@media (max-width:620px){
+  :root{--b:7px}
+  body{font-size:16px}
+  .folha{padding:calc(var(--b) + 30px) calc(var(--b) + 22px) 30px}
+  .sinal{width:34px;height:34px}
+  .ident{grid-template-columns:1fr}
+  .retrato{max-width:170px;aspect-ratio:3/4;order:-1;justify-self:center}
+  .campos,.cols{grid-template-columns:1fr}
+  .cars{grid-template-columns:1fr}
+  .per{
+    grid-template-columns:22px 1fr 1fr 1fr 40px 28px 28px;
+    grid-template-areas:"ck nm nm nm tot hf fi" ". o p e . . .";row-gap:4px;padding:5px 0;
+  }
+  .per>.ck{grid-area:ck}.per>.nmw{grid-area:nm}.per>.tot{grid-area:tot}.per>.hf{grid-area:hf}.per>.fi{grid-area:fi}
+  .per>.o{grid-area:o}.per>.p{grid-area:p}.per>.e{grid-area:e}
+  .per input.pt{height:32px;font-size:16px}
+  #bandeja .ultimo{justify-content:flex-start;text-align:left}
+}
+@media print{
+  body{background:#fff;padding:0}
+  .barra,#bandeja,.sinal,.mini,.cont button,.novo,.per .x{display:none!important}
+  .folha{box-shadow:none}
+}
+</style>
+</head>
+<body>
+
+<div class="barra">
+  <a href="index.html">‹ RPGBox</a>
+  <select id="era" aria-label="Época da campanha">
+    <option value="1920">Era de 1920</option>
+    <option value="moderna">Era Moderna</option>
+  </select>
+  <span class="esp"></span>
+  <button type="button" id="gerar">Rolar características</button>
+  <button type="button" id="exportar">Exportar</button>
+  <button type="button" id="importar">Importar</button>
+  <input type="file" id="arq" accept="application/json,.json" hidden>
+</div>
+
+<main class="folha" id="folha">
+  <div class="sinal a" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon id="s1" points="20,3 25,16 38,16 28,24 32,37 20,29 8,37 12,24 2,16 15,16"/></svg></div>
+  <div class="sinal b" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon points="20,3 25,16 38,16 28,24 32,37 20,29 8,37 12,24 2,16 15,16"/></svg></div>
+  <div class="sinal c" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon points="20,3 25,16 38,16 28,24 32,37 20,29 8,37 12,24 2,16 15,16"/></svg></div>
+  <div class="sinal d" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon points="20,3 25,16 38,16 28,24 32,37 20,29 8,37 12,24 2,16 15,16"/></svg></div>
+
+  <header class="titulo">
+    <h1 id="titulo">Investigador da Era de 1920</h1>
+    <p>Chamado de Cthulhu · 7ª edição</p>
+  </header>
+
+  <section class="ident" style="margin-top:0">
+    <div class="campos" id="campos"></div>
+    <label class="retrato" id="retrato"><span>Toque para<br>enviar o retrato</span><input type="file" id="foto" accept="image/*"></label>
+  </section>
+
+  <section>
+    <div class="cab"><h2>Características</h2><small>Toque no nome para testar. Caixas: valor, metade, um quinto.</small></div>
+    <div class="cars" id="cars"></div>
+    <div class="deriv" id="deriv"></div>
+    <div class="estados" id="estados"></div>
+  </section>
+
+  <section>
+    <div class="cab"><h2>Perícias</h2><span class="esp"></span>
+      <input type="text" id="busca" class="busca" placeholder="Buscar perícia" aria-label="Buscar perícia">
+    </div>
+    <div class="pontos" id="pontos"></div>
+    <div class="lista" id="lista"></div>
+    <div class="novo">
+      <div class="campo"><label for="famSel">Nova especialização</label>
+        <select id="famSel"></select></div>
+      <div class="campo"><label for="famNome">Nome</label>
+        <input type="text" id="famNome" placeholder="ex.: Pintura, Francês, Avião"></div>
+      <button type="button" class="mini" id="famAdd">Adicionar perícia</button>
+      <button type="button" class="mini claro" id="evoluir" title="Rola d100 para cada perícia marcada. Se tirar mais que o valor (ou mais que 95), ganha 1d10.">Fase de desenvolvimento</button>
+    </div>
+    <p class="legenda">Marque a caixa ao lado da perícia quando ela for usada com sucesso. Mythos de Cthulhu e Nível de Crédito não recebem pontos de ocupação ou interesse pessoal na criação.</p>
+  </section>
+
+  <section>
+    <div class="cab"><h2>Combate</h2><span class="esp"></span><button type="button" class="mini" id="armaAdd">Adicionar arma</button></div>
+    <div class="rolagem"><table class="armas">
+      <thead><tr><th>Arma</th><th>Perícia</th><th>Dano</th><th>Alcance</th><th>Ataques</th><th>Munição</th><th>Defeito</th><th></th></tr></thead>
+      <tbody id="armas"></tbody>
+    </table></div>
+    <p class="legenda">Use BD no dano para somar o Bônus de Dano (ex.: 1d3+BD).</p>
+  </section>
+
+  <section>
+    <div class="cab"><h2>Histórico do investigador</h2></div>
+    <div class="cols" id="bio"></div>
+  </section>
+
+  <section>
+    <div class="cab"><h2>Equipamento e finanças</h2></div>
+    <div class="cols" id="eq"></div>
+  </section>
+
+  <p class="rodape">Os dados da ficha ficam salvos neste navegador. Use Exportar para guardar uma cópia.</p>
+</main>
+
+<div id="bandeja" role="region" aria-label="Rolagem de dados">
+  <div class="in">
+    <div class="topo">
+      <select id="mod" aria-label="Dados de bônus ou penalidade">
+        <option value="0">Rolagem normal</option>
+        <option value="1">1 dado de bônus</option>
+        <option value="2">2 dados de bônus</option>
+        <option value="-1">1 dado de penalidade</option>
+        <option value="-2">2 dados de penalidade</option>
+      </select>
+      <input type="text" id="expr" value="1d100" aria-label="Expressão de dados" autocomplete="off">
+      <button type="button" class="mini" id="rolar">Rolar</button>
+      <button type="button" class="mini" id="abrir" aria-expanded="false" aria-controls="hist">Histórico</button>
+      <div class="ultimo" id="ultimo" aria-live="polite"></div>
+    </div>
+    <div id="hist"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- utilidades ---------- */
+function h(tag,props,kids){
+  var e=document.createElement(tag),k;
+  if(props)for(k in props){
+    if(k==="class")e.className=props[k];
+    else if(k==="text")e.textContent=props[k];
+    else if(k.slice(0,2)==="on")e.addEventListener(k.slice(2),props[k]);
+    else e.setAttribute(k,props[k]);
+  }
+  (kids||[]).forEach(function(c){if(c!=null)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});
+  return e;
+}
+function $(id){return document.getElementById(id)}
+function n(v){var x=parseInt(v,10);return isNaN(x)?0:x}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function rnd(max){return 1+Math.floor(Math.random()*max)}
+
+/* ---------- dados do sistema ---------- */
+var CARS=[["FOR","Força"],["CON","Constituição"],["TAM","Tamanho"],["DES","Destreza"],["APA","Aparência"],["INT","Inteligência"],["POD","Poder"],["EDU","Educação"]];
+var INFO=[["nome","Nome"],["ocupacao","Ocupação"],["etnia","Etnia"],["pronomes","Pronomes"],["residencia","Residência"],["nascimento","Local de nascimento"],["idade","Idade"]];
+var CI="Ciência",AF="Armas de Fogo",LU="Lutar",AO="Arte/Ofício";
+/* nome, base (número | "des2" | "edu"), grupo, era moderna */
+var SK=[
+["Antropologia",1],["Arcos",15,AF],["Armas Pesadas",10,AF],["Arqueologia",1],["Arremessar",20],["Artilharia",1],
+["Astronomia",1,CI],["Atuação",5,AO],["Avaliação",5],["Belas Artes",5,AO],["Biologia",1,CI],["Botânica",1,CI],
+["Briga",25,LU],["Cavalgar",5],["Charme",15],["Chaveiro",1],["Chicotes",5,LU],["Ciência Forense",1,CI],
+["Consertos Elétricos",10],["Consertos Mecânicos",10],["Contabilidade",5],["Criptografia",1,CI],["Demolições",1],
+["Direito",5],["Dirigir Automóveis",20],["Disfarce",5],["Eletrônica",1,"",1],["Encontrar",25],["Engenharia",1,CI],
+["Escalar",20],["Escutar",20],["Espadas",20,LU],["Esquivar","des2"],["Falsificação",5,AO],["Farmácia",1,CI],
+["Física",1,CI],["Fotografia",5,AO],["Furtividade",20],["Garrote",15,LU],["Geologia",1,CI],["Hipnose",1],
+["História",5],["Intimidação",15],["Lábia",5],["Lança-chamas",10,AF],["Lanças",20,AF],["Leitura Labial",1],
+["Língua Nativa","edu"],["Machados",15,LU],["Manguais",10,LU],["Matemática",1,CI],["Medicina",1],["Mergulho",1],
+["Meteorologia",1,CI],["Metralhadoras",10,AF],["Motosserras",10,LU],["Mundo Natural",10],["Mythos de Cthulhu",0],
+["Natação",20],["Navegação",10],["Nível de Crédito",0],["Ocultismo",5],["Operar Maquinário Pesado",1],
+["Persuasão",10],["Pistolas",20,AF],["Prestidigitação",10],["Primeiros Socorros",30],["Psicanálise",1],
+["Psicologia",10],["Química",1,CI],["Rastrear",10],["Rifles/Espingardas",25,AF],["Saltar",20],
+["Submetralhadoras",15,AF],["Treinar Animais",5],["Usar Bibliotecas",20],["Usar Computadores",5,"",1],["Zoologia",1,CI]
+];
+var FAM=[["Arte/Ofício",5],["Ciência",1],["Língua (Outra)",1],["Pilotar",1],["Sobrevivência",10],["Outra perícia",1]];
+var BIO=[["descricao","Descrição pessoal"],["ideologia","Ideologia e crenças"],["pessoas","Pessoas significativas"],["locais","Locais significativos"],["pertences","Pertences queridos"],["tracos","Traços"],["ferimentos","Ferimentos e cicatrizes"],["fobias","Fobias e manias"],["tomos","Tomos arcanos, magias e artefatos"],["encontros","Encontros com entidades estranhas"],["historia","História do investigador","larga"],["notas","Anotações","larga"]];
+var EQ=[["equipamento","Equipamento e pertences","larga"],["dinheiro","Dinheiro em mãos"],["gasto","Gasto diário"],["bens","Bens e propriedades"],["aliados","Contatos e dívidas"]];
+var ESTADOS=[["grave","Ferimento grave"],["inconsciente","Inconsciente"],["morrendo","Morrendo"],["insTemp","Insanidade temporária"],["insInd","Insanidade indefinida"],["morte","Morte"]];
+
+/* ---------- estado e persistência ---------- */
+var id=new URLSearchParams(location.search).get("id");
+var DEF={sys:"coc",name:"Novo investigador",avatar:"",era:"1920",i:{},c:{},pv:null,pm:null,san:null,sorte:null,
+  fl:{},ptsO:null,ptsP:null,s:{},cs:[],sl:{s:"1",f:"1d6"},
+  w:[{n:"Briga",sk:"Briga",d:"1d3+BD",a:"toque",at:"1",mu:"—",df:"—"}],b:{},eq:{}};
+var D=clone(DEF);
+
+function lerArmazenado(){
+  var raw=null;
+  try{if(id&&typeof FICHAS!=="undefined"&&FICHAS.read)raw=FICHAS.read(id)}catch(e){}
+  if(!raw){try{raw=JSON.parse(localStorage.getItem("ficha-cthulhu-"+id))}catch(e){}}
+  return raw&&typeof raw==="object"?raw:null;
+}
+(function init(){
+  if(!id&&typeof FICHAS!=="undefined"&&FICHAS.create){
+    try{id=FICHAS.create({name:DEF.name,sys:"coc"});if(id)history.replaceState(null,"","?id="+id)}catch(e){}
+  }
+  var raw=lerArmazenado();
+  if(raw)for(var k in raw)D[k]=raw[k];
+  ["i","c","fl","s","sl","b","eq"].forEach(function(k){if(!D[k]||typeof D[k]!=="object"||Array.isArray(D[k]))D[k]=clone(DEF[k])});
+  ["cs","w"].forEach(function(k){if(!Array.isArray(D[k]))D[k]=clone(DEF[k])});
+  D.sys="coc";
+})();
+
+var tSave=null;
+function save(){clearTimeout(tSave);tSave=setTimeout(persist,350)}
+function persist(){
+  D.name=(D.i.nome||"").trim()||"Novo investigador";
+  try{
+    if(id&&typeof FICHAS!=="undefined"){
+      var fn=["save","write","update","set","put"].filter(function(k){return typeof FICHAS[k]==="function"})[0];
+      if(fn){FICHAS[fn](id,D);return}
+    }
+  }catch(e){}
+  try{localStorage.setItem("ficha-cthulhu-"+id,JSON.stringify(D))}catch(e){}
+}
+window.addEventListener("pagehide",function(){clearTimeout(tSave);persist()});
+
+/* ---------- regras ---------- */
+function car(k){return n(D.c[k])}
+function pvMax(){return Math.floor((car("CON")+car("TAM"))/10)}
+function pmMax(){return Math.floor(car("POD")/5)}
+function skillTotal(nome){
+  for(var i=0;i<rows.length;i++)if(rows[i].nome===nome)return rows[i].total();
+  return 0;
+}
+function sanMax(){return Math.max(0,99-skillTotal("Mythos de Cthulhu"))}
+function movimento(){
+  var f=car("FOR"),d=car("DES"),t=car("TAM");
+  if(!f||!d||!t)return 0;
+  var m=(f>t&&d>t)?9:(f<t&&d<t)?7:8;
+  var ida=n(D.i.idade),red=ida>=80?5:ida>=70?4:ida>=60?3:ida>=50?2:ida>=40?1:0;
+  return m-red;
+}
+function corpoBD(){
+  var s=car("FOR")+car("TAM");
+  if(!s)return{corpo:"—",bd:"—",bdExpr:"0"};
+  if(s<=64)return{corpo:-2,bd:"-2",bdExpr:"-2"};
+  if(s<=84)return{corpo:-1,bd:"-1",bdExpr:"-1"};
+  if(s<=124)return{corpo:0,bd:"0",bdExpr:"0"};
+  if(s<=164)return{corpo:1,bd:"+1d4",bdExpr:"1d4"};
+  if(s<=204)return{corpo:2,bd:"+1d6",bdExpr:"1d6"};
+  var x=Math.ceil((s-204)/80);
+  return{corpo:2+x,bd:"+"+(1+x)+"d6",bdExpr:(1+x)+"d6"};
+}
+function nivel(r,v){
+  if(r===1)return{t:"Sucesso Crítico",c:"crit",ok:true};
+  if(r===100||(r>=96&&v<50))return{t:"Desastre",c:"des",ok:false};
+  if(r<=Math.floor(v/5))return{t:"Sucesso Extremo",c:"ext",ok:true};
+  if(r<=Math.floor(v/2))return{t:"Sucesso Difícil",c:"dif",ok:true};
+  if(r<=v)return{t:"Sucesso",c:"ok",ok:true};
+  return{t:"Falha",c:"fail",ok:false};
+}
+
+/* ---------- dados ---------- */
+var modSel=$("mod");
+function d100(mod){
+  var u=rnd(10)-1,qtd=1+Math.abs(mod),ds=[],i;
+  for(i=0;i<qtd;i++)ds.push((rnd(10)-1)*10+u);
+  ds=ds.map(function(v){return v===0?100:v});
+  var v=mod>0?Math.min.apply(null,ds):mod<0?Math.max.apply(null,ds):ds[0];
+  return{v:v,det:mod?"dezenas: "+ds.join(", ")+(mod>0?" (menor)":" (maior)"):""};
+}
+function rolarExpr(expr){
+  var s=String(expr).toLowerCase().replace(/\s/g,"").replace(/bd|db/g,corpoBD().bdExpr);
+  var re=/([+-]?)(\d*)d(\d+)|([+-]?)(\d+)/g,m,tot=0,det=[],ok=false,i;
+  while((m=re.exec(s))){
+    ok=true;
+    if(m[3]){
+      var q=+(m[2]||1),f=+m[3],sg=m[1]==="-"?-1:1,rs=[],soma=0;
+      if(q>50||f>1000||f<1)return null;
+      for(i=0;i<q;i++){var r=rnd(f);rs.push(r);soma+=r}
+      tot+=sg*soma;det.push((sg<0?"-":"")+q+"d"+f+" ["+rs.join(", ")+"]");
+    }else{
+      var v=(m[4]==="-"?-1:1)*(+m[5]);tot+=v;det.push(String(v));
+    }
+  }
+  return ok?{total:tot,det:det.join(" ")}:null;
+}
+
+var historico=[];
+function log(e){
+  historico.unshift(e);if(historico.length>40)historico.pop();
+  var ult=$("ultimo");ult.textContent="";ult.appendChild(linhaRes(e,true));
+  var hist=$("hist");hist.textContent="";
+  historico.forEach(function(x){hist.appendChild(linhaRes(x,false))});
+}
+function linhaRes(e,destaque){
+  var cls="res nv-"+(e.nv?e.nv.c:"ok")+(destaque?" novo-res":"");
+  var kids=[h("span",{class:"n",text:String(e.v)})];
+  var r=h("span",{class:"r"});
+  r.appendChild(h("span",{class:"t",text:(e.rot?e.rot+": ":"")+(e.nv?e.nv.t:"")}));
+  if(e.det)r.appendChild(h("span",{class:"d",text:" "+e.det}));
+  kids.push(r);
+  return h("div",{class:cls},kids);
+}
+function rolarTeste(rotulo,valor){
+  var r=d100(+modSel.value),nv=nivel(r.v,valor);
+  log({rot:rotulo+" "+valor,v:r.v,nv:nv,det:r.det});
+  return nv;
+}
+$("rolar").addEventListener("click",function(){
+  var ex=$("expr").value.trim()||"1d100";
+  if(/^1?d100$/i.test(ex)){var r=d100(+modSel.value);log({rot:"d100",v:r.v,det:r.det});return}
+  var p=rolarExpr(ex);
+  if(!p){log({rot:"Expressão inválida",v:"?",det:"use algo como 1d6+BD"});return}
+  log({rot:ex,v:Math.max(0,p.total),det:p.det});
+});
+$("expr").addEventListener("keydown",function(e){if(e.key==="Enter")$("rolar").click()});
+$("abrir").addEventListener("click",function(){
+  var a=$("hist").classList.toggle("aberto");this.setAttribute("aria-expanded",String(a));
+});
+
+/* ---------- cabeçalho ---------- */
+function atualizaEra(){
+  $("era").value=D.era;
+  $("titulo").textContent=D.era==="moderna"?"Investigador da Era Moderna":"Investigador da Era de 1920";
+  filtra();
+}
+$("era").addEventListener("change",function(){D.era=this.value;atualizaEra();save()});
+
+var campos=$("campos");
+INFO.forEach(function(f){
+  var inp=h("input",{type:f[0]==="idade"?"number":"text",id:"i-"+f[0],autocomplete:"off"});
+  if(f[0]==="idade"){inp.setAttribute("inputmode","numeric");inp.min=15;inp.max=99}
+  inp.value=D.i[f[0]]||"";
+  inp.addEventListener("input",function(){D.i[f[0]]=inp.value;if(f[0]==="idade")refresh();save()});
+  campos.appendChild(h("div",{class:"campo"},[h("label",{for:"i-"+f[0],text:f[1]}),inp]));
+});
+
+/* retrato */
+function mostraRetrato(){
+  var r=$("retrato");
+  if(D.avatar){r.style.backgroundImage='url("'+D.avatar+'")';r.classList.add("tem")}
+  else{r.style.backgroundImage="";r.classList.remove("tem")}
+}
+$("foto").addEventListener("change",function(){
+  var f=this.files[0];if(!f)return;
+  var img=new Image(),url=URL.createObjectURL(f);
+  img.onload=function(){
+    var max=360,s=Math.min(1,max/Math.max(img.width,img.height));
+    var cv=document.createElement("canvas");cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);
+    cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    URL.revokeObjectURL(url);
+    var q=.85,out;
+    do{
+      out=cv.toDataURL("image/webp",q);
+      if(out.indexOf("data:image/webp")!==0)out=cv.toDataURL("image/jpeg",q);
+      q-=.15;
+    }while(out.length>380000&&q>.2);
+    D.avatar=out;mostraRetrato();save();
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);alert("Não foi possível ler essa imagem.")};
+  img.src=url;
+});
+
+/* ---------- características ---------- */
+var carInputs={},carSubs={};
+CARS.forEach(function(c){
+  var k=c[0],inp=h("input",{type:"number",inputmode:"numeric",min:0,max:999,"aria-label":c[1]});
+  inp.value=D.c[k]||"";
+  var hf=h("span",{class:"sub"}),fi=h("span",{class:"sub"});
+  inp.addEventListener("input",function(){D.c[k]=inp.value;refresh();save()});
+  carInputs[k]=inp;carSubs[k]=[hf,fi];
+  var btn=h("button",{type:"button",class:"rot",title:"Testar "+c[1],onclick:function(){rolarTeste(k,car(k))}},[h("b",{text:k}),h("small",{text:c[1]})]);
+  $("cars").appendChild(h("div",{class:"car"},[btn,h("div",{class:"tri"},[inp,hf,fi])]));
+});
+$("gerar").addEventListener("click",function(){
+  if(!confirm("Rolar todas as características? Os valores atuais serão substituídos."))return;
+  var t={FOR:3,CON:3,DES:3,APA:3,POD:3,TAM:2,INT:2,EDU:2};
+  CARS.forEach(function(c){
+    var k=c[0],s=0,q=t[k],i;
+    for(i=0;i<q;i++)s+=rnd(6);
+    if(q===2)s+=6;
+    D.c[k]=String(s*5);carInputs[k].value=D.c[k];
+  });
+  D.pv=null;D.pm=null;D.san=null;
+  refresh();save();
+  log({rot:"Características geradas",v:"✓",det:"3d6×5 e (2d6+6)×5"});
+});
+
+/* contadores (PV, PM, Sorte, Sanidade) */
+var cont={};
+function contador(k,titulo,maxFn,extra){
+  var inp=h("input",{type:"number",inputmode:"numeric","aria-label":titulo});
+  var sub=h("small");
+  function valor(){return D[k]==null?(k==="san"?Math.min(car("POD"),maxFn()):maxFn?maxFn():0):D[k]}
+  function set(v){D[k]=maxFn?Math.max(0,Math.min(v,k==="san"?99:maxFn())):Math.max(0,v);refresh();save()}
+  inp.addEventListener("input",function(){
+    if(inp.value===""){D[k]=null}else{D[k]=Math.max(0,n(inp.value))}
+    refresh(true);save();
+  });
+  var card=h("div",{class:"card"},[
+    h("h3",{},[h("span",{text:titulo}),sub]),
+    h("div",{class:"cont"},[
+      h("button",{type:"button","aria-label":"Diminuir "+titulo,text:"−",onclick:function(){set(valor()-1)}}),
+      inp,
+      h("button",{type:"button","aria-label":"Aumentar "+titulo,text:"+",onclick:function(){set(valor()+1)}})
+    ])
+  ]);
+  if(extra)card.appendChild(extra);
+  cont[k]={inp:inp,sub:sub,valor:valor};
+  return card;
+}
+var sorteAcoes=h("div",{class:"acoes"},[
+  h("button",{type:"button",class:"mini claro",text:"Testar Sorte",onclick:function(){rolarTeste("Sorte",cont.sorte.valor())}}),
+  h("button",{type:"button",class:"mini claro",text:"Rolar inicial",title:"3d6 × 5",onclick:function(){
+    var s=rnd(6)+rnd(6)+rnd(6);D.sorte=s*5;refresh();save();log({rot:"Sorte inicial",v:s*5,det:"3d6 × 5"});
+  }})
+]);
+var sl1=h("input",{type:"text","aria-label":"Perda de Sanidade em caso de sucesso",value:D.sl.s});
+var sl2=h("input",{type:"text","aria-label":"Perda de Sanidade em caso de falha",value:D.sl.f});
+sl1.addEventListener("input",function(){D.sl.s=sl1.value;save()});
+sl2.addEventListener("input",function(){D.sl.f=sl2.value;save()});
+var sanExtra=h("div",{},[
+  h("div",{class:"linha"},[h("span",{text:"Perda"}),sl1,h("span",{text:"/"}),sl2]),
+  h("div",{class:"acoes"},[h("button",{type:"button",class:"mini claro",text:"Testar Sanidade",onclick:testeSan})])
+]);
+function testeSan(){
+  var v=cont.san.valor(),r=d100(+modSel.value),nv=nivel(r.v,v);
+  var ex=nv.ok?D.sl.s:D.sl.f,p=rolarExpr(ex||"0"),perda=p?Math.max(0,p.total):0;
+  D.san=Math.max(0,v-perda);
+  var nota="perda "+perda+(p?" ("+ex+": "+p.det+")":"")+" → "+D.san;
+  if(perda>=5)nota+=" · 5 ou mais de uma vez: teste de INT para insanidade temporária";
+  if(D.san===0)nota+=" · Sanidade zerada";
+  log({rot:"Sanidade "+v,v:r.v,nv:nv,det:(r.det?r.det+" · ":"")+nota});
+  refresh();save();
+}
+var deriv=$("deriv");
+deriv.appendChild(contador("pv","Pontos de Vida",pvMax));
+deriv.appendChild(contador("pm","Pontos de Magia",pmMax));
+deriv.appendChild(contador("sorte","Sorte",null,sorteAcoes));
+deriv.appendChild(contador("san","Sanidade",function(){return sanMax()},sanExtra));
+cont.san.max=function(){return Math.min(sanMax(),99)};
+
+/* valores calculados */
+var calc={};
+[["mov","Movimento"],["corpo","Corpo"],["bd","Bônus de Dano"],["esq","Esquiva"]].forEach(function(c){
+  var v=h("div",{class:"valor"});
+  calc[c[0]]=v;
+  deriv.appendChild(h("div",{class:"card"},[h("h3",{},[h("span",{text:c[1]})]),v]));
+});
+
+/* estados */
+ESTADOS.forEach(function(e){
+  var ck=h("input",{type:"checkbox"});ck.checked=!!D.fl[e[0]];
+  ck.addEventListener("change",function(){D.fl[e[0]]=ck.checked;save()});
+  $("estados").appendChild(h("label",{},[ck,e[1]]));
+});
+
+/* ---------- perícias ---------- */
+var rows=[],customRows=[];
+function baseDe(b){return b==="des2"?Math.floor(car("DES")/2):b==="edu"?car("EDU"):b}
+
+function makeRow(o){
+  var tot=h("output",{class:"tot"}),hf=h("span",{class:"sub hf"}),fi=h("span",{class:"sub fi"});
+  var ck=h("input",{type:"checkbox",class:"ck","aria-label":"Marcar evolução de "+o.nome});
+  ck.checked=!!o.get("m");
+  ck.addEventListener("change",function(){o.set("m",ck.checked);save()});
+  var campos={};
+  [["o","ocup.","Pontos de ocupação"],["p","pess.","Pontos de interesse pessoal"],["e","evol.","Evolução"]].forEach(function(f){
+    var inp=h("input",{type:"number",inputmode:"numeric",min:0,max:99,class:"pt "+f[0],placeholder:f[1],"aria-label":f[2]+" em "+o.nome});
+    inp.value=o.get(f[0])||"";
+    inp.addEventListener("input",function(){o.set(f[0],Math.max(0,n(inp.value)));refresh();save()});
+    campos[f[0]]=inp;
+  });
+  function total(){return baseDe(o.base())+n(o.get("o"))+n(o.get("p"))+n(o.get("e"))}
+  var nm=h("button",{type:"button",class:"nm",title:"Testar "+o.nome,onclick:function(){rolarTeste(o.nome,total())}},[o.nome,o.sub?h("small",{text:o.sub}):null]);
+  var wrap=[nm];
+  if(o.remove)wrap.push(h("button",{type:"button",class:"x","aria-label":"Remover "+o.nome,text:"×",onclick:o.remove}));
+  var el=h("div",{class:"per"},[ck,h("div",{class:"nmw"},wrap),campos.o,campos.p,campos.e,tot,hf,fi]);
+  return{nome:o.nome,total:total,el:el,moderna:!!o.moderna,ck:ck,
+    upd:function(){var t=total();tot.textContent=t;hf.textContent=Math.floor(t/2);fi.textContent=Math.floor(t/5);el.classList.toggle("zero",t===0)},
+    zerarMarca:function(){ck.checked=false;o.set("m",false)},
+    addE:function(v){var e=n(o.get("e"))+v;o.set("e",e);campos.e.value=e||""},
+    marcada:function(){return ck.checked}};
+}
+
+var lista=$("lista");
+SK.slice().sort(function(a,b){return a[0].localeCompare(b[0],"pt-BR")}).forEach(function(s){
+  var nome=s[0],base=s[1],g=s[2];
+  var r=makeRow({
+    nome:nome,sub:g||"",moderna:!!s[3],
+    base:function(){return base},
+    get:function(f){return (D.s[nome]||{})[f]},
+    set:function(f,v){(D.s[nome]||(D.s[nome]={o:0,p:0,e:0,m:false}))[f]=v}
+  });
+  rows.push(r);lista.appendChild(r.el);
+});
+var listaCust=h("div",{style:"display:contents"});
+lista.appendChild(listaCust);
+
+function montaCustom(){
+  listaCust.textContent="";customRows=[];
+  D.cs.forEach(function(c,i){
+    var r=makeRow({
+      nome:c.n,sub:"especialização",base:function(){return n(c.b)},
+      get:function(f){return c[f]},set:function(f,v){c[f]=v},
+      remove:function(){
+        if(!confirm("Remover \""+c.n+"\"?"))return;
+        D.cs.splice(i,1);montaCustom();montaArmas();refresh();save();
+      }
+    });
+    customRows.push(r);listaCust.appendChild(r.el);
+  });
+  rows=rows.filter(function(r){return !r.custom});
+  customRows.forEach(function(r){r.custom=true;rows.push(r)});
+  filtra();
+}
+FAM.forEach(function(f,i){$("famSel").appendChild(h("option",{value:String(i),text:f[0]+" ("+String(f[1]).padStart(2,"0")+"%)"}))});
+$("famAdd").addEventListener("click",function(){
+  var f=FAM[+$("famSel").value],nm=$("famNome").value.trim();
+  if(!nm){$("famNome").focus();return}
+  D.cs.push({n:f[0]==="Outra perícia"?nm:f[0]+" ("+nm+")",b:f[1],o:0,p:0,e:0,m:false});
+  $("famNome").value="";montaCustom();montaArmas();refresh();save();
+});
+$("famNome").addEventListener("keydown",function(e){if(e.key==="Enter")$("famAdd").click()});
+
+function filtra(){
+  var q=$("busca").value.trim().toLowerCase();
+  rows.forEach(function(r){
+    var ocultaEra=r.moderna&&D.era!=="moderna";
+    var ocultaBusca=q&&r.nome.toLowerCase().indexOf(q)<0;
+    r.el.classList.toggle("oculta",!!(ocultaEra||ocultaBusca));
+  });
+}
+$("busca").addEventListener("input",filtra);
+
+/* pontos de ocupação e interesse */
+var pontosEl=$("pontos"),pO=h("span"),pP=h("span");
+var inO=h("input",{type:"number",inputmode:"numeric","aria-label":"Total de pontos de ocupação"});
+var inP=h("input",{type:"number",inputmode:"numeric","aria-label":"Total de pontos de interesse pessoal"});
+inO.value=D.ptsO==null?"":D.ptsO;inP.value=D.ptsP==null?"":D.ptsP;
+inO.addEventListener("input",function(){D.ptsO=inO.value===""?null:n(inO.value);refresh();save()});
+inP.addEventListener("input",function(){D.ptsP=inP.value===""?null:n(inP.value);refresh();save()});
+pontosEl.appendChild(h("span",{class:"pt-in"},[document.createTextNode("Ocupação "),pO,document.createTextNode(" de "),inO]));
+pontosEl.appendChild(h("span",{class:"pt-in"},[document.createTextNode("Interesse pessoal "),pP,document.createTextNode(" de "),inP]));
+pontosEl.appendChild(h("small",{style:"font:italic 14px var(--serif);color:var(--tinta2)",text:"Em branco, o total usa EDU×4 e INT×2."}));
+
+function somaPts(f){
+  var s=0;
+  Object.keys(D.s).forEach(function(k){s+=n(D.s[k][f])});
+  D.cs.forEach(function(c){s+=n(c[f])});
+  return s;
+}
+
+/* fase de desenvolvimento */
+$("evoluir").addEventListener("click",function(){
+  var marc=rows.filter(function(r){return r.marcada()});
+  if(!marc.length){alert("Nenhuma perícia marcada para evolução.");return}
+  if(!confirm("Rolar a fase de desenvolvimento para "+marc.length+" perícia(s) marcada(s)?"))return;
+  var res=[];
+  marc.forEach(function(r){
+    var v=r.total(),d=rnd(100);
+    if(d>v||d>95){var g=rnd(10);r.addE(g);res.push(r.nome+" +"+g)}
+    else res.push(r.nome+" sem ganho");
+    r.zerarMarca();
+  });
+  refresh();save();
+  log({rot:"Desenvolvimento",v:"✓",det:res.join(" · ")});
+});
+
+/* ---------- armas ---------- */
+var armasEl=$("armas");
+function montaArmas(){
+  armasEl.textContent="";
+  var nomes=rows.map(function(r){return r.nome}).sort(function(a,b){return a.localeCompare(b,"pt-BR")});
+  D.w.forEach(function(w,i){
+    function campo(k,lbl,larg){
+      var inp=h("input",{type:"text","aria-label":lbl,style:larg?"min-width:"+larg:""});
+      inp.value=w[k]||"";
+      inp.addEventListener("input",function(){w[k]=inp.value;save()});
+      return h("td",{},[inp]);
+    }
+    var sel=h("select",{"aria-label":"Perícia da arma"});
+    sel.appendChild(h("option",{value:"",text:"—"}));
+    nomes.forEach(function(nm){var o=h("option",{value:nm,text:nm});if(nm===w.sk)o.selected=true;sel.appendChild(o)});
+    sel.addEventListener("change",function(){w.sk=sel.value;save()});
+    var tr=h("tr",{},[
+      campo("n","Nome da arma","120px"),
+      h("td",{},[sel]),
+      campo("d","Dano","90px"),campo("a","Alcance","70px"),campo("at","Ataques","50px"),campo("mu","Munição","60px"),campo("df","Defeito","60px"),
+      h("td",{},[
+        h("button",{type:"button",class:"mini",text:"Atacar",onclick:function(){
+          if(!w.sk){alert("Escolha a perícia da arma.");return}
+          rolarTeste((w.n||"Ataque")+" · "+w.sk,skillTotal(w.sk));
+        }})," ",
+        h("button",{type:"button",class:"mini claro",text:"Dano",onclick:function(){
+          var p=rolarExpr(w.d||"0");
+          if(!p){log({rot:"Dano inválido",v:"?",det:w.d||""});return}
+          log({rot:"Dano de "+(w.n||"arma"),v:Math.max(0,p.total),det:p.det});
+        }})," ",
+        h("button",{type:"button",class:"mini claro","aria-label":"Remover arma",text:"×",onclick:function(){D.w.splice(i,1);montaArmas();save()}})
+      ])
+    ]);
+    armasEl.appendChild(tr);
+  });
+}
+$("armaAdd").addEventListener("click",function(){
+  D.w.push({n:"",sk:"",d:"1d6",a:"",at:"1",mu:"",df:""});montaArmas();save();
+});
+
+/* ---------- textos longos ---------- */
+function montaTextos(box,lista,dest){
+  lista.forEach(function(f){
+    var tid="t-"+dest+"-"+f[0];
+    var el=f[0]==="dinheiro"||f[0]==="gasto"||f[0]==="bens"||f[0]==="aliados"
+      ?h("input",{type:"text",id:tid,autocomplete:"off"})
+      :h("textarea",{id:tid});
+    el.value=D[dest][f[0]]||"";
+    el.addEventListener("input",function(){D[dest][f[0]]=el.value;save()});
+    box.appendChild(h("div",{class:"campo"+(f[2]?" larga":"")},[h("label",{for:tid,text:f[1]}),el]));
+  });
+}
+montaTextos($("bio"),BIO,"b");
+montaTextos($("eq"),EQ,"eq");
+
+/* ---------- refresh geral ---------- */
+function refresh(editando){
+  CARS.forEach(function(c){
+    var v=car(c[0]);
+    carSubs[c[0]][0].textContent=v?Math.floor(v/2):"";
+    carSubs[c[0]][1].textContent=v?Math.floor(v/5):"";
+  });
+  rows.forEach(function(r){r.upd()});
+  var maxes={pv:pvMax(),pm:pmMax(),san:Math.min(sanMax(),99)};
+  Object.keys(cont).forEach(function(k){
+    var c=cont[k];
+    if(document.activeElement!==c.inp||!editando)c.inp.value=c.valor();
+    if(k==="pv"||k==="pm")c.sub.textContent="máx. "+maxes[k];
+    else if(k==="san")c.sub.textContent="inicial "+car("POD")+" · máx. "+maxes.san;
+  });
+  var so=somaPts("o"),sp=somaPts("p"),to=D.ptsO==null?car("EDU")*4:D.ptsO,tp=D.ptsP==null?car("INT")*2:D.ptsP;
+  inO.placeholder=String(car("EDU")*4);inP.placeholder=String(car("INT")*2);
+  pO.textContent=so;pP.textContent=sp;
+  pO.className=so>to?"estouro":"";pP.className=sp>tp?"estouro":"";
+  pO.title=pP.title=so>to||sp>tp?"Pontos acima do disponível":"";
+  var m=movimento(),cb=corpoBD();
+  calc.mov.textContent=m||"—";calc.corpo.textContent=cb.corpo;calc.bd.textContent=cb.bd;
+  calc.esq.textContent=car("DES")?Math.floor(car("DES")/2):"—";
+}
+
+/* ---------- exportar e importar ---------- */
+$("exportar").addEventListener("click",function(){
+  persist();
+  var blob=new Blob([JSON.stringify(D,null,1)],{type:"application/json"});
+  var a=h("a",{href:URL.createObjectURL(blob),download:((D.i.nome||"investigador").replace(/[^\w\-]+/g,"_"))+".json"});
+  document.body.appendChild(a);a.click();a.remove();
+});
+$("importar").addEventListener("click",function(){$("arq").click()});
+$("arq").addEventListener("change",function(){
+  var f=this.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var o=JSON.parse(rd.result);
+      if(!o||typeof o!=="object"||o.sys!=="coc")throw 0;
+      if(!confirm("Substituir esta ficha pelos dados importados?"))return;
+      var keep=D.name;D=Object.assign(clone(DEF),o);D.sys="coc";if(!D.name)D.name=keep;
+      persist();location.reload();
+    }catch(e){alert("Esse arquivo não é uma ficha de Chamado de Cthulhu.")}
+  };
+  rd.readAsText(f);
+});
+
+/* ---------- início ---------- */
+montaCustom();
+montaArmas();
+mostraRetrato();
+atualizaEra();
+refresh();
+})();
+</script>
+</body>
+</html>
