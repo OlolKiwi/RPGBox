@@ -7,8 +7,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=IM+Fell+English+SC&family=Special+Elite&display=swap" rel="stylesheet">
-<script src="share.js"></script>
 <script src="fichas.js"></script>
+<script src="share.js"></script>
 <style>
 :root{
   --papel:#d3e5de; --papel2:#b9d2ca; --tinta:#0c2027; --tinta2:#3b5b62;
@@ -239,7 +239,7 @@ input[type=checkbox]:checked::after{content:"";width:9px;height:5px;border-left:
 </head>
 <body>
 
-<div class="barra">
+<header class="barra glass">
   <a href="index.html">‹ RPGBox</a>
   <select id="era" aria-label="Época da campanha">
     <option value="1920">Era de 1920</option>
@@ -250,7 +250,7 @@ input[type=checkbox]:checked::after{content:"";width:9px;height:5px;border-left:
   <button type="button" id="exportar">Exportar</button>
   <button type="button" id="importar">Importar</button>
   <input type="file" id="arq" accept="application/json,.json" hidden>
-</div>
+</header>
 
 <main class="folha" id="folha">
   <div class="sinal a" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon id="s1" points="20,3 25,16 38,16 28,24 32,37 20,29 8,37 12,24 2,16 15,16"/></svg></div>
@@ -258,10 +258,10 @@ input[type=checkbox]:checked::after{content:"";width:9px;height:5px;border-left:
   <div class="sinal c" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon points="20,3 25,16 38,16 28,24 32,37 20,29 8,37 12,24 2,16 15,16"/></svg></div>
   <div class="sinal d" aria-hidden="true"><svg viewBox="0 0 40 40"><polygon points="20,3 25,16 38,16 28,24 32,37 20,29 8,37 12,24 2,16 15,16"/></svg></div>
 
-  <header class="titulo">
+  <div class="titulo">
     <h1 id="titulo">Investigador da Era de 1920</h1>
     <p>Chamado de Cthulhu · 7ª edição</p>
-  </header>
+  </div>
 
   <section class="ident" style="margin-top:0">
     <div class="campos" id="campos"></div>
@@ -395,7 +395,7 @@ function lerArmazenado(){
 }
 (function init(){
   if(!id&&typeof FICHAS!=="undefined"&&FICHAS.create){
-    try{id=FICHAS.create({name:DEF.name,sys:"coc"});if(id)history.replaceState(null,"","?id="+id)}catch(e){}
+    try{id=FICHAS.create({name:DEF.name,sys:"coc"});if(id){location.replace("?id="+id);return}}catch(e){}
   }
   var raw=lerArmazenado();
   if(raw)for(var k in raw)D[k]=raw[k];
@@ -406,11 +406,25 @@ function lerArmazenado(){
 
 var tSave=null;
 function save(){clearTimeout(tSave);tSave=setTimeout(persist,350)}
+function proj(){
+  var ocup=(D.i.ocupacao||"").trim(),ida=n(D.i.idade);
+  D.info=["Investigador"+(ocup?" · "+ocup:"")+(ida?" · "+ida+" anos":"")+" · "+(D.era==="moderna"?"Era Moderna":"Era de 1920")];
+  D.attrs=CARS.map(function(c){return{n:c[0],v:car(c[0]),f:"1d100"}});
+  D.per=rows.map(function(r){return{n:r.nome,b:r.total(),at:""}});
+  D.bars=[
+    {n:"PV",c:cont.pv.valor(),m:pvMax(),col:"#d93b4f"},
+    {n:"PM",c:cont.pm.valor(),m:pmMax(),col:"#2f7df0"},
+    {n:"SAN",c:cont.san.valor(),m:Math.min(sanMax(),99),col:"#9b4dff"},
+    {n:"Sorte",c:cont.sorte.valor(),m:Math.max(99,cont.sorte.valor()),col:"#d9a43b"}
+  ];
+  D.marks=[];D.skills=[];
+}
 function persist(){
+  try{proj()}catch(e){}
   D.name=(D.i.nome||"").trim()||"Novo investigador";
   try{
     if(id&&typeof FICHAS!=="undefined"){
-      var fn=["save","write","update","set","put"].filter(function(k){return typeof FICHAS[k]==="function"})[0];
+      var fn=["write","save","update","set","put"].filter(function(k){return typeof FICHAS[k]==="function"})[0];
       if(fn){FICHAS[fn](id,D);return}
     }
   }catch(e){}
@@ -871,6 +885,18 @@ montaArmas();
 mostraRetrato();
 atualizaEra();
 refresh();
+
+/* diagnóstico: se o share.js não colocou o botão, mostra o motivo na barra */
+window.addEventListener("load",function(){
+  if(document.getElementById("shbtn"))return;
+  var why=!id?"a URL não tem ?id=":
+    typeof FICHAS==="undefined"?"o fichas.js não carregou":
+    !FICHAS.has(id)?"FICHAS.has(\""+id+"\") deu falso (a ficha não está na lista)":
+    "o share.js não carregou (confira nome e pasta do arquivo)";
+  var bar=document.querySelector(".barra");
+  if(bar)bar.appendChild(h("span",{style:"flex-basis:100%;font-size:14px;color:#ffb4a8",text:"Compartilhar não iniciou: "+why}));
+  if(window.console)console.warn("share.js não iniciou:",why);
+});
 })();
 </script>
 </body>
