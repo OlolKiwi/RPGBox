@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Edgerunner · Cyberpunk RED</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;900&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="fichas.js"></script>
+<script src="share.js"></script>
+<style>
+:root{
+  --noite:#0a0812; --painel:#140e24; --painel2:#1d1533; --linha:#3a2c63;
+  --amarelo:#fcee0c; --magenta:#ff2a6d; --ciano:#08e0ee; --gelo:#f3f0ff; --cinza:#9a92b8; --alerta:#ff4b4b;
+  --disp:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
+  --txt:"Chakra Petch","Segoe UI",system-ui,sans-serif;
+  --corte:16px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;color:var(--gelo);font-family:var(--txt);font-size:16px;line-height:1.35;background:var(--noite);
+  background-image:
+    radial-gradient(circle at 100% 0,rgba(255,42,109,.28),transparent 42%),
+    radial-gradient(circle at 0 38%,rgba(8,224,238,.16),transparent 38%),
+    radial-gradient(rgba(255,42,109,.18) 1.2px,transparent 1.6px);
+  background-size:auto,auto,14px 14px;
+  background-attachment:fixed;
+  padding:0 0 calc(130px + env(safe-area-inset-bottom));
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--amarelo);outline-offset:2px}
+
+/* faixa de perigo e barra */
+.faixa{height:12px;background:repeating-linear-gradient(-45deg,var(--amarelo) 0 14px,#0a0812 14px 28px)}
+.barra{
+  max-width:1120px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) 14px 10px;
+  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
+}
+.barra a,.barra button,.barra select{
+  background:var(--painel2);border:1px solid var(--linha);color:var(--gelo);padding:7px 14px;text-decoration:none;
+  font-weight:600;font-size:15px;clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));
+}
+.barra select option{color:#000}
+.barra .esp{flex:1}
+.barra a:hover,.barra button:hover{background:var(--magenta);border-color:var(--magenta)}
+
+.folha{max-width:1120px;margin:0 auto;padding:6px 14px 20px;position:relative}
+.katakana{
+  position:absolute;right:-6px;top:90px;writing-mode:vertical-rl;font:900 64px/1 var(--disp);letter-spacing:.1em;
+  color:transparent;-webkit-text-stroke:1.5px rgba(8,224,238,.35);pointer-events:none;user-select:none;
+}
+
+/* painéis com cantos cortados */
+.painel{
+  position:relative;background:var(--painel);border-left:6px solid var(--amarelo);padding:14px 16px 16px;margin-top:22px;
+  clip-path:polygon(0 0,calc(100% - var(--corte)) 0,100% var(--corte),100% 100%,var(--corte) 100%,0 calc(100% - var(--corte)));
+}
+.painel.mg{border-left-color:var(--magenta)}
+.painel.ci{border-left-color:var(--ciano)}
+h2{
+  margin:0 0 12px;font:900 30px/1 var(--disp);text-transform:uppercase;letter-spacing:.03em;
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+}
+h2 small{font:400 14px var(--txt);text-transform:none;letter-spacing:0;color:var(--cinza)}
+h2 .esp{flex:1}
+
+/* campos */
+input,select,textarea{font-family:var(--txt);font-size:16px}
+input[type=text],input[type=number],select,textarea{
+  background:#0d0919;border:1px solid var(--linha);border-radius:0;padding:6px 8px;width:100%;min-width:0;color:var(--gelo);
+}
+input[type=number]{-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+textarea{min-height:92px;resize:vertical;line-height:1.4}
+input::placeholder,textarea::placeholder{color:#6d6490}
+select option{color:#000}
+.campo label{display:block;font-size:13px;color:var(--cinza);margin-bottom:2px}
+.mini{
+  background:var(--amarelo);color:#0a0812;border:0;padding:5px 12px;font-weight:700;font-size:14px;
+  clip-path:polygon(0 0,calc(100% - 7px) 0,100% 7px,100% 100%,7px 100%,0 calc(100% - 7px));
+}
+.mini:hover{background:var(--ciano)}
+.mini.mg{background:var(--magenta);color:#fff}
+.mini.mg:hover{background:var(--gelo);color:#0a0812}
+.mini.cl{background:transparent;color:var(--gelo);border:1px solid var(--linha);clip-path:none}
+.mini.cl:hover{border-color:var(--ciano);color:var(--ciano);background:transparent}
+
+/* identificação */
+.ident{display:grid;grid-template-columns:1fr 200px;gap:22px;align-items:start;margin-top:14px}
+.handle{
+  width:100%;background:none!important;border:0!important;border-bottom:4px solid var(--amarelo)!important;padding:0 0 2px!important;
+  font:900 clamp(44px,9vw,84px)/1 var(--disp)!important;text-transform:uppercase;letter-spacing:.02em;
+  text-shadow:-3px 0 var(--ciano),3px 0 var(--magenta);transform:skewX(-6deg);transform-origin:left bottom;
+}
+.handle::placeholder{color:#4b4070;text-shadow:none}
+.campos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 14px;margin-top:14px}
+.campos .campo.dupla{grid-column:span 2}
+.dica-papel{font-size:13px;color:var(--ciano);margin-top:3px;min-height:1.2em}
+.retrato{
+  aspect-ratio:3/4;position:relative;display:grid;place-items:center;text-align:center;padding:12px;cursor:pointer;color:var(--cinza);
+  background:var(--painel2) center/cover no-repeat;
+  clip-path:polygon(0 0,calc(100% - 28px) 0,100% 28px,100% 100%,28px 100%,0 calc(100% - 28px));
+  box-shadow:inset 0 0 0 3px var(--magenta);
+}
+.retrato input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%}
+.retrato.tem span{display:none}
+
+/* stats: o elemento central da ficha */
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.tile{position:relative;padding:8px 8px 10px;text-align:center;isolation:isolate}
+.tile::before{
+  content:"";position:absolute;inset:0;z-index:-1;background:var(--painel2);border-bottom:4px solid var(--ciano);transform:skewX(-8deg);
+}
+.tile:nth-child(odd)::before{border-bottom-color:var(--magenta)}
+.tile .rot{background:none;border:0;padding:0;line-height:1;display:block;width:100%}
+.tile .rot b{display:block;font:900 22px var(--disp);letter-spacing:.06em}
+.tile .rot small{font-size:12px;color:var(--cinza)}
+.tile .rot:hover b{color:var(--amarelo)}
+.tile input{
+  background:none;border:0;text-align:center;font:900 64px/1 var(--disp);padding:0;height:66px;
+  text-shadow:-2.5px 0 var(--ciano),2.5px 0 var(--magenta);
+}
+.tile .ef{display:block;min-height:1.1em;font-size:12px;color:var(--amarelo)}
+
+/* derivados */
+.deriv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:18px}
+.card{background:var(--painel2);border-top:3px solid var(--linha);padding:8px 12px 12px}
+.card h3{margin:0 0 4px;font:700 20px var(--disp);text-transform:uppercase;letter-spacing:.05em;display:flex;justify-content:space-between;align-items:baseline;gap:6px}
+.card h3 small{font:400 13px var(--txt);text-transform:none;letter-spacing:0;color:var(--cinza)}
+.card.hp{border-top-color:var(--magenta)}.card.hu{border-top-color:var(--ciano)}.card.lk{border-top-color:var(--amarelo)}
+.cont{display:grid;grid-template-columns:36px 1fr 36px;gap:6px;align-items:center}
+.cont input{text-align:center;font:900 40px/1 var(--disp);border:0;background:none;padding:0}
+.cont button{height:36px;width:36px;border:1px solid var(--linha);background:transparent;font-size:20px;line-height:1;padding:0}
+.cont button:hover{background:var(--magenta);border-color:var(--magenta)}
+.medidor{height:12px;margin:8px 0 0;background:#0d0919;border:1px solid var(--linha);position:relative}
+.medidor i{
+  position:absolute;inset:0 auto 0 0;width:0;background:var(--cor,var(--magenta));
+  -webkit-mask:repeating-linear-gradient(90deg,#000 0 7px,transparent 7px 9px);mask:repeating-linear-gradient(90deg,#000 0 7px,transparent 7px 9px);
+}
+.estado{margin-top:8px;padding:4px 8px;font-weight:700;font-size:14px;background:#0d0919;border-left:4px solid var(--ciano)}
+.estado.ser{border-left-color:var(--amarelo);color:var(--amarelo)}
+.estado.mort{border-left-color:var(--alerta);color:var(--alerta)}
+.estado.cyb{border-left-color:var(--alerta);color:var(--alerta)}
+.card .acoes{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.card .acoes small{color:var(--cinza);font-size:12px}
+.valor{font:900 44px/1 var(--disp);text-align:center;padding:4px 0}
+
+/* perícias */
+.pontos{display:flex;flex-wrap:wrap;gap:6px 22px;align-items:center;font-weight:600}
+.pontos .pt-in{display:inline-flex;align-items:baseline;gap:6px}
+.pontos .pt-in input{width:58px;text-align:center}
+.pontos .estouro{color:var(--alerta)}
+.filtros{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-left:auto}
+.filtros input[type=text]{width:220px}
+.cat{margin-top:18px}
+.cat>h3{
+  margin:0 0 4px;font:700 22px var(--disp);text-transform:uppercase;letter-spacing:.06em;color:var(--ciano);
+  border-bottom:2px solid var(--linha);padding-bottom:2px;
+}
+.cat:nth-of-type(even)>h3{color:var(--magenta)}
+.cat.vazia{display:none}
+.lista{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
+.per{display:grid;grid-template-columns:minmax(0,1fr) 50px 40px;gap:6px;align-items:center;padding:3px 0;border-bottom:1px solid #2a2050}
+.per .nmw{display:flex;align-items:center;min-width:0;gap:4px}
+.per .nm{background:none;border:0;padding:0;text-align:left;min-width:0;font-size:16px;font-weight:500;line-height:1.15}
+.per .nm small{display:block;font-size:12px;color:var(--cinza);font-weight:400}
+.per .nm:hover{color:var(--amarelo)}
+.per .x{background:none;border:0;color:var(--alerta);font-size:18px;padding:0 4px}
+.per input.lv{height:30px;padding:0;text-align:center;font-weight:700}
+.per .tot{font:900 24px var(--disp);text-align:center;color:var(--amarelo)}
+.per.zero .nm{color:var(--cinza)}
+.per.zero .tot{color:#6d6490}
+.per.oculta{display:none}
+.novo{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin-top:16px}
+.novo select{width:auto;min-width:130px}
+.novo input[type=text]{width:200px}
+.legenda{font-size:14px;color:var(--cinza);margin:10px 0 0}
+
+/* tabelas */
+.rolagem{overflow-x:auto}
+.tab{width:100%;border-collapse:collapse;min-width:760px}
+.tab th{font:700 16px var(--disp);text-transform:uppercase;letter-spacing:.06em;text-align:left;padding:0 6px 4px;border-bottom:2px solid var(--amarelo);color:var(--cinza)}
+.tab td{padding:5px 6px 2px;vertical-align:bottom}
+.tab td:last-child{white-space:nowrap}
+.tab select{font-size:15px}
+.armaduras{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.armaduras .card{border-top-color:var(--ciano)}
+.armaduras .linha{display:grid;grid-template-columns:1fr 70px;gap:8px;margin-bottom:6px}
+
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 22px}
+.cols .campo.larga{grid-column:1/-1}
+.rodape{margin-top:26px;font-size:14px;color:var(--cinza);text-align:center}
+
+/* bandeja de dados */
+#bandeja{
+  position:fixed;left:0;right:0;bottom:0;z-index:20;background:#06040d;border-top:3px solid var(--amarelo);
+  padding:8px 12px calc(8px + env(safe-area-inset-bottom));
+}
+#bandeja .in{max-width:1120px;margin:0 auto}
+#bandeja .topo{display:flex;flex-wrap:wrap;gap:8px 10px;align-items:center}
+#bandeja input{background:#140e24;border:1px solid var(--linha);padding:5px 8px}
+#bandeja .dvi,#bandeja .modi{width:74px}
+#bandeja .exi{width:130px}
+#bandeja .ultimo{flex:1;min-width:210px;display:flex;align-items:center;gap:10px;justify-content:flex-end;text-align:right}
+.res{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.res .n{font:900 40px/1 var(--disp);text-shadow:-2px 0 var(--ciano),2px 0 var(--magenta)}
+.res .t{font-weight:700}
+.res .d{font-size:13px;color:var(--cinza)}
+.nv-crit .t{color:var(--amarelo)}
+.nv-ok .t{color:var(--ciano)}
+.nv-fail .t{color:#d79ac0}
+.nv-des .t{color:var(--alerta)}
+#hist{display:none;max-height:34vh;overflow:auto;margin-top:8px;border-top:1px solid var(--linha);padding-top:6px}
+#hist.aberto{display:block}
+#hist .res{padding:3px 0;border-bottom:1px solid #1f1737}
+#hist .n{font-size:26px;text-shadow:none}
+@media (prefers-reduced-motion:no-preference){
+  .titulo-glitch{animation:glitch .9s steps(2,end) 1}
+  @keyframes glitch{
+    0%{transform:skewX(-6deg) translateX(0);clip-path:inset(0 0 0 0)}
+    20%{transform:skewX(-6deg) translateX(-8px);clip-path:inset(10% 0 55% 0)}
+    40%{transform:skewX(-6deg) translateX(7px);clip-path:inset(55% 0 8% 0)}
+    60%{transform:skewX(-6deg) translateX(-3px);clip-path:inset(0 0 0 0)}
+    100%{transform:skewX(-6deg) translateX(0);clip-path:inset(0 0 0 0)}
+  }
+}
+
+@media (max-width:900px){
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .deriv{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lista{grid-template-columns:1fr}
+  .katakana{display:none}
+}
+@media (max-width:620px){
+  :root{--corte:12px}
+  .ident{grid-template-columns:1fr}
+  .retrato{max-width:170px;order:-1;justify-self:center}
+  .campos,.cols,.armaduras{grid-template-columns:1fr}
+  .campos .campo.dupla{grid-column:auto}
+  .filtros{margin-left:0;width:100%}
+  .filtros input[type=text]{width:100%}
+  .deriv{grid-template-columns:1fr}
+  #bandeja .ultimo{justify-content:flex-start;text-align:left}
+}
+@media print{
+  body{background:#fff;color:#000}
+  .barra,#bandeja,.faixa,.katakana,.mini,.cont button,.novo,.per .x{display:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="faixa" aria-hidden="true"></div>
+<header class="barra glass">
+  <a href="index.html">‹ RPGBox</a>
+  <span class="esp"></span>
+  <button type="button" id="gerar">Rolar stats</button>
+  <button type="button" id="exportar">Exportar</button>
+  <button type="button" id="importar">Importar</button>
+  <input type="file" id="arq" accept="application/json,.json" hidden>
+</header>
+
+<main class="folha">
+  <div class="katakana" aria-hidden="true">エッジランナー</div>
+
+  <section class="ident">
+    <div>
+      <input type="text" id="handle" class="handle titulo-glitch" placeholder="Handle" maxlength="40" autocomplete="off" aria-label="Handle">
+      <div class="campos" id="campos"></div>
+    </div>
+    <label class="retrato" id="retrato"><span>Toque para<br>enviar o retrato</span><input type="file" id="foto" accept="image/*"></label>
+  </section>
+
+  <section class="painel mg">
+    <h2>Stats <small>Toque no nome para testar: STAT + 1d10</small></h2>
+    <div class="stats" id="stats"></div>
+    <div class="deriv" id="deriv"></div>
+  </section>
+
+  <section class="painel">
+    <h2>Habilidades <span class="esp"></span>
+      <span class="filtros">
+        <input type="text" id="busca" placeholder="Buscar habilidade" aria-label="Buscar habilidade">
+        <label style="display:flex;gap:6px;align-items:center;font-size:14px;font-weight:400"><input type="checkbox" id="soTreina"> só treinadas</label>
+      </span>
+    </h2>
+    <div class="pontos" id="pontos"></div>
+    <div id="cats"></div>
+    <div class="novo">
+      <div class="campo"><label for="famSel">Nova especialização</label><select id="famSel"></select></div>
+      <div class="campo"><label for="famStat">STAT</label><select id="famStat"></select></div>
+      <div class="campo"><label for="famNome">Nome</label><input type="text" id="famNome" placeholder="ex.: Japonês, Watson, Violão"></div>
+      <button type="button" class="mini" id="famAdd">Adicionar</button>
+    </div>
+    <p class="legenda">Total = STAT + nível. Habilidades ×2 custam o dobro para subir. Edgerunner: 86 pontos, nível entre 2 e 6, e 4 níveis de Linguagem grátis pela origem cultural.</p>
+  </section>
+
+  <section class="painel ci">
+    <h2>Armas e armadura</h2>
+    <div class="armaduras" id="armaduras"></div>
+    <div class="rolagem"><table class="tab">
+      <thead><tr><th>Arma</th><th>Habilidade</th><th>Dano</th><th>ROF</th><th>Munição</th><th>Notas</th><th></th></tr></thead>
+      <tbody id="armas"></tbody>
+    </table></div>
+    <div style="margin-top:10px"><button type="button" class="mini" id="armaAdd">Adicionar arma</button></div>
+    <p class="legenda">No dano, escreva BRIGA para usar o dano de Briga do seu BODY. Dois ou mais 6 nos dados de dano causam Lesão Crítica (+5 direto no HP).</p>
+  </section>
+
+  <section class="painel mg">
+    <h2>Cyberware <small>Instalar rola a perda de Humanidade</small></h2>
+    <div class="rolagem"><table class="tab" style="min-width:620px">
+      <thead><tr><th>Item</th><th>Perda de HUM</th><th>Notas</th><th></th></tr></thead>
+      <tbody id="cyber"></tbody>
+    </table></div>
+    <div style="margin-top:10px"><button type="button" class="mini" id="cyAdd">Adicionar cyberware</button></div>
+  </section>
+
+  <section class="painel">
+    <h2>Vida na rua</h2>
+    <div class="cols" id="bio"></div>
+  </section>
+
+  <section class="painel ci">
+    <h2>Equipamento e eddies</h2>
+    <div class="cols" id="eq"></div>
+  </section>
+
+  <p class="rodape">Os dados da ficha ficam salvos neste navegador. Use Exportar para guardar uma cópia.</p>
+</main>
+
+<div id="bandeja" role="region" aria-label="Rolagem de dados">
+  <div class="in">
+    <div class="topo">
+      <input type="number" inputmode="numeric" id="dv" class="dvi" placeholder="DV" aria-label="Valor de dificuldade (opcional)">
+      <input type="number" inputmode="numeric" id="mod" class="modi" placeholder="mod" aria-label="Modificador">
+      <input type="text" id="expr" class="exi" value="1d10" aria-label="Expressão de dados" autocomplete="off">
+      <button type="button" class="mini" id="rolar">Rolar</button>
+      <button type="button" class="mini cl" id="abrir" aria-expanded="false" aria-controls="hist">Histórico</button>
+      <div class="ultimo" id="ultimo" aria-live="polite"></div>
+    </div>
+    <div id="hist"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- utilidades ---------- */
+function h(tag,props,kids){
+  var e=document.createElement(tag),k;
+  if(props)for(k in props){
+    if(k==="class")e.className=props[k];
+    else if(k==="text")e.textContent=props[k];
+    else if(k.slice(0,2)==="on")e.addEventListener(k.slice(2),props[k]);
+    else e.setAttribute(k,props[k]);
+  }
+  (kids||[]).forEach(function(c){if(c!=null)e.appendChild(typeof c==="string"?document.createTextNode(c):c)});
+  return e;
+}
+function $(id){return document.getElementById(id)}
+function n(v){var x=parseInt(v,10);return isNaN(x)?0:x}
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function rnd(max){return 1+Math.floor(Math.random()*max)}
+
+/* ---------- dados do sistema ---------- */
+var STATS=[["INT","Inteligência"],["REF","Reflexos"],["DEX","Destreza"],["TECH","Técnica"],["COOL","Carisma"],["WILL","Força de Vontade"],["LUCK","Sorte"],["MOVE","Movimento"],["BODY","Corpo"],["EMP","Empatia"]];
+var PAPEIS=[["Rockerboy","Impacto Carismático"],["Solo","Consciência de Combate"],["Netrunner","Interface"],["Tech","Artífice"],["Medtech","Medicina"],["Executivo","Trabalho em Equipe"],["Mídia","Credibilidade"],["Homem da Lei","Reforços"],["Fixer","Operador"],["Nômade","Moto"]];
+/* categoria, [nome, stat, x2] */
+var CATS=[
+["Consciência",[["Concentração","WILL"],["Esconder/Revelar Objeto","INT"],["Leitura Labial","INT"],["Percepção","INT"],["Rastrear","INT"]]],
+["Corpo",[["Atletismo","DEX"],["Contorcionismo","DEX"],["Dança","DEX"],["Furtividade","DEX"],["Resistência","WILL"],["Resistir Tortura/Drogas","WILL"]]],
+["Controle",[["Conduzir Veículo Terrestre","REF"],["Pilotar Veículo Aéreo","REF",1],["Pilotar Veículo Marítimo","REF"],["Equitação","REF"]]],
+["Educação",[["Afinidade com Animais","INT"],["Burocracia","INT"],["Contabilidade","INT"],["Composição","INT"],["Criminologia","INT"],["Criptografia","INT"],["Dedução","INT"],["Educação","INT"],["Especialista Local","INT"],["Jogos","INT"],["Linguagem","INT"],["Negócios","INT"],["Pesquisa Bibliotecária","INT"],["Ciências","INT"],["Sobrevivência","INT"],["Táticas","INT"]]],
+["Luta",[["Briga","DEX"],["Evasão","DEX"],["Artes Marciais","DEX",1],["Armas Brancas","DEX"]]],
+["Performance",[["Atuação","COOL"],["Tocar Instrumentos","TECH"]]],
+["Armas à distância",[["Arquearia","REF"],["Armas de uma Mão","REF"],["Armas de Ombro","REF"],["Armas Pesadas","REF",1],["Disparo Automático","REF",1]]],
+["Sociais",[["Conversação","EMP"],["Cuidados Pessoais","COOL"],["Guarda-roupa e Estilo","COOL"],["Interrogatório","COOL"],["Malandragem","COOL"],["Negociação","COOL"],["Percepção Humana","EMP"],["Persuasão","COOL"],["Subornar","COOL"]]],
+["Técnicas",[["Arrombamento","TECH"],["Bater Carteira","TECH"],["Cybertecnologia","TECH"],["Demolições","TECH",1],["Falsificação","TECH"],["Fotografia/Filme","TECH"],["Paramédico","TECH",1],["Pintura/Desenho/Escultura","TECH"],["Primeiros Socorros","TECH"],["Tecnologia Básica","TECH"],["Tecnologia de Aeronaves","TECH"],["Tecnologia de Armas","TECH"],["Tecnologia de Veículos Marítimos","TECH"],["Tecnologia de Veículos Terrestres","TECH"],["Tecnologia Eletrônica/Segurança","TECH",1]]]
+];
+/* "Linguagem", "Especialista Local", "Ciências", "Artes Marciais" e "Tocar Instrumentos" pedem uma especialização (lista abaixo) */
+var ESPEC={"Linguagem":1,"Especialista Local":1,"Ciências":1,"Artes Marciais":1,"Tocar Instrumentos":1};
+var FAM=[["Linguagem","INT",0],["Especialista Local","INT",0],["Ciências","INT",0],["Artes Marciais","DEX",1],["Tocar Instrumentos","TECH",0],["Outra habilidade","INT",0]];
+var INFO=[["nome","Nome real"],["idade","Idade"],["origem","Origem cultural"],["rep","Reputação"],["eb","Eddies (eb)"]];
+var BIO=[["aparencia","Aparência e estilo"],["personalidade","Personalidade"],["valor","O que mais valoriza"],["familia","Família e origem"],["amigos","Amigos e aliados"],["inimigos","Inimigos"],["romance","Romance"],["objetivo","Objetivo de vida"],["historia","História","larga"],["notas","Anotações","larga"]];
+var EQ=[["equipamento","Equipamento e pertences","larga"],["moradia","Moradia"],["veiculo","Veículo"]];
+
+/* ---------- estado e persistência ---------- */
+var id=new URLSearchParams(location.search).get("id");
+var DEF={sys:"red",name:"Novo edgerunner",avatar:"",i:{},papel:"",rank:1,c:{},hp:null,hum:null,luck:null,dsPen:0,
+  s:{},cs:[{n:"Linguagem (Linguagem de Rua)",s:"INT",x:0,l:0},{n:"Especialista Local (Sua Casa)",s:"INT",x:0,l:0}],
+  pts:86,ar:{h:{n:"",m:0,c:null},b:{n:"",m:0,c:null}},
+  w:[{n:"Briga",sk:"Briga",d:"BRIGA",r:"2",mu:"—",nt:""}],cy:[],b:{},eq:{}};
+var D=clone(DEF);
+
+function lerArmazenado(){
+  var raw=null;
+  try{if(id&&typeof FICHAS!=="undefined"&&FICHAS.read)raw=FICHAS.read(id)}catch(e){}
+  if(!raw){try{raw=JSON.parse(localStorage.getItem("ficha-red-"+id))}catch(e){}}
+  return raw&&typeof raw==="object"?raw:null;
+}
+(function init(){
+  if(!id&&typeof FICHAS!=="undefined"&&FICHAS.create){
+    try{id=FICHAS.create({name:DEF.name,sys:"red"});if(id){location.replace("?id="+id);return}}catch(e){}
+  }
+  var raw=lerArmazenado();
+  if(raw)for(var k in raw)D[k]=raw[k];
+  ["i","c","s","b","eq","ar"].forEach(function(k){if(!D[k]||typeof D[k]!=="object"||Array.isArray(D[k]))D[k]=clone(DEF[k])});
+  ["cs","w","cy"].forEach(function(k){if(!Array.isArray(D[k]))D[k]=clone(DEF[k])});
+  ["h","b"].forEach(function(k){if(!D.ar[k]||typeof D.ar[k]!=="object")D.ar[k]={n:"",m:0,c:null}});
+  D.sys="red";
+})();
+
+var tSave=null;
+function save(){clearTimeout(tSave);tSave=setTimeout(persist,350)}
+function proj(){
+  var pap=D.papel||"Sem papel";
+  D.info=[pap+(D.papel?" · Rank "+n(D.rank):"")+(D.i.rep?" · Rep "+D.i.rep:"")];
+  D.attrs=STATS.map(function(s){return{n:s[0],v:ef(s[0]),f:"1d10"}});
+  D.per=rows.map(function(r){return{n:r.nome,b:r.total(),at:r.stat}});
+  D.bars=[
+    {n:"HP",c:cont.hp.valor(),m:hpMax(),col:"#ff2a6d"},
+    {n:"HUM",c:cont.hum.valor(),m:humMax(),col:"#08e0ee"},
+    {n:"Sorte",c:cont.luck.valor(),m:Math.max(1,st("LUCK")),col:"#fcee0c"}
+  ];
+  D.marks=[];D.skills=[];
+}
+function persist(){
+  try{proj()}catch(e){}
+  D.name=(D.handle||"").trim()||(D.i.nome||"").trim()||"Novo edgerunner";
+  try{
+    if(id&&typeof FICHAS!=="undefined"){
+      var fn=["write","save","update","set","put"].filter(function(k){return typeof FICHAS[k]==="function"})[0];
+      if(fn){FICHAS[fn](id,D);return}
+    }
+  }catch(e){}
+  try{localStorage.setItem("ficha-red-"+id,JSON.stringify(D))}catch(e){}
+}
+window.addEventListener("pagehide",function(){clearTimeout(tSave);persist()});
+
+/* ---------- regras ---------- */
+function st(k){return n(D.c[k])}
+function hpMax(){return 10+5*Math.ceil((st("BODY")+st("WILL"))/2)}
+function humMax(){return st("EMP")*10}
+function humCur(){return D.hum==null?humMax():D.hum}
+function empAtual(){return Math.max(0,Math.floor(humCur()/10))}
+function ferida(){
+  var m=hpMax(),c=D.hp==null?m:D.hp;
+  if(!st("BODY")&&!st("WILL"))return{t:"Defina BODY e WILL",p:0,mv:0,cl:""};
+  if(c<1)return{t:"Mortalmente Ferido · −4 em tudo, −6 MOVE, Death Save a cada turno",p:-4,mv:-6,cl:"mort"};
+  if(c<=Math.ceil(m/2))return{t:"Seriamente Ferido · −2 em todas as Ações",p:-2,mv:0,cl:"ser"};
+  if(c<m)return{t:"Levemente Ferido",p:0,mv:0,cl:""};
+  return{t:"Sem ferimentos",p:0,mv:0,cl:""};
+}
+function ef(k){
+  if(k==="EMP")return empAtual()-(0);
+  if(k==="MOVE")return Math.max(1,st("MOVE")+ferida().mv);
+  return st(k);
+}
+function brigaDano(){var b=st("BODY");return b>=11?"4d6":b>=7?"3d6":b>=5?"2d6":"1d6"}
+
+/* ---------- dados ---------- */
+var historico=[];
+function rolarD10(){
+  var r=rnd(10),ex=0,nota="";
+  if(r===10){ex=rnd(10);nota="crítico +"+ex}
+  else if(r===1){ex=-rnd(10);nota="falha crítica "+ex}
+  return{r:r,ex:ex,nota:nota};
+}
+function nivelDe(total,dv,r){
+  if(dv==null)return r===10?{t:"Crítico",c:"crit"}:r===1?{t:"Falha crítica",c:"des"}:{t:"",c:"ok"};
+  var ok=total>=dv;
+  if(r===10&&ok)return{t:"Sucesso crítico",c:"crit"};
+  if(r===1&&!ok)return{t:"Falha crítica",c:"des"};
+  return ok?{t:"Sucesso",c:"ok"}:{t:"Falha",c:"fail"};
+}
+function dvAtual(){var v=$("dv").value.trim();return v===""?null:n(v)}
+function rolarTeste(rotulo,base){
+  var d=rolarD10(),pen=ferida().p,mod=n($("mod").value),dv=dvAtual();
+  var total=base+pen+mod+d.r+d.ex;
+  var det="d10 "+d.r+(d.nota?" ("+d.nota+")":"")+" · base "+base+(pen?" · ferida "+pen:"")+(mod?" · mod "+(mod>0?"+":"")+mod:"")+(dv!=null?" · DV "+dv:"");
+  log({rot:rotulo,v:total,nv:nivelDe(total,dv,d.r),det:det,teste:true,dv:dv,r:d.r});
+}
+function rolarExpr(expr){
+  var s=String(expr).toLowerCase().replace(/\s/g,"").replace(/briga/g,brigaDano());
+  var re=/([+-]?)(\d*)d(\d+)|([+-]?)(\d+)/g,m,tot=0,det=[],ok=false,i,dados=[];
+  while((m=re.exec(s))){
+    ok=true;
+    if(m[3]){
+      var q=+(m[2]||1),f=+m[3],sg=m[1]==="-"?-1:1,rs=[],soma=0;
+      if(q>50||f>1000||f<1)return null;
+      for(i=0;i<q;i++){var r=rnd(f);rs.push(r);soma+=r;dados.push({f:f,r:r})}
+      tot+=sg*soma;det.push((sg<0?"-":"")+q+"d"+f+" ["+rs.join(", ")+"]");
+    }else{
+      var v=(m[4]==="-"?-1:1)*(+m[5]);tot+=v;det.push(String(v));
+    }
+  }
+  return ok?{total:tot,det:det.join(" "),dados:dados}:null;
+}
+function log(e){
+  historico.unshift(e);if(historico.length>40)historico.pop();
+  renderLog();
+}
+function renderLog(){
+  var ult=$("ultimo");ult.textContent="";
+  if(historico[0])ult.appendChild(linhaRes(historico[0]));
+  var hist=$("hist");hist.textContent="";
+  historico.forEach(function(x){hist.appendChild(linhaRes(x))});
+}
+function linhaRes(e){
+  var cls="res nv-"+(e.nv?e.nv.c:"ok");
+  var r=h("span",{class:"r"});
+  r.appendChild(h("span",{class:"t",text:(e.rot||"")+(e.nv&&e.nv.t?": "+e.nv.t:"")}));
+  if(e.det)r.appendChild(h("span",{class:"d",text:" "+e.det}));
+  return h("div",{class:cls},[h("span",{class:"n",text:String(e.v)}),r]);
+}
+$("rolar").addEventListener("click",function(){
+  var ex=$("expr").value.trim()||"1d10";
+  if(/^1?d10$/i.test(ex)){rolarTeste("d10",0);return}
+  var p=rolarExpr(ex);
+  if(!p){log({rot:"Expressão inválida",v:"?",det:"use algo como 3d6+2"});return}
+  log({rot:ex,v:p.total,det:p.det});
+});
+$("expr").addEventListener("keydown",function(e){if(e.key==="Enter")$("rolar").click()});
+$("abrir").addEventListener("click",function(){
+  var a=$("hist").classList.toggle("aberto");this.setAttribute("aria-expanded",String(a));
+});
+
+/* ---------- identificação ---------- */
+var hd=$("handle");hd.value=D.handle||"";
+hd.addEventListener("input",function(){D.handle=hd.value;save()});
+
+var campos=$("campos");
+var selPapel=h("select",{id:"i-papel","aria-label":"Papel"});
+selPapel.appendChild(h("option",{value:"",text:"Escolha o papel"}));
+PAPEIS.forEach(function(p){selPapel.appendChild(h("option",{value:p[0],text:p[0]}))});
+selPapel.value=D.papel||"";
+var inRank=h("input",{type:"number",inputmode:"numeric",min:1,max:10,id:"i-rank","aria-label":"Rank da habilidade de papel"});
+inRank.value=D.rank||1;
+var dicaPapel=h("div",{class:"dica-papel"});
+function atualizaPapel(){
+  var p=PAPEIS.filter(function(x){return x[0]===D.papel})[0];
+  dicaPapel.textContent=p?"Habilidade de papel: "+p[1]+" (Rank "+n(D.rank)+")":"";
+}
+selPapel.addEventListener("change",function(){D.papel=selPapel.value;atualizaPapel();save()});
+inRank.addEventListener("input",function(){D.rank=Math.max(1,Math.min(10,n(inRank.value)||1));atualizaPapel();save()});
+campos.appendChild(h("div",{class:"campo dupla"},[h("label",{for:"i-papel",text:"Papel"}),selPapel,dicaPapel]));
+campos.appendChild(h("div",{class:"campo"},[h("label",{for:"i-rank",text:"Rank do papel"}),inRank]));
+INFO.forEach(function(f){
+  var inp=h("input",{type:f[0]==="idade"||f[0]==="eb"?"number":"text",id:"i-"+f[0],autocomplete:"off"});
+  if(f[0]==="idade"||f[0]==="eb")inp.setAttribute("inputmode","numeric");
+  inp.value=D.i[f[0]]||"";
+  inp.addEventListener("input",function(){D.i[f[0]]=inp.value;save()});
+  campos.appendChild(h("div",{class:"campo"},[h("label",{for:"i-"+f[0],text:f[1]}),inp]));
+});
+
+function mostraRetrato(){
+  var r=$("retrato");
+  if(D.avatar){r.style.backgroundImage='url("'+D.avatar+'")';r.classList.add("tem")}
+  else{r.style.backgroundImage="";r.classList.remove("tem")}
+}
+$("foto").addEventListener("change",function(){
+  var f=this.files[0];if(!f)return;
+  var img=new Image(),url=URL.createObjectURL(f);
+  img.onload=function(){
+    var max=360,s=Math.min(1,max/Math.max(img.width,img.height));
+    var cv=document.createElement("canvas");cv.width=Math.round(img.width*s);cv.height=Math.round(img.height*s);
+    cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+    URL.revokeObjectURL(url);
+    var q=.85,out;
+    do{
+      out=cv.toDataURL("image/webp",q);
+      if(out.indexOf("data:image/webp")!==0)out=cv.toDataURL("image/jpeg",q);
+      q-=.15;
+    }while(out.length>380000&&q>.2);
+    D.avatar=out;mostraRetrato();save();
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);alert("Não foi possível ler essa imagem.")};
+  img.src=url;
+});
+
+/* ---------- stats ---------- */
+var statInputs={},statEf={};
+STATS.forEach(function(s){
+  var k=s[0],inp=h("input",{type:"number",inputmode:"numeric",min:0,max:20,"aria-label":s[1]});
+  inp.value=D.c[k]||"";
+  var efEl=h("span",{class:"ef"});
+  inp.addEventListener("input",function(){D.c[k]=inp.value;refresh();save()});
+  statInputs[k]=inp;statEf[k]=efEl;
+  var btn=h("button",{type:"button",class:"rot",title:"Testar "+s[1],onclick:function(){rolarTeste(k,ef(k))}},[h("b",{text:k}),h("small",{text:s[1]})]);
+  $("stats").appendChild(h("div",{class:"tile"},[btn,inp,efEl]));
+});
+$("gerar").addEventListener("click",function(){
+  if(!confirm("Rolar todos os stats (1d10 para cada)? Os valores atuais serão substituídos."))return;
+  STATS.forEach(function(s){D.c[s[0]]=String(Math.max(2,rnd(10)));statInputs[s[0]].value=D.c[s[0]]});
+  D.hp=null;D.hum=null;D.luck=null;D.dsPen=0;
+  refresh();save();
+  log({rot:"Stats gerados",v:"✓",det:"1d10 por STAT, mínimo 2. Ajuste como a mesa preferir."});
+});
+
+/* contadores */
+var cont={};
+function contador(k,titulo,maxFn,extra,min,cls){
+  var inp=h("input",{type:"number",inputmode:"numeric","aria-label":titulo});
+  var sub=h("small"),barra=h("i");
+  function valor(){return D[k]==null?maxFn():D[k]}
+  function set(v){D[k]=Math.min(Math.max(min,v),maxFn());refresh();save()}
+  inp.addEventListener("input",function(){
+    if(inp.value===""||inp.value==="-"){D[k]=null}else{D[k]=Math.min(Math.max(min,n(inp.value)),Math.max(maxFn(),0))}
+    refresh(true);save();
+  });
+  var card=h("div",{class:"card "+cls},[
+    h("h3",{},[h("span",{text:titulo}),sub]),
+    h("div",{class:"cont"},[
+      h("button",{type:"button","aria-label":"Diminuir "+titulo,text:"−",onclick:function(){set(valor()-1)}}),
+      inp,
+      h("button",{type:"button","aria-label":"Aumentar "+titulo,text:"+",onclick:function(){set(valor()+1)}})
+    ]),
+    h("div",{class:"medidor"},[barra])
+  ]);
+  if(extra)card.appendChild(extra);
+  cont[k]={inp:inp,sub:sub,barra:barra,valor:valor,max:maxFn};
+  return card;
+}
+
+var estadoEl=h("div",{class:"estado"});
+var dsTxt=h("small");
+var hpExtra=h("div",{},[
+  estadoEl,
+  h("div",{class:"acoes"},[
+    h("button",{type:"button",class:"mini mg",text:"Death Save",onclick:deathSave}),
+    h("button",{type:"button",class:"mini cl",text:"Estabilizar",title:"Zera a penalidade do Death Save",onclick:function(){D.dsPen=0;refresh();save()}}),
+    dsTxt
+  ])
+]);
+function deathSave(){
+  var r=rnd(10),pen=n(D.dsPen),body=st("BODY"),efv=r+pen;
+  var ok=r!==10&&efv<body;
+  D.dsPen=pen+1;
+  log({rot:"Death Save",v:efv,nv:ok?{t:"Sobreviveu",c:"ok"}:{t:"Morreu",c:"des"},det:"d10 "+r+(pen?" + penalidade "+pen:"")+" contra BODY "+body+(r===10?" (10 é falha automática)":"")});
+  refresh();save();
+}
+var luckExtra=h("div",{class:"acoes"},[
+  h("button",{type:"button",class:"mini",text:"+1 no último teste",title:"Gasta 1 ponto de Sorte e soma 1 ao último teste",onclick:gastarSorte}),
+  h("small",{text:"Recarrega a cada sessão"})
+]);
+function gastarSorte(){
+  var l=cont.luck.valor(),e=historico[0];
+  if(l<1){log({rot:"Sorte",v:"0",det:"Sem pontos de Sorte"});return}
+  if(!e||!e.teste){alert("Faça um teste antes de gastar Sorte.");return}
+  e.v+=1;e.det+=" · +1 Sorte";
+  if(e.dv!=null)e.nv=nivelDe(e.v,e.dv,e.r);
+  D.luck=l-1;refresh();save();renderLog();
+}
+var iniExtra=h("div",{class:"acoes"},[
+  h("button",{type:"button",class:"mini",text:"Rolar iniciativa",onclick:function(){rolarTeste("Iniciativa",ef("REF"))}})
+]);
+var humEstado=h("div",{class:"estado"});
+
+var deriv=$("deriv");
+deriv.appendChild(contador("hp","Pontos de Vida",hpMax,hpExtra,0,"hp"));
+deriv.appendChild(contador("hum","Humanidade",humMax,humEstado,-99,"hu"));
+deriv.appendChild(contador("luck","Sorte",function(){return st("LUCK")},luckExtra,0,"lk"));
+var iniVal=h("div",{class:"valor"});
+deriv.appendChild(h("div",{class:"card"},[h("h3",{},[h("span",{text:"Iniciativa"}),h("small",{text:"REF + 1d10"})]),iniVal,iniExtra]));
+
+/* ---------- habilidades ---------- */
+var rows=[],customRows=[],catEls=[];
+function makeRow(o){
+  var tot=h("output",{class:"tot"});
+  var inp=h("input",{type:"number",inputmode:"numeric",min:0,max:10,class:"lv",placeholder:"0","aria-label":"Nível de "+o.nome});
+  inp.value=o.get()||"";
+  inp.addEventListener("input",function(){o.set(Math.max(0,Math.min(10,n(inp.value))));refresh();save()});
+  function total(){return ef(o.stat)+n(o.get())}
+  var nm=h("button",{type:"button",class:"nm",title:"Testar "+o.nome,onclick:function(){rolarTeste(o.nome,total())}},[o.nome,h("small",{text:o.stat+(o.x2?" · custa ×2":"")})]);
+  var wrap=[nm];
+  if(o.remove)wrap.push(h("button",{type:"button",class:"x","aria-label":"Remover "+o.nome,text:"×",onclick:o.remove}));
+  var el=h("div",{class:"per"},[h("div",{class:"nmw"},wrap),inp,tot]);
+  return{nome:o.nome,stat:o.stat,x2:!!o.x2,nivel:function(){return n(o.get())},total:total,el:el,
+    upd:function(){tot.textContent=total();el.classList.toggle("zero",n(o.get())===0)}};
+}
+var catsBox=$("cats");
+CATS.forEach(function(c){
+  var box=h("div",{class:"cat"},[h("h3",{text:c[0]})]);
+  var lista=h("div",{class:"lista"});
+  c[1].forEach(function(s){
+    var nome=s[0];
+    if(ESPEC[nome])return; /* essas entram como especializações */
+    var r=makeRow({nome:nome,stat:s[1],x2:!!s[2],get:function(){return D.s[nome]},set:function(v){D.s[nome]=v}});
+    rows.push(r);lista.appendChild(r.el);
+  });
+  box.appendChild(lista);box.dataset.cat=c[0];catsBox.appendChild(box);catEls.push({box:box,lista:lista});
+});
+var custBox=h("div",{class:"cat"},[h("h3",{text:"Especializações"})]);
+var listaCust=h("div",{class:"lista"});
+custBox.appendChild(listaCust);catsBox.appendChild(custBox);catEls.push({box:custBox,lista:listaCust});
+
+function montaCustom(){
+  listaCust.textContent="";
+  rows=rows.filter(function(r){return !r.custom});
+  D.cs.forEach(function(c,i){
+    var r=makeRow({
+      nome:c.n,stat:c.s,x2:!!c.x,get:function(){return c.l},set:function(v){c.l=v},
+      remove:function(){
+        if(!confirm("Remover \""+c.n+"\"?"))return;
+        D.cs.splice(i,1);montaCustom();montaArmas();refresh();save();
+      }
+    });
+    r.custom=true;rows.push(r);listaCust.appendChild(r.el);
+  });
+}
+FAM.forEach(function(f,i){$("famSel").appendChild(h("option",{value:String(i),text:f[0]+(f[2]?" (×2)":"")}))});
+STATS.forEach(function(s){$("famStat").appendChild(h("option",{value:s[0],text:s[0]}))});
+$("famStat").value="INT";
+$("famSel").addEventListener("change",function(){$("famStat").value=FAM[+this.value][1]});
+$("famAdd").addEventListener("click",function(){
+  var f=FAM[+$("famSel").value],nm=$("famNome").value.trim();
+  if(!nm){$("famNome").focus();return}
+  D.cs.push({n:f[0]==="Outra habilidade"?nm:f[0]+" ("+nm+")",s:$("famStat").value,x:f[2],l:0});
+  $("famNome").value="";montaCustom();montaArmas();refresh();save();
+});
+$("famNome").addEventListener("keydown",function(e){if(e.key==="Enter")$("famAdd").click()});
+
+function filtra(){
+  var q=$("busca").value.trim().toLowerCase(),so=$("soTreina").checked;
+  rows.forEach(function(r){
+    var oculta=(q&&r.nome.toLowerCase().indexOf(q)<0)||(so&&r.nivel()===0);
+    r.el.classList.toggle("oculta",!!oculta);
+  });
+  catEls.forEach(function(c){
+    var vis=c.lista.querySelectorAll(".per:not(.oculta)").length;
+    c.box.classList.toggle("vazia",vis===0);
+  });
+}
+$("busca").addEventListener("input",filtra);
+$("soTreina").addEventListener("change",filtra);
+
+/* pontos de habilidade */
+var pontosEl=$("pontos"),pGasto=h("span");
+var inPts=h("input",{type:"number",inputmode:"numeric","aria-label":"Pontos de habilidade disponíveis"});
+inPts.value=D.pts;
+inPts.addEventListener("input",function(){D.pts=n(inPts.value);refresh();save()});
+pontosEl.appendChild(h("span",{class:"pt-in"},[document.createTextNode("Pontos gastos "),pGasto,document.createTextNode(" de "),inPts]));
+function pontosGastos(){
+  var s=0,lang=0;
+  rows.forEach(function(r){
+    var l=r.nivel();
+    s+=l*(r.x2?2:1);
+    if(r.nome.indexOf("Linguagem")===0)lang+=l;
+  });
+  return s-Math.min(4,lang);
+}
+
+/* ---------- armadura ---------- */
+var armEls={};
+function armorCard(k,titulo){
+  var a=D.ar[k];
+  var nm=h("input",{type:"text","aria-label":"Nome da armadura de "+titulo,placeholder:"Armadura"});nm.value=a.n||"";
+  var mx=h("input",{type:"number",inputmode:"numeric","aria-label":"SP máximo de "+titulo,placeholder:"SP"});mx.value=a.m||"";
+  var cur=h("input",{type:"number",inputmode:"numeric","aria-label":"SP atual de "+titulo});
+  nm.addEventListener("input",function(){a.n=nm.value;save()});
+  mx.addEventListener("input",function(){a.m=Math.max(0,n(mx.value));refresh();save()});
+  cur.addEventListener("input",function(){a.c=cur.value===""?null:Math.max(0,n(cur.value));save()});
+  armEls[k]={cur:cur,a:a};
+  return h("div",{class:"card"},[
+    h("h3",{},[h("span",{text:titulo}),h("small",{text:"SP atual / máximo"})]),
+    h("div",{class:"linha"},[nm,mx]),
+    h("div",{class:"cont"},[
+      h("button",{type:"button","aria-label":"Ablação: perder 1 de SP",text:"−",onclick:function(){a.c=Math.max(0,(a.c==null?a.m:a.c)-1);refresh();save()}}),
+      cur,
+      h("button",{type:"button","aria-label":"Recuperar 1 de SP",text:"+",onclick:function(){a.c=Math.min(a.m,(a.c==null?a.m:a.c)+1);refresh();save()}})
+    ]),
+    h("div",{class:"acoes"},[h("button",{type:"button",class:"mini cl",text:"Reparar tudo",onclick:function(){a.c=null;refresh();save()}}),h("small",{text:"Cada dano que passa do SP reduz 1"})])
+  ]);
+}
+$("armaduras").appendChild(armorCard("h","Cabeça"));
+$("armaduras").appendChild(armorCard("b","Corpo"));
+
+/* ---------- armas ---------- */
+var armasEl=$("armas");
+function montaArmas(){
+  armasEl.textContent="";
+  var nomes=rows.map(function(r){return r.nome}).sort(function(a,b){return a.localeCompare(b,"pt-BR")});
+  D.w.forEach(function(w,i){
+    function campo(k,lbl,larg){
+      var inp=h("input",{type:"text","aria-label":lbl,style:larg?"min-width:"+larg:""});
+      inp.value=w[k]||"";
+      inp.addEventListener("input",function(){w[k]=inp.value;save()});
+      return h("td",{},[inp]);
+    }
+    var sel=h("select",{"aria-label":"Habilidade da arma"});
+    sel.appendChild(h("option",{value:"",text:"—"}));
+    nomes.forEach(function(nm){var o=h("option",{value:nm,text:nm});if(nm===w.sk)o.selected=true;sel.appendChild(o)});
+    sel.addEventListener("change",function(){w.sk=sel.value;save()});
+    armasEl.appendChild(h("tr",{},[
+      campo("n","Nome da arma","120px"),
+      h("td",{},[sel]),
+      campo("d","Dano","80px"),campo("r","ROF","44px"),campo("mu","Munição","70px"),campo("nt","Notas","120px"),
+      h("td",{},[
+        h("button",{type:"button",class:"mini",text:"Atacar",onclick:function(){
+          if(!w.sk){alert("Escolha a habilidade da arma.");return}
+          var r=rows.filter(function(x){return x.nome===w.sk})[0];
+          rolarTeste((w.n||"Ataque")+" · "+w.sk,r?r.total():0);
+        }})," ",
+        h("button",{type:"button",class:"mini mg",text:"Dano",onclick:function(){
+          var p=rolarExpr(w.d||"0");
+          if(!p){log({rot:"Dano inválido",v:"?",det:w.d||""});return}
+          var seis=p.dados.filter(function(d){return d.f===6&&d.r===6}).length;
+          var crit=seis>=2;
+          log({rot:"Dano de "+(w.n||"arma"),v:Math.max(0,p.total),nv:crit?{t:"Lesão Crítica",c:"crit"}:null,
+            det:p.det+(crit?" · dois 6: Lesão Crítica, +5 direto no HP":"")+" · subtraia o SP do alvo"});
+        }})," ",
+        h("button",{type:"button",class:"mini cl","aria-label":"Remover arma",text:"×",onclick:function(){D.w.splice(i,1);montaArmas();save()}})
+      ])
+    ]));
+  });
+}
+$("armaAdd").addEventListener("click",function(){
+  D.w.push({n:"",sk:"",d:"2d6",r:"1",mu:"",nt:""});montaArmas();save();
+});
+
+/* ---------- cyberware ---------- */
+var cyEl=$("cyber");
+function montaCyber(){
+  cyEl.textContent="";
+  D.cy.forEach(function(c,i){
+    function campo(k,lbl,larg){
+      var inp=h("input",{type:"text","aria-label":lbl,style:larg?"min-width:"+larg:""});
+      inp.value=c[k]||"";
+      inp.addEventListener("input",function(){c[k]=inp.value;save()});
+      return h("td",{},[inp]);
+    }
+    var bt=h("button",{type:"button",class:c.i?"mini cl":"mini mg",text:c.i?"Instalado":"Instalar",onclick:function(){
+      if(c.i){return}
+      var p=rolarExpr(c.c||"0");
+      if(!p){alert("Escreva a perda como número ou dados, ex.: 7 ou 2d6.");return}
+      var perda=Math.max(0,p.total),antes=humCur();
+      D.hum=antes-perda;c.i=true;
+      var nota="HUM "+antes+" → "+D.hum+(D.hum<=0?" · cyberpsicose":"");
+      log({rot:"Perda de Humanidade ("+(c.n||"cyberware")+")",v:perda,nv:D.hum<=0?{t:"",c:"des"}:null,det:p.det+" · "+nota});
+      montaCyber();refresh();save();
+    }});
+    cyEl.appendChild(h("tr",{},[
+      campo("n","Nome do cyberware","160px"),campo("c","Perda de Humanidade","90px"),campo("nt","Notas","160px"),
+      h("td",{},[bt," ",h("button",{type:"button",class:"mini cl","aria-label":"Remover cyberware",text:"×",onclick:function(){
+        if(!confirm("Remover \""+(c.n||"este item")+"\"? A Humanidade já perdida não volta sozinha."))return;
+        D.cy.splice(i,1);montaCyber();save();
+      }})])
+    ]));
+  });
+}
+$("cyAdd").addEventListener("click",function(){D.cy.push({n:"",c:"2d6",nt:"",i:false});montaCyber();save()});
+
+/* ---------- textos ---------- */
+function montaTextos(box,lista,dest){
+  lista.forEach(function(f){
+    var tid="t-"+dest+"-"+f[0];
+    var curto=f[0]==="moradia"||f[0]==="veiculo";
+    var el=curto?h("input",{type:"text",id:tid,autocomplete:"off"}):h("textarea",{id:tid});
+    el.value=D[dest][f[0]]||"";
+    el.addEventListener("input",function(){D[dest][f[0]]=el.value;save()});
+    box.appendChild(h("div",{class:"campo"+(f[2]?" larga":"")},[h("label",{for:tid,text:f[1]}),el]));
+  });
+}
+montaTextos($("bio"),BIO,"b");
+montaTextos($("eq"),EQ,"eq");
+
+/* ---------- refresh ---------- */
+function refresh(editando){
+  var fer=ferida();
+  STATS.forEach(function(s){
+    var k=s[0],e=statEf[k];
+    if(k==="EMP"){e.textContent=D.hum!=null||humCur()!==humMax()?"atual "+empAtual():""}
+    else if(k==="MOVE"){e.textContent=fer.mv?"com ferimento "+ef("MOVE"):""}
+    else e.textContent="";
+  });
+  rows.forEach(function(r){r.upd()});
+  Object.keys(cont).forEach(function(k){
+    var c=cont[k],m=c.max(),v=c.valor();
+    if(document.activeElement!==c.inp||!editando)c.inp.value=v;
+    c.sub.textContent="máx. "+m;
+    var p=m>0?Math.max(0,Math.min(1,v/m)):0;
+    c.barra.style.width=(p*100)+"%";
+    c.barra.parentNode.style.setProperty("--cor",k==="hum"?"#08e0ee":k==="luck"?"#fcee0c":(fer.cl==="mort"?"#ff4b4b":fer.cl==="ser"?"#fcee0c":"#ff2a6d"));
+  });
+  estadoEl.textContent=fer.t;estadoEl.className="estado "+fer.cl;
+  dsTxt.textContent="Death Save: penalidade +"+n(D.dsPen)+" · passa se d10+pen < BODY";
+  var hu=humCur();
+  humEstado.textContent=hu<=0?"Cyberpsicose: "+hu+" de Humanidade":"EMP atual "+empAtual()+" de "+st("EMP");
+  humEstado.className="estado "+(hu<=0?"cyb":"");
+  iniVal.textContent=st("REF")?(ef("REF")+" + d10"):"—";
+  var g=pontosGastos(),tp=n(D.pts);
+  pGasto.textContent=g;pGasto.className=g>tp?"estouro":"";
+  pGasto.title=g>tp?"Pontos acima do disponível":"";
+  ["h","b"].forEach(function(k){
+    var e=armEls[k];if(!e)return;
+    if(document.activeElement!==e.cur)e.cur.value=e.a.c==null?(e.a.m||""):e.a.c;
+  });
+  filtra();
+}
+
+/* ---------- exportar e importar ---------- */
+$("exportar").addEventListener("click",function(){
+  persist();
+  var blob=new Blob([JSON.stringify(D,null,1)],{type:"application/json"});
+  var a=h("a",{href:URL.createObjectURL(blob),download:((D.handle||D.i.nome||"edgerunner").replace(/[^\w\-]+/g,"_"))+".json"});
+  document.body.appendChild(a);a.click();a.remove();
+});
+$("importar").addEventListener("click",function(){$("arq").click()});
+$("arq").addEventListener("change",function(){
+  var f=this.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){
+    try{
+      var o=JSON.parse(rd.result);
+      if(!o||typeof o!=="object"||o.sys!=="red")throw 0;
+      if(!confirm("Substituir esta ficha pelos dados importados?"))return;
+      var keep=D.name;D=Object.assign(clone(DEF),o);D.sys="red";if(!D.name)D.name=keep;
+      persist();location.reload();
+    }catch(e){alert("Esse arquivo não é uma ficha de Cyberpunk RED.")}
+  };
+  rd.readAsText(f);
+});
+
+/* ---------- início ---------- */
+montaCustom();
+montaArmas();
+montaCyber();
+mostraRetrato();
+atualizaPapel();
+refresh();
+renderLog();
+
+/* diagnóstico: se o share.js não colocou o botão, mostra o motivo na barra */
+window.addEventListener("load",function(){
+  if(document.getElementById("shbtn"))return;
+  var why=!id?"a URL não tem ?id=":
+    typeof FICHAS==="undefined"?"o fichas.js não carregou":
+    !FICHAS.has(id)?"FICHAS.has(\""+id+"\") deu falso (a ficha não está na lista)":
+    "o share.js não carregou (confira nome e pasta do arquivo)";
+  var bar=document.querySelector(".barra");
+  if(bar)bar.appendChild(h("span",{style:"flex-basis:100%;font-size:14px;color:#ff8aa8",text:"Compartilhar não iniciou: "+why}));
+  if(window.console)console.warn("share.js não iniciou:",why);
+});
+})();
+</script>
+</body>
+</html>
