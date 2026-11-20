@@ -33,7 +33,7 @@ a.back{color:var(--muted);font-size:.9rem}
 function el(i){return document.getElementById(i)}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 try{var th=JSON.parse(localStorage.getItem("vtt-tema"));if(th){var rs=document.documentElement.style;if(+th.h>=0)rs.setProperty("--h",+th.h);if(th.glass)rs.setProperty("--glass",th.glass/100);if(th.blur>=0)rs.setProperty("--blur",th.blur+"px");document.documentElement.dataset.style=th.solid?"solid":"glass"}}catch(e){}
-var SYS={"":["Ficha universal","ficha.html"],op:["Ordem Paranormal","ficha_op.html"],ordem:["Ordem (playtest)","ficha_ordem.html"],sentim:["Sentimentalism","ficha_sentim.html"],jojo:["JoJo","ficha_jojo.html"]};
+var SYS={"":["Ficha universal","ficha.html"],op:["Ordem Paranormal","ficha_op.html"],ordem:["Ordem (playtest)","ficha_ordem.html"],sentim:["Sentimentalism","ficha_sentim.html"],jojo:["JoJo","ficha_jojo.html"],coc:["Chamado de Cthulhu","ficha_cthulhu.html"],red:["Cyberpunk RED","ficha_red.html"]};
 var AV=/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+\/=]+$/;
 var rc=el("rc"),data=null;
 function fail(t){rc.innerHTML='<p class="msg">'+esc(t)+'</p><a class="btn" href="index.html">Ir para o início</a>'}
