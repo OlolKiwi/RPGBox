@@ -580,3 +580,20 @@ body:not(.gm) #mesabtn,body:not(.gm) #pw{display:none!important}
 .pbar i{display:block;height:100%;background:var(--c)}
 .rlg{display:flex;flex-direction:column;padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.05);margin-bottom:5px;font-size:.88rem}
 .rlg small{color:var(--muted);align-self:flex-end}
+
+#vpop{display:none;max-height:min(60vh,420px);overflow-y:auto;min-width:230px}
+#vpop .vt{font-weight:700;margin-bottom:8px}
+#vpop .row{min-height:40px}
+#vpop input[type=checkbox]{width:22px;height:22px}
+#vpop .vnote{font-size:12px;opacity:.7;margin-top:8px}
+#viewas{max-width:140px}
+.tchip.hid{opacity:.45}
+#toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,16px);max-width:min(92vw,420px);padding:10px 16px;border-radius:12px;background:rgba(20,18,30,.94);color:#fff;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:999}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#help{display:none;position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:min(92vw,420px);padding:16px;z-index:998}
+#help.on{display:block}
+#help p{margin:6px 0 12px;line-height:1.5}
+#help kbd{padding:1px 6px;border-radius:6px;border:1px solid rgba(255,255,255,.35);font:inherit;font-size:.9em}
+@media (max-width:700px){
+  #vpop{position:fixed!important;left:8px!important;right:8px!important;top:auto!important;bottom:calc(84px + env(safe-area-inset-bottom))!important;width:auto!important}
+}
