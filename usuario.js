@@ -12,6 +12,7 @@ if (header) {
   #upanel *{box-sizing:border-box}
   #upanel .u-out,#upanel .u-on{display:grid;gap:10px}
   #upanel h2{margin:0 0 2px}
+  #upanel [hidden]{display:none!important}
   #upanel input{width:100%;background:#0003;border:1px solid #fff2;border-radius:10px;padding:10px 12px;font:inherit;color:inherit}
   #upanel input::placeholder{color:#fff7}
   .u-seg{display:grid;grid-template-columns:1fr 1fr;background:#0003;border-radius:10px;padding:3px}
@@ -38,7 +39,7 @@ if (header) {
   const pan = document.createElement("div");
   pan.className = "panel glass"; pan.id = "upanel"; pan.setAttribute("role", "dialog"); pan.setAttribute("aria-label", "Conta");
   pan.innerHTML = `
-  <div class="u-out">
+  <div class="u-out" hidden>
     <h2 id="u-title">Entre na mesa</h2>
     <div class="u-seg"><button type="button" id="u-mi" aria-pressed="true">Entrar</button><button type="button" id="u-mu" aria-pressed="false">Criar conta</button></div>
     <input id="u-name" type="text" maxlength="24" placeholder="Seu nome" autocomplete="nickname" hidden>
