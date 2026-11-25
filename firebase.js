@@ -29,4 +29,7 @@ export const ERR = {
 export const letterAvatar = n => "data:image/svg+xml;utf8," + encodeURIComponent(
   `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#3b2a57"/><text x="50" y="66" font-size="48" text-anchor="middle" fill="#f1e9d8" font-family="Georgia">${((n || "?").trim().charAt(0) || "?").toUpperCase().replace(/[<>&]/g, "?")}</text></svg>`);
 
-export const okUrl = u => { try { return new URL(u).protocol === "https:" } catch { return false } };
+export const okUrl = u => {
+  if (typeof u === "string" && /^data:image\/(webp|jpeg|png|gif);base64,/.test(u)) return true;
+  try { return new URL(u).protocol === "https:" } catch { return false }
+};
