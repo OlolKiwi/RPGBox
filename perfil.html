@@ -161,13 +161,13 @@ import { onAuthStateChanged, updateProfile } from "https://www.gstatic.com/fireb
 import { doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 const BADGES=[
- {id:"mestre",e:"🎲",t:"Mestre",c:"#e0a43c"},{id:"aventureiro",e:"🗡️",t:"Aventureiro",c:"#4f9dff"},
+ {id:"mestre",e:"🎲",t:"Mestre",c:"#e0a43c"},{id:"player",e:"🗡️",t:"Player",c:"#4f9dff"},
  {id:"veterano",e:"🏆",t:"Veterano",c:"#f2c230"},{id:"lorista",e:"📜",t:"Lorista",c:"#c9a46a"},
  {id:"critico",e:"🎯",t:"Crítico 20",c:"#5eff8a"},{id:"falha",e:"💀",t:"Falha Crítica",c:"#ff5e5e"},
  {id:"cthulhu",e:"🐙",t:"Sanidade Frágil",c:"#38b79a"},{id:"cyber",e:"⚡",t:"Edgerunner",c:"#ff2a6d"},
- {id:"stand",e:"✨",t:"Stand User",c:"#a45bff"},{id:"sonhador",e:"💔",t:"Sonhador",c:"#ff7eb6"},
- {id:"artista",e:"🎨",t:"Artista",c:"#ff9a3d"},{id:"noturno",e:"🌙",t:"Coruja da Madrugada",c:"#7c8cff"}];
-const PRESETS=[["aurora","Aurora"],["sangue","Sangue"],["neon","Neon"],["papel","Papel velho"],["stand","Stand"],["floresta","Floresta"]];
+ {id:"stand",e:"✨",t:"Stand User",c:"#a45bff"},{id:"combo",e:"🩸",t:"Combeiro",c:"#ff7eb6"},
+ {id:"artista",e:"🎨",t:"Artista",c:"#ff9a3d"},{id:"ordem",e:"🔍",t:"Ordo Realitas",c:"#7c8cff"}];
+const PRESETS=[["aurora","Aurora"],["sangue","Sangue"],["neon","Neon"],["papel","Papel velho"],["floresta","Floresta"]];
 const RINGS=[["giro","Giratório"],["arco","Arco-íris"],["chama","Chama"],["pulso","Pulsante"],["nenhum","Sem anel"]];
 const PAGES={"":"ficha.html",op:"ficha_op.html",ordem:"ficha_ordem.html",sentim:"ficha_sentim.html",jojo:"ficha_jojo.html",coc:"ficha_cthulhu.html",red:"ficha_red.html"};
 const MAXB=5,$=id=>document.getElementById(id);
