@@ -139,8 +139,12 @@ textarea.pf-in{resize:vertical;min-height:72px}
     <fieldset><label class="l" for="f-handle">Nome de usuário</label><input class="pf-in" id="f-handle" maxlength="20" placeholder="sem espaços, ex: olol"></fieldset>
     <fieldset><label class="l" for="f-pron">Pronomes</label><input class="pf-in" id="f-pron" maxlength="16" placeholder="ele/dele"></fieldset>
     <fieldset><label class="l" for="f-bio">Bio</label><textarea class="pf-in" id="f-bio" maxlength="140"></textarea></fieldset>
+    <div class="pf-row"><button class="pf-btn g" type="button" id="up-av">Escolher arquivo</button><button class="pf-btn g" type="button" id="rm-av">Remover</button></div>
+    <input type="file" id="file-av" accept="image/*" hidden>
     <fieldset><label class="l" for="f-av">Foto ou GIF de perfil</label><input class="pf-in" id="f-av" type="url" placeholder="Link de imagem ou GIF (https://…)">
       <span class="pf-hint">Vazio = foto da sua conta Google, se houver.</span></fieldset>
+    <div class="pf-row"><button class="pf-btn g" type="button" id="up-bg">Escolher arquivo</button><button class="pf-btn g" type="button" id="rm-bg">Remover</button></div>
+    <input type="file" id="file-bg" accept="image/*" hidden>
     <fieldset><legend>Fundo do perfil</legend><div class="pf-bgs" id="presets"></div>
       <input class="pf-in" id="f-bg" type="url" placeholder="Ou link de imagem, GIF, MP4 ou WebM"></fieldset>
     <fieldset><legend>Anel da foto</legend><div class="pf-row" id="rings"></div></fieldset>
@@ -237,16 +241,56 @@ BADGES.forEach(x=>{const b=badge(x,"button");b.type="button";b.dataset.badge=x.i
 FIELDS.forEach(([id,k])=>$(id).addEventListener("input",e=>{
  S[k]=k==="handle"?e.target.value.toLowerCase().replace(/[^a-z0-9_]/g,""):e.target.value.trim();render()}));
 
+function readImg(file,w,square,gifMax){
+ return new Promise((ok,fail)=>{
+  if(!file||!file.type.startsWith("image/"))return fail("Escolha um arquivo de imagem.");
+  const fr=new FileReader();
+  fr.onerror=()=>fail("Não consegui ler o arquivo.");
+  fr.onload=()=>{
+   if(file.type==="image/gif"){
+    if(file.size>gifMax)return fail("GIF grande demais (máx. "+Math.round(gifMax/1024)+" KB). Use um link.");
+    return ok(fr.result);
+   }
+   const im=new Image();
+   im.onerror=()=>fail("Imagem inválida.");
+   im.onload=()=>{
+    const c=document.createElement("canvas"),x=c.getContext("2d");
+    if(square){const s=Math.min(im.width,im.height);c.width=c.height=w;
+     x.drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,w,w)}
+    else{const k=Math.min(1,w/im.width);c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+     x.drawImage(im,0,0,c.width,c.height)}
+    let d=c.toDataURL("image/webp",.82);
+    if(!d.startsWith("data:image/webp"))d=c.toDataURL("image/jpeg",.82);
+    ok(d);
+   };
+   im.src=fr.result;
+  };
+  fr.readAsDataURL(file);
+ });
+}
+function wire(btn,file,rm,inp,key,w,square,gifMax){
+ $(btn).onclick=()=>$(file).click();
+ $(file).onchange=async e=>{
+  const f=e.target.files[0];e.target.value="";if(!f)return;
+  try{S[key]=await readImg(f,w,square,gifMax);$(inp).value="";render()}
+  catch(m){toast(String(m))}
+ };
+ $(rm).onclick=()=>{S[key]="";$(inp).value="";render()};
+}
+wire("up-av","file-av","rm-av","f-av","avatar",256,true,200*1024);
+wire("up-bg","file-bg","rm-bg","f-bg","bg",1000,false,300*1024);
+  
 function toast(m){$("toast").textContent=m;clearTimeout(toast.t);toast.t=setTimeout(()=>$("toast").textContent="",3500)}
 function close(){$("ov").hidden=true;document.removeEventListener("keydown",esc)}
 function cancel(){S=snap;render();close()}
 function esc(e){if(e.key==="Escape")cancel()}
-$("edit").onclick=()=>{snap=JSON.parse(JSON.stringify(S));FIELDS.forEach(([i,k])=>$(i).value=S[k]);
+$("edit").onclick=()=>{snap=JSON.parse(JSON.stringify(S));FIELDS.forEach(([i,k])=>$(i).value=String(S[k]).startsWith("data:")?"":S[k]);
  $("ov").hidden=false;document.addEventListener("keydown",esc);$("f-name").focus()};
 $("cancel").onclick=cancel;
 $("ov").addEventListener("click",e=>{if(e.target===$("ov"))cancel()});
 $("save").onclick=async()=>{
  if(!S.name)return toast("Escolha um nome.");
+ if(S.avatar.length+S.bg.length>800000)return toast("Imagens grandes demais juntas. Use arquivos menores.");
  const p={name:S.name.slice(0,24),handle:S.handle.slice(0,20),pron:S.pron.slice(0,16),bio:S.bio.slice(0,140),
   avatar:okUrl(S.avatar)?S.avatar:"",bg:okUrl(S.bg)?S.bg:"",bgPreset:S.bgPreset,ring:S.ring,badges:S.badges.slice(0,MAXB)};
  try{await setDoc(doc(db,"users",user.uid),{...p,updatedAt:serverTimestamp()},{merge:true});
