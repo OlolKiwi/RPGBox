@@ -536,7 +536,7 @@
     }
   }
 
-    var PLAYER_ACTS={roll:1,sheet:1,"sheet:update":1,note:1,"note:add":1,"note:move":1,"note:upd":1,"note:del":1,"edge:add":1,"board:clear":1};
+    var PLAYER_ACTS={roll:1,sheet:1,"sheet:update":1,"sheet:del":1,note:1,"note:add":1,"note:move":1,"note:upd":1,"note:del":1,"edge:add":1,"board:clear":1};
 
   var players=[];
   function renderPlayers(l){
@@ -589,6 +589,11 @@
       if(!(role==="gm"&&same(by,myName))&&!same(d.by,by))return;
       var ui=camp.sheets.findIndex(function(s){return s.by===d.by});
       if(ui>=0){camp.sheets[ui].data=d.data||camp.sheets[ui].data;camp.sheets[ui].name=d.name||camp.sheets[ui].name;camp.sheets[ui].upd=Date.now();camp.sheets[ui].ts=Date.now()}
+    }
+    else if(a==="sheet:del"){
+      var who=d.by||by;
+      if(!(role==="gm"&&same(by,myName))&&!same(who,by))return;
+      camp.sheets=camp.sheets.filter(function(s){return !same(s.by,who)});
     }
     else if(a==="note"){camp.notes=d.notes||""}
     else if(a==="rename"){camp.name=d.name||camp.name}
@@ -702,6 +707,15 @@
         c.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();openSheet(s)}});
       }else{
         var lk=document.createElement("small");lk.className="pj-lock";lk.textContent="🔒 Só o mestre e o dono abrem a ficha.";body.appendChild(lk);
+      }
+      if(mine||role==="gm"){
+        var rm=document.createElement("button");rm.type="button";rm.className="btn";rm.style.marginTop="6px";rm.textContent="Remover da mesa";
+        rm.addEventListener("click",function(e){
+          e.stopPropagation();
+          if(confirm("Remover a ficha de "+(s.by||"?")+" da mesa? A ficha original continua guardada com o dono."))sendAction("sheet:del",{by:s.by});
+        });
+        rm.addEventListener("keydown",function(e){e.stopPropagation()});
+        body.appendChild(rm);
       }
       c.appendChild(art);c.appendChild(body);box.appendChild(c);
     });
