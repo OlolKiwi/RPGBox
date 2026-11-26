@@ -7,6 +7,16 @@ const MIME={".html":"text/html; charset=utf-8",".css":"text/css; charset=utf-8",
 
 const share=require("./compartilhar")();
 
+const admin=require("firebase-admin");
+admin.initializeApp({projectId:"rpgbox-e616b"});
+const uidOf=async t=>{try{return(await admin.auth().verifyIdToken(String(t||""))).uid}catch(e){return null}};
+const ACC_FILE=path.join(DATA_DIR,"contas.json"),MAX_CREATE=2,MAX_JOIN=4;
+let ACC={};try{ACC=JSON.parse(fs.readFileSync(ACC_FILE,"utf8"))}catch(e){}
+const acc=u=>ACC[u]||(ACC[u]={created:[],joined:[]});
+const saveAcc=()=>{try{fs.writeFileSync(ACC_FILE,JSON.stringify(ACC))}catch(e){console.error("saveAcc",e.message)}};
+function claimCreate(u,c){const A=acc(u);if(A.created.includes(c))return true;if(A.created.length>=MAX_CREATE)return false;A.created.push(c);saveAcc();return true}
+function claimJoin(u,c){const A=acc(u);if(A.created.includes(c)||A.joined.includes(c))return true;if(A.joined.length>=MAX_JOIN)return false;A.joined.push(c);saveAcc();return true}
+
 const server=http.createServer((req,res)=>{
   if(share.handle(req,res))return;
  if(req.method!=="GET"&&req.method!=="HEAD"){res.writeHead(405);return res.end()}
@@ -113,11 +123,12 @@ function handle(ws,m,raw){
   send(r.host,{t:"rl",by:ws.name,c:S_(m.c,60),l,x:S_(m.x,200),ts:Date.now()});return;
  }
  case "create":{
-  if(r)return;
+  if(!ws.uid)return send(ws,{t:"error",m:"Entre na sua conta (botão de usuário, no topo) para criar campanhas."});
   const name=cname(m.name);if(!name)return send(ws,{t:"error",m:"Digite um nome."});
   const want=typeof m.room==="string"&&RX.test(m.room)?m.room:null;
   let room=want?rooms.get(want):null;
   if(room&&!same(room.key,m.key))return send(ws,{t:"error",m:"Essa sala já existe com outro mestre."});
+  if(room&&!claimCreate(ws.uid,room.code))return send(ws,{t:"error",m:"Você já criou "+MAX_CREATE+" campanhas. Exclua uma para criar outra."});
   if(!room){
        if(!(want&&typeof m.key==="string"&&same(m.key,sign(want)))){
     if(blocked(ws.ip))return send(ws,{t:"error",m:"Muitas tentativas. Aguarde alguns minutos."});
@@ -125,6 +136,7 @@ function handle(ws,m,raw){
    }
    if(rooms.size>=MAX_ROOMS)return send(ws,{t:"error",m:"O servidor está com salas demais. Tente mais tarde."});
    const code=want||newCode();
+   if(!claimCreate(ws.uid,code))return send(ws,{t:"error",m:"Você já criou "+MAX_CREATE+" campanhas. Exclua uma para criar outra."});
    room={code,key:sign(code),host:null,hostName:name,players:new Map(),scene:null,assets:new Map(),bytes:0,timer:null,perms:{},camp:{name:"Campanha",notes:"",rolls:[],sheets:[],docs:[],board:{nodes:[],edges:[]},wallpaper:"",theme:null}}
    rooms.set(code,room);
   }
@@ -149,6 +161,8 @@ function handle(ws,m,raw){
   const ex=room.players.get(k);
   if(ex){if(sid&&ex.sid===sid){try{ex.ws.close()}catch(e){}}else return send(ws,{t:"error",m:"Já existe alguém com esse nome na sala."})}
   else if(room.players.size>=MAX_PLAYERS)return send(ws,{t:"error",m:"A sala está cheia."});
+  if(!ws.uid)return send(ws,{t:"error",m:"Entre na sua conta (botão de usuário, no topo) para entrar em campanhas."});
+  if(!claimJoin(ws.uid,room.code))return send(ws,{t:"error",m:"Você já está em "+MAX_JOIN+" campanhas. Saia de uma para entrar em outra."});
   room.players.set(k,{ws,name,sid});ws.room=room;ws.name=name;ws.gm=false;
   send(ws,{t:"joined",room:room.code,role:"player",name});
   for(const [h,src] of room.assets)send(ws,{t:"asset",h,src});
@@ -213,6 +227,27 @@ send(ws,{t:"me",p:permsFor(room,name)});
    saveRoom(r);
    toPlayers(r,{t:"campstate",d:m.d});return;
   }
+    case "mine":{
+   if(!ws.uid)return send(ws,{t:"mine",l:[]});
+   const A=acc(ws.uid);
+   const info=c=>{const x=rooms.get(c)||loadRoom(c);return{name:(x&&x.camp&&x.camp.name)||"Campanha",host:x&&x.hostName||""}};
+   send(ws,{t:"mine",l:A.created.map(c=>Object.assign({code:c,role:"gm",key:sign(c)},info(c))).concat(A.joined.map(c=>Object.assign({code:c,role:"player"},info(c))))});return;
+  }
+  case "delcamp":{
+   const c=String(m.room||"").toUpperCase();
+   if(!ws.uid||!RX.test(c))return;
+   const A=acc(ws.uid);if(!A.created.includes(c))return send(ws,{t:"error",m:"Só quem criou pode excluir."});
+   const x=rooms.get(c);
+   if(x){if(x.timer)clearTimeout(x.timer);x.players.forEach(p=>{try{p.ws.close()}catch(e){}});if(x.host){try{x.host.close()}catch(e){}}rooms.delete(c)}
+   try{fs.unlinkSync(roomFile(c))}catch(e){}
+   for(const u in ACC)ACC[u].joined=ACC[u].joined.filter(k=>k!==c);
+   A.created=A.created.filter(k=>k!==c);saveAcc();send(ws,{t:"done"});return;
+  }
+  case "leavecamp":{
+   const c=String(m.room||"").toUpperCase();
+   if(!ws.uid)return;
+   const A=acc(ws.uid);A.joined=A.joined.filter(k=>k!==c);saveAcc();send(ws,{t:"done"});return;
+  }
  }
 }
 function leave(ws){
@@ -237,7 +272,9 @@ wss.on("connection",(ws,req)=>{
   if(++ws.n>400)return;
   const raw=data.toString();let m;
   try{m=JSON.parse(raw)}catch(e){return}
-  if(m&&typeof m.t==="string")handle(ws,m,raw);
+  if(!m||typeof m.t!=="string")return;
+  if(typeof m.tok==="string"&&m.tok)uidOf(m.tok).then(u=>{ws.uid=u;handle(ws,m,raw)});
+  else handle(ws,m,raw);
  });
  ws.on("close",()=>leave(ws));
  ws.on("error",()=>{});
