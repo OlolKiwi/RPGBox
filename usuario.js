@@ -2,6 +2,7 @@ import { auth, db, ERR, letterAvatar, okUrl } from "./firebase.js";
 import { GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, createUserWithEmailAndPassword,
   signInWithEmailAndPassword, updateProfile, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+window.rpgToken = async () => { await auth.authStateReady(); return auth.currentUser ? auth.currentUser.getIdToken() : null };
 
 const header = document.getElementById("top") || document.querySelector("header");
 if (header) {
@@ -117,6 +118,6 @@ if (header) {
     btn.innerHTML = ""; const im = document.createElement("img"); im.src = src; im.alt = ""; btn.appendChild(im);
     btn.setAttribute("aria-label", "Conta de " + name);
   }
-  onAuthStateChanged(auth, u => show(u));
+    onAuthStateChanged(auth, u => { show(u); window.dispatchEvent(new Event("rpg-auth")) });
   window.addEventListener("perfil-atualizado", () => show(auth.currentUser));
 }
