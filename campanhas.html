@@ -221,6 +221,10 @@
 </header>
 <main>
   <div id="gate" class="gate">
+    <div class="glass" id="mineBox" style="padding:16px;margin-bottom:12px;display:none">
+      <h2>Minhas campanhas</h2>
+      <div id="mineList"></div>
+    </div>
     <div class="glass" style="padding:16px;margin-bottom:12px">
       <h2>Criar campanha (mestre)</h2>
       <div class="row"><label>Nome do mestre</label><input id="gmName" maxlength="20" style="width:100%"></div>
@@ -257,19 +261,21 @@
     </div>
 
     <div class="camp-pane on" data-pane="sheets">
-        <div class="glass share-bar">
-          <div class="share-txt">
-            <h3>Sua ficha na mesa</h3>
-            <p class="muted" id="shareHint">Escolha uma das suas fichas pra mostrar à mesa.</p>
-          </div>
-          <div class="share-row">
-            <select id="fichaSel" aria-label="Escolher ficha"></select>
-            <button type="button" class="btn-accent" id="addSheet">Compartilhar</button>
-          </div>
-          <div class="who">
-            <span class="who-l">Na mesa</span>
-            <div id="playersList"></div>
+      <div class="glass share-bar">
+        <div class="share-txt">
+          <h3>Sua ficha na mesa</h3>
+          <p class="muted" id="shareHint">Escolha uma das suas fichas pra mostrar à mesa.</p>
         </div>
+        <div class="share-row">
+          <select id="fichaSel" aria-label="Escolher ficha"></select>
+          <button type="button" class="btn-accent" id="addSheet">Compartilhar</button>
+        </div>
+      </div>
+      <div class="who">
+        <span class="who-l">Na mesa</span>
+        <div id="playersList"></div>
+      </div>
+      <div id="sheetsList"></div>
     </div>
 
     <div class="camp-pane" data-pane="rolls">
@@ -396,12 +402,57 @@
   function lastUpd(by){try{var v=localStorage.getItem(updKey(by));return v===null?null:(+v||0)}catch(e){return null}}
   function setLastUpd(by,v){try{localStorage.setItem(updKey(by),String(v))}catch(e){}}
 
+    function getTok(){
+    return new Promise(function(ok){
+      var n=0;(function t(){
+        if(window.rpgToken)return window.rpgToken().then(ok,function(){ok(null)});
+        if(++n>30)return ok(null);setTimeout(t,100);
+      })();
+    });
+  }
+  function ask(msg,cb){
+    var done=false;function fin(m){if(done)return;done=true;cb(m)}
+    getTok().then(function(tok){
+      if(!tok)return fin(null);
+      var w;try{w=new WebSocket((location.protocol==="https:"?"wss:":"ws:")+"//"+location.host)}catch(e){return fin(null)}
+      w.onopen=function(){msg.tok=tok;w.send(JSON.stringify(msg))};
+      w.onmessage=function(e){var m;try{m=JSON.parse(e.data)}catch(x){return}fin(m);try{w.close()}catch(x){}};
+      w.onerror=function(){fin(null)};
+    });
+  }
+  function loadMine(){
+    var box=el("mineBox"),list=el("mineList");
+    ask({t:"mine"},function(m){
+      if(!m||m.t!=="mine"||!m.l||!m.l.length){box.style.display="none";return}
+      box.style.display="block";list.textContent="";
+      m.l.forEach(function(c){
+        var row=document.createElement("div");row.style.cssText="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px";
+        var t=document.createElement("span");t.style.flex="1";t.textContent=c.name+" · "+c.code+(c.role==="gm"?" (mestre)":"");
+        var go=document.createElement("button");go.className="btn";go.textContent="Entrar";
+        var out=document.createElement("button");out.className="btn danger";out.textContent=c.role==="gm"?"Excluir":"Sair";
+        go.onclick=function(){
+          if(c.role==="gm"){start({t:"create",room:c.code,name:c.host||"Mestre",key:c.key});return}
+          var nm="";try{nm=localStorage.getItem("vtt-nome")||""}catch(e){}
+          nm=(nm||prompt("Seu nome na campanha:")||"").trim();if(!nm)return;
+          start({t:"join",room:c.code,name:nm});
+        };
+        out.onclick=function(){
+          var q=c.role==="gm"?"Excluir a campanha “"+c.name+"” para sempre? Isso apaga tudo dela.":"Sair da campanha “"+c.name+"”?";
+          if(!confirm(q))return;
+          ask({t:c.role==="gm"?"delcamp":"leavecamp",room:c.code},function(){loadMine()});
+        };
+        row.appendChild(t);row.appendChild(go);row.appendChild(out);list.appendChild(row);
+      });
+    });
+  }
+  window.addEventListener("rpg-auth",loadMine);
+  
   function connect(first){
     if(net&&net.readyState<2){try{net.close()}catch(e){}}
     var w;
     try{w=new WebSocket((location.protocol==="https:"?"wss:":"ws:")+"//"+location.host)}catch(e){gErr("Não foi possível conectar.");return}
     net=w;
-    w.onopen=function(){w.send(JSON.stringify(first))};
+    w.onopen=function(){getTok().then(function(t){var f=Object.assign({},first);if(t)f.tok=t;w.send(JSON.stringify(f))})};
     w.onmessage=function(e){var m;try{m=JSON.parse(e.data)}catch(x){return}onMsg(m)};
     w.onclose=function(){
       if(net!==w||leaving)return;
@@ -926,5 +977,7 @@
   try{var saved=JSON.parse(localStorage.getItem("vtt-camp"));if(saved&&saved.room){start(saved)}}catch(e){}
 })();
 </script>
+<script type="module" src="usuario.js"></script>
+<script type="module" src="fichas-nuvem.js"></script>
 </body>
 </html>
