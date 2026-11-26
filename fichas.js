@@ -3,6 +3,8 @@ var FICHAS=(function(){
  function rd(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}}
  function wr(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}
  function newId(){return "f"+Date.now().toString(36).slice(-6)+Math.random().toString(36).slice(2,6)}
+ var hook=null;
+ function emit(t,id){try{if(hook)hook(t,id)}catch(e){}}
  function list(){
   var a=rd(IDX);
   a=Array.isArray(a)?a.filter(function(x){return x&&typeof x.id==="string"&&RX.test(x.id)}).slice(0,MAX):[];
@@ -21,7 +23,7 @@ var FICHAS=(function(){
   if(!wr(PRE+id,S))return false;
   var a=list(),n=String(S&&S.name||"Sem nome").slice(0,60),i;
   for(i=0;i<a.length;i++)if(a[i].id===id&&a[i].name!==n){a[i].name=n;wr(IDX,a)}
-  return true;
+    emit("w",id);return true;
  }
  function create(data){
   var a=list();if(a.length>=MAX)return null;
@@ -29,12 +31,23 @@ var FICHAS=(function(){
   if(!wr(PRE+id,d))return null;
   a.push({id:id,name:String(d.name||"Novo personagem").slice(0,60)});
   if(!wr(IDX,a)){try{localStorage.removeItem(PRE+id)}catch(e){}return null}
-  return id;
+    emit("w",id);return id;
  }
  function remove(id){
   var a=list().filter(function(x){return x.id!==id});
   try{localStorage.removeItem(PRE+id)}catch(e){}
   wr(IDX,a);
+  emit("d",id);
  }
- return{MAX:MAX,list:list,has:has,read:read,write:write,create:create,remove:remove};
+
+  function put(id,S){
+  if(!RX.test(id))return false;
+  var a=list(),n=String(S&&S.name||"Sem nome").slice(0,60),i;
+  for(i=0;i<a.length;i++)if(a[i].id===id){a[i].name=n;wr(IDX,a);return wr(PRE+id,S)}
+  if(a.length>=MAX)return false;
+  if(!wr(PRE+id,S))return false;
+  a.push({id:id,name:n});return wr(IDX,a);
+ }
+ 
+ return{MAX:MAX,list:list,has:has,read:read,write:write,create:create,remove:remove,put:put,on:function(f){hook=f}};
 })();
