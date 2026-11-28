@@ -65,13 +65,18 @@ async function sync() {
   snap.forEach(s => cloud[s.id] = s.data());
 
   /* exclusões feitas offline ou que não chegaram a subir */
-  for (const id of rd(DEL, [])) { if (await tomb(id)) cloud[id] = { deleted: true, updatedAt: Date.now() } }
+  const pend = new Set(rd(DEL, []));
+  for (const id of pend) {
+    const ok = await Promise.race([tomb(id), new Promise(r => setTimeout(() => r(false), 8000))]);
+    if (ok) cloud[id] = { deleted: true, updatedAt: Date.now() };
+  }
 
   const ts = rd(TS, {}), localIds = FICHAS.list().map(f => f.id), now = Date.now();
   let changed = false, reload = false;
   const openId = new URLSearchParams(location.search).get("id");
 
   for (const id of Object.keys(cloud)) {
+    if (pend.has(id) && !cloud[id].deleted) continue;  /* apagada aqui, ainda não confirmada na nuvem */
     const c = cloud[id], lt = ts[id] || 0;
 
     if (c.deleted) {
